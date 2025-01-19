@@ -1,69 +1,58 @@
-import { Box, Container, Heading, Text, VStack, Divider } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Heading,
+  Stack,
+  Text,
+  Box,
+  Flex,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import { QuoteBlock } from "@/components/QuoteBlock";
 
 export default function Home() {
   return (
-    <Container maxW="container.lg" py={10}>
-      <VStack spacing={8} align="stretch">
-        {/* Aeion Mono - Variable Font */}
-        <Box>
-          <Heading mb={4} fontFamily="inherit">Aeion Mono (Variable Font)</Heading>
-          <VStack align="stretch" spacing={3}>
-            <Text fontFamily="'Aeion Mono'" fontWeight={100}>
-              Aeion Mono Light (100) - The quick brown fox jumps over the lazy dog
-            </Text>
-            <Text fontFamily="'Aeion Mono'" fontWeight={400}>
-              Aeion Mono Regular (400) - The quick brown fox jumps over the lazy dog
-            </Text>
-            <Text fontFamily="'Aeion Mono'" fontWeight={700}>
-              Aeion Mono Bold (700) - The quick brown fox jumps over the lazy dog
-            </Text>
-            <Text fontFamily="'Aeion Mono'" fontWeight={900}>
-              Aeion Mono Black (900) - The quick brown fox jumps over the lazy dog
-            </Text>
-          </VStack>
-        </Box>
-
-        <Divider />
-
-        {/* Topoline - Variable Font */}
-        <Box>
-          <Heading mb={4} fontFamily="inherit">Topoline (Variable Font)</Heading>
-          <VStack align="stretch" spacing={3}>
-            <Text fontFamily="'Topoline'" fontWeight={100}>
-              Topoline Light (100) - The quick brown fox jumps over the lazy dog
-            </Text>
-            <Text fontFamily="'Topoline'" fontWeight={400}>
-              Topoline Regular (400) - The quick brown fox jumps over the lazy dog
-            </Text>
-            <Text fontFamily="'Topoline'" fontWeight={700}>
-              Topoline Bold (700) - The quick brown fox jumps over the lazy dog
-            </Text>
-            <Text fontFamily="'Topoline'" fontWeight={900}>
-              Topoline Black (900) - The quick brown fox jumps over the lazy dog
-            </Text>
-          </VStack>
-        </Box>
-
-        <Divider />
-
-        {/* Tickerbit */}
-        <Box>
-          <Heading mb={4} fontFamily="inherit">Tickerbit</Heading>
-          <Text fontFamily="'Tickerbit'">
-            Tickerbit Regular - The quick brown fox jumps over the lazy dog
-          </Text>
-        </Box>
-
-        <Divider />
-
-        {/* YE Display */}
-        <Box>
-          <Heading mb={4} fontFamily="inherit">YE Display</Heading>
-          <Text fontFamily="'YE Display'">
-            YE Display Regular - The quick brown fox jumps over the lazy dog
-          </Text>
-        </Box>
-      </VStack>
-    </Container>
+    <Box py={{ base: 8, md: 12 }}>
+      <Stack>
+        <Container py={{ base: "16", md: "24" }}>
+          <Stack direction={"column"} spacing={{ base: 12, md: 24 }}>
+            <Stack direction="column" px={{ base: 0, md: 8 }}>
+              <Text
+                fontSize={{ base: "lg", md: "2xl" }}
+                color="fg.muted"
+                maxW={"md"}
+                fontFamily="Topoline"
+              >
+                The digital garden of a full-stack deep learning engineer,
+                trying to find his way in the startup world.
+              </Text>
+              <Stack direction={{ base: "column", md: "row" }} spacing="3">
+                <Button
+                  size={{ base: "lg", md: "xl" }}
+                  variant="primary"
+                  as="a"
+                  href="mailto:hello@0xeljh.com?subject=Getting%20In%20Touch"
+                >
+                  Contact Me
+                </Button>
+                <Button
+                  variant="secondary"
+                  size={{ base: "lg", md: "xl" }}
+                  as="a"
+                  href="#portfolio"
+                >
+                  Portfolio
+                </Button>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Container>
+        <Container py={{ base: 8, md: 16 }}>
+            <QuoteBlock colorScheme="red" dark={true}>
+              Keeping one foot in order so I can dance with the chaos.
+            </QuoteBlock>
+          </Container>
+      </Stack>
+    </Box>
   );
 }

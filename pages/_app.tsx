@@ -3,8 +3,14 @@ import Head from "next/head";
 import { ChakraProvider } from "@chakra-ui/react";
 import Fonts from "@/styles/fonts";
 import {theme} from "@/styles/theme";
+import {useDarkMode} from "@/lib/hooks/useDarkMode";
+import { useEffect } from "react";
 
 export default function App({ Component, pageProps }: AppProps) {
+  const { setDarkMode } = useDarkMode();
+  useEffect(() => {
+    setDarkMode();
+  }, []);
   const metaDescription =
     "Digital garden of a full-stack deep learning engineer, trying to find his way in the startup world.";
   return (
