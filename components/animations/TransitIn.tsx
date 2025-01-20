@@ -1,8 +1,8 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useMemo } from "react";
 
-export const MotionBox = motion(Box);
+export const MotionBox = motion.create(Box);
 
 interface TransitInProps {
   children: React.ReactNode;

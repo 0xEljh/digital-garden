@@ -17,7 +17,7 @@
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.1.5",
     "@types/mdx": "^2.0.13",
-    "framer-motion": "^11.18.1",
+    "motion": "^11.18.1",
     "next": "15.1.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

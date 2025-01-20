@@ -9,6 +9,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { QuoteBlock } from "@/components/QuoteBlock";
+import { Banner } from "@/components/Banner";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <Stack>
         <Container py={{ base: "16", md: "24" }}>
           <Stack direction={"column"} spacing={{ base: 12, md: 24 }}>
+            <Banner />
             <Stack direction="column" px={{ base: 0, md: 8 }}>
               <Text
                 fontSize={{ base: "lg", md: "2xl" }}
