@@ -42,7 +42,7 @@ export const QuoteBlock = (props: QuoteBlockProps) => {
             <Text
               fontSize="lg"
               color={dark ? "white" : "black"}
-              fontFamily={"Topoline"}
+              fontFamily={"YE Display"}
             >
               {children}
             </Text>

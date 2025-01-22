@@ -1,5 +1,4 @@
-import { useRef, ReactNode, useEffect, useState } from "react";
-import { Box, Flex } from "@chakra-ui/react";
+import { Center, Flex, type FlexProps } from "@chakra-ui/react";
 import {
   motion,
   useScroll,
@@ -8,16 +7,57 @@ import {
   useMotionValue,
   useVelocity,
   useAnimationFrame,
-  wrap
-} from "motion/react";
+} from "framer-motion";
+import { useRef, useEffect, useState } from "react";
 
-interface MarqueeProps {
-  children: ReactNode;
-  baseVelocity: number;
+const MotionFlex = motion(Flex);
+
+interface VelocityMarqueeProps extends FlexProps {
+  items: React.ReactNode[];
+  gutter?: FlexProps["marginEnd"];
+  baseVelocity?: number;
 }
 
-export function VelocityMarquee({ children, baseVelocity = 100 }: MarqueeProps) {
+interface MarqueeProps extends FlexProps {
+  items: React.ReactNode[];
+  gutter?: FlexProps["marginEnd"];
+  speed?: string;
+}
+
+const Mirror = (props: FlexProps) => (
+  <>
+    <Flex {...props} />
+    <Flex aria-hidden {...props} />
+  </>
+);
+
+export const Marquee = (props: MarqueeProps) => {
+  const { items, gutter = "3.75rem", speed = "10s", ...rest } = props;
+  const animation = `slide-to-left-full ${speed} linear infinite`;
+  return (
+    <Flex
+      {...rest}
+      overflow="hidden"
+      maskImage="linear-gradient(var(--mask-direction,to right),#0000,#000 10%,#000 90%,#0000)"
+    >
+      <Mirror animation={animation}>
+        {items.map((item, index) => (
+          <Center marginEnd={gutter} key={index}>
+            {item}
+          </Center>
+        ))}
+      </Mirror>
+    </Flex>
+  );
+};
+
+export const VelocityMarquee = (props: VelocityMarqueeProps) => {
+  const { items, gutter = "3.75rem", baseVelocity = 100, ...rest } = props;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentWidth, setContentWidth] = useState(0);
   const baseX = useMotionValue(0);
+
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
   const smoothVelocity = useSpring(scrollVelocity, {
@@ -27,59 +67,57 @@ export function VelocityMarquee({ children, baseVelocity = 100 }: MarqueeProps) 
   const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], {
     clamp: false,
   });
-  const childRef = useRef<HTMLDivElement>(null);
-  const [numberOfChildren, setNumberOfChildren] = useState<number>(1);
 
   useEffect(() => {
-    if (childRef.current) {
-      const calculatedChildren = calculateNumberOfChildren(childRef.current);
-      setNumberOfChildren(calculatedChildren);
+    if (contentRef.current) {
+      const totalWidth = Array.from(contentRef.current.children).reduce(
+        (acc, child) => acc + child.getBoundingClientRect().width,
+        0
+      );
+      setContentWidth(totalWidth);
     }
-  }, []);
+  }, [items, gutter]);
 
-  const wrapMin = -20;
-  const wrapMax = wrapMin - 1000 / numberOfChildren;
+  const x = useTransform(baseX, (value) => `${-value % contentWidth}px`);
 
-  const x = useTransform(baseX, (v) => `${wrap(wrapMin, wrapMax, v)}%`);
-
-  const directionFactor = useRef<number>(1);
   useAnimationFrame((t, delta) => {
-    let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
-    if (velocityFactor.get() < 0) {
-      directionFactor.current = -1;
-    } else if (velocityFactor.get() > 0) {
-      directionFactor.current = 1;
-    }
-    moveBy += directionFactor.current * moveBy * velocityFactor.get();
+    if (!contentWidth) return;
+
+    const moveBy =
+      baseVelocity * (delta / 1000) * (1 + Math.abs(velocityFactor.get()));
     baseX.set(baseX.get() + moveBy);
   });
 
-  const childrenArray = new Array(numberOfChildren).fill(
-    <Box ref={childRef} marginRight="30px">
-      {children}
-    </Box>
-  );
-
   return (
-    <Flex direction="column" overflowX="hidden" m={0}>
-      <Box
-        as={motion.div}
+    <Flex
+      {...rest}
+      ref={containerRef}
+      overflow="hidden"
+      maskImage="linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)"
+    >
+      <MotionFlex
+        ref={contentRef}
         style={{ x }}
-        whiteSpace="nowrap"
         display="flex"
-        flexWrap="nowrap"
+        animate={{
+          x: [`0px`, `-${contentWidth}px`],
+          transition: { duration: 10, repeat: Infinity, ease: "linear" },
+        }}
       >
-        {childrenArray.map((child, index) => (
-          <Box key={index}>{child}</Box>
+        {/* Original Items */}
+        {items.map((item, index) => (
+          <Center key={`original-${index}`} marginEnd={gutter}>
+            {item}
+          </Center>
         ))}
-      </Box>
+
+        {/* Mirrored Clone */}
+        {items.map((item, index) => (
+          <Center key={`clone-${index}`} marginEnd={gutter} aria-hidden>
+            {item}
+          </Center>
+        ))}
+      </MotionFlex>
     </Flex>
   );
-}
-
-function calculateNumberOfChildren(childElement: HTMLDivElement): number {
-  if (!childElement) return 1;
-  const viewportWidth = window.innerWidth;
-  const childWidth = childElement.offsetWidth;
-  return Math.max(Math.ceil((viewportWidth * 2) / childWidth), 1);
-}
+};

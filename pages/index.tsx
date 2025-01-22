@@ -50,10 +50,10 @@ export default function Home() {
           </Stack>
         </Container>
         <Container py={{ base: 8, md: 16 }}>
-            <QuoteBlock colorScheme="red" dark={true}>
-              Keeping one foot in order so I can dance with the chaos.
-            </QuoteBlock>
-          </Container>
+          <QuoteBlock colorScheme="red" dark={true}>
+            Keeping one foot in order so I can dance with the chaos.
+          </QuoteBlock>
+        </Container>
       </Stack>
     </Box>
   );
