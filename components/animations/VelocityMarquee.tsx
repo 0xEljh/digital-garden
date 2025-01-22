@@ -53,7 +53,6 @@ export const Marquee = (props: MarqueeProps) => {
 
 export const VelocityMarquee = (props: VelocityMarqueeProps) => {
   const { items, gutter = "3.75rem", baseVelocity = 100, ...rest } = props;
-  const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentWidth, setContentWidth] = useState(0);
   const baseX = useMotionValue(0);
@@ -91,14 +90,13 @@ export const VelocityMarquee = (props: VelocityMarqueeProps) => {
   return (
     <Flex
       {...rest}
-      ref={containerRef}
       overflow="hidden"
       maskImage="linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)"
     >
       <MotionFlex
         ref={contentRef}
         style={{ x }}
-        display="flex"
+        // display="flex"
         animate={{
           x: [`0px`, `-${contentWidth}px`],
           transition: { duration: 10, repeat: Infinity, ease: "linear" },

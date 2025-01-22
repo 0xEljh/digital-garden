@@ -8,17 +8,17 @@ export default function Home() {
         <Box>
           <Heading mb={4} fontFamily="inherit">Aeion Mono (Variable Font)</Heading>
           <VStack align="stretch" spacing={3} fontSize="lg">
-            <Text fontFamily="'Aeion Mono'" fontWeight={100}>
-              Aeion Mono Light (100) - The quick brown fox jumps over the lazy dog
+            <Text fontFamily="'Aeion Mono'" fontWeight={1}>
+              Aeion Mono Light (1) - The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontFamily="'Aeion Mono'" fontWeight={400}>
-              Aeion Mono Regular (400) - The quick brown fox jumps over the lazy dog
+            <Text fontFamily="'Aeion Mono'" fontWeight={40}>
+              Aeion Mono Regular (40) - The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontFamily="'Aeion Mono'" fontWeight={700}>
-              Aeion Mono Bold (700) - The quick brown fox jumps over the lazy dog
+            <Text fontFamily="'Aeion Mono'" fontWeight={70}>
+              Aeion Mono Bold (70) - The quick brown fox jumps over the lazy dog
             </Text>
-            <Text fontFamily="'Aeion Mono'" fontWeight={900}>
-              Aeion Mono Black (900) - The quick brown fox jumps over the lazy dog
+            <Text fontFamily="'Aeion Mono'" fontWeight={90}>
+              Aeion Mono Black (90) - The quick brown fox jumps over the lazy dog
             </Text>
           </VStack>
         </Box>

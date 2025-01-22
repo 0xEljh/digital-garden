@@ -34,6 +34,8 @@ export default function Home() {
                   variant="primary"
                   as="a"
                   href="mailto:hello@0xeljh.com?subject=Getting%20In%20Touch"
+                  fontFamily="Aeion Mono"
+                  fontWeight={20}
                 >
                   Contact Me
                 </Button>
@@ -41,7 +43,9 @@ export default function Home() {
                   variant="secondary"
                   size={{ base: "lg", md: "xl" }}
                   as="a"
-                  href="#portfolio"
+                  href="/portfolio"
+                  fontFamily="Aeion Mono"
+                  fontWeight={20}
                 >
                   Portfolio
                 </Button>

@@ -5,7 +5,7 @@ export function Banner() {
   const fontSizes = { base: "5xl", md: "7xl" };
   const baseVelocity = useBreakpointValue({ base: 180, md: 100 });
   return (
-    <Stack spacing={4}>
+
       <VelocityMarquee
         baseVelocity={baseVelocity}
         items={["Deep Learning", "Startups", "Full-Stack"].map((item) => (
@@ -24,6 +24,6 @@ export function Banner() {
           </Text>
         ))}
       />
-    </Stack>
+
   );
 }

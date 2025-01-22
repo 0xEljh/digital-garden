@@ -6,10 +6,10 @@ const Fonts = () => (
       @font-face {
         font-family: 'Aeion Mono';
         font-style: normal;
-        src: url('/fonts/AeionMono-VariableVF.woff2') format('woff2-variations'),
-             url('/fonts/AeionMono-VariableVF.woff') format('woff-variations'),
-             url('/fonts/AeionMono-VariableVF.ttf') format('truetype-variations');
-        font-weight: 100 900;
+        src: url('/fonts/AeionMono-VariableVF.woff2') format('woff2'),
+             url('/fonts/AeionMono-VariableVF.woff') format('woff'),
+             url('/fonts/AeionMono-VariableVF.ttf') format('truetype');
+        font-weight: 0 100;
       }
       
       @font-face {
@@ -24,10 +24,10 @@ const Fonts = () => (
       @font-face {
         font-family: 'Topoline';
         font-style: normal;
-        src: url('/fonts/Topoline-VariableVF.woff2') format('woff2-variations'),
-             url('/fonts/Topoline-VariableVF.woff') format('woff-variations'),
-             url('/fonts/Topoline-VariableVF.ttf') format('truetype-variations');
-        font-weight: 100 900;
+        src: url('/fonts/Topoline-VariableVF.woff2') format('woff2'),
+             url('/fonts/Topoline-VariableVF.woff') format('woff'),
+             url('/fonts/Topoline-VariableVF.ttf') format('truetype');
+        font-weight: 0 100;
       }
       
       @font-face {
