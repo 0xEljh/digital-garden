@@ -1,12 +1,12 @@
 import { ComponentType } from "react";
 
-export type PortfolioCategory = 
-  "Web Development" |
-  "Deep Learning" |
-  "Crypto" |
-  "Data Science" |
-  "Research" |
-  "Open Source";
+export type PortfolioCategory =
+  | "Web Development"
+  | "Deep Learning"
+  | "Crypto"
+  | "Data Science"
+  | "Research"
+  | "Open Source";
 
 export type PortfolioEntry = {
   title: string;
@@ -23,6 +23,6 @@ export type PortfolioEntry = {
   github?: string;
 };
 
-export type PortfolioEntryMetadata = Omit<PortfolioEntry, 'icon'> & {
+export type PortfolioEntryMetadata = Omit<PortfolioEntry, "icon"> & {
   icon: string;
 };

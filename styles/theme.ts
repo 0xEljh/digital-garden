@@ -15,10 +15,10 @@ export const theme = extendTheme(
           bg: "black",
           color: "white",
           fontFamily: "Aeion Mono",
-          fontWeight: 200,
+          fontWeight: "40",
         },
       },
     },
   },
-  proTheme,
+  proTheme
 );

@@ -4,13 +4,14 @@ import path from "path";
 import matter from "gray-matter";
 import type { PortfolioEntry, PortfolioEntryMetadata } from "@/types/portfolio";
 
+const PORTFOLIO_DIR = path.join(process.cwd(), "content/portfolio");
+
 export const loadPortfolioEntries = async (): Promise<PortfolioEntry[]> => {
-  const entriesDir = path.join(process.cwd(), "content/portfolio");
-  const entryFiles = await fs.readdir(entriesDir);
+  const entryFiles = await fs.readdir(PORTFOLIO_DIR);
 
   const entries = await Promise.all(
     entryFiles.map(async (filename) => {
-      const filePath = path.join(entriesDir, filename);
+      const filePath = path.join(PORTFOLIO_DIR, filename);
       const source = await fs.readFile(filePath, "utf8");
       const { content, data } = matter(source);
 

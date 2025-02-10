@@ -16,10 +16,11 @@ import { GetStaticProps } from "next";
 import { QuoteBlock } from "@/components/QuoteBlock";
 import { ImageToAscii } from "@/components/AsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
-import { PortfolioCard } from "@/components/PortfolioCard";
+import { PortfolioCard } from "@/components/portfolio/PortfolioCard";
 import { PortfolioEntry } from "@/types/portfolio";
 import { FaDownload } from "react-icons/fa6";
 import { SocialBar } from "@/components/SocialBar";
+import { PortfolioPreview } from "@/components/portfolio/PortfolioPreview";
 
 interface HomeProps {
   featuredEntries: PortfolioEntry[];
@@ -38,6 +39,7 @@ const HeroSection = () => (
       color="fg.muted"
       maxW={"md"}
       fontFamily="Topoline"
+      fontWeight="100"
     >
       The digital garden of a full-stack deep learning engineer, trying to find
       his way in the startup world.
@@ -51,47 +53,49 @@ const HeroSection = () => (
   </Stack>
 );
 // 2) Portfolio Teaser
-const PortfolioPreview = ({ entries }: { entries: PortfolioEntry[] }) => {
-  return (
-    <Box as="section" py={8}>
-      <Stack spacing={6}>
-        <Heading size="xs" fontFamily="Topoline">
-          Recent stuff
-        </Heading>
-        <Container overflow="scroll" maxH="150vw">
-          <SimpleGrid columns={1} spacing={6}>
-            {entries.map((entry) => (
-              <PortfolioCard key={entry.slug} entry={entry} />
-            ))}
-          </SimpleGrid>
-        </Container>
-        <Stack direction={{ base: "column-reverse", md: "row" }}>
-          <Button
-            leftIcon={<FaDownload />}
-            colorScheme="teal"
-            variant="outline"
-            size="lg"
-            alignSelf="center"
-            as="a"
-            href="/api/download-resume"
-          >
-            My Resume
-          </Button>
-          <Button
-            as="a"
-            href="/portfolio"
-            colorScheme="teal"
-            variant="outline"
-            size="lg"
-            alignSelf="center"
-          >
-            Full Portfolio
-          </Button>
-        </Stack>
-      </Stack>
-    </Box>
-  );
-};
+// const PortfolioPreview = ({ entries }: { entries: PortfolioEntry[] }) => {
+//   return (
+//     <Box as="section" py={8}>
+//       <Stack spacing={6}>
+//         <Heading size="xs" fontFamily="Topoline">
+//           Recent stuff
+//         </Heading>
+//         <Container overflow="scroll" maxH="150vw">
+//           <SimpleGrid columns={1} spacing={6}>
+//             {entries.map((entry) => (
+//               <PortfolioCard key={entry.slug} entry={entry} />
+//             ))}
+//           </SimpleGrid>
+//         </Container>
+//         <Stack direction={{ base: "column-reverse", md: "row" }}>
+//           <Button
+//             leftIcon={<FaDownload />}
+//             colorScheme="teal"
+//             variant="outline"
+//             size="md"
+//             alignSelf="center"
+//             as="a"
+//             href="/api/download-resume"
+//             fontWeight="40"
+//           >
+//             My Resume
+//           </Button>
+//           <Button
+//             as="a"
+//             href="/portfolio"
+//             colorScheme="teal"
+//             variant="outline"
+//             size="md"
+//             alignSelf="center"
+//             fontWeight="40"
+//           >
+//             Full Portfolio
+//           </Button>
+//         </Stack>
+//       </Stack>
+//     </Box>
+//   );
+// };
 
 // 3) Digital Garden
 const DigitalGarden = () => {

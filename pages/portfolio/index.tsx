@@ -7,7 +7,7 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
-import { PortfolioCard } from "@/components/PortfolioCard";
+import { PortfolioCard } from "@/components/portfolio/PortfolioCard";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { PortfolioEntry } from "@/types/portfolio";
 

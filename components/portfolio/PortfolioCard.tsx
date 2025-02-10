@@ -44,7 +44,7 @@ export const PortfolioCard = ({
     <Link
       _hover={{ textDecor: "none" }}
       role="group"
-      href={entry.link ?? undefined}
+      href={"/portfolio/" + entry.slug}
       isExternal
       onMouseEnter={setIsHovered.on}
       onMouseLeave={setIsHovered.off}
