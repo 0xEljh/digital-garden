@@ -71,8 +71,10 @@ export const PortfolioCard = ({
             transition="opacity 0.3s"
             _groupHover={{ opacity: 1 }}
             color="gray.300"
+            overflowWrap={"break-word"}
+            fontFamily="Aeion Mono"
+            fontWeight={40}
             fontSize={{ base: "sm", md: "md" }}
-            // overflowWrap={"break-word"}
           >
             {entry.shortDescription}
           </Text> */}
@@ -93,26 +95,40 @@ export const PortfolioCard = ({
             px={4}
             zIndex={10}
           >
-            {entry.categories.map((category) => (
-              <Text
-                textStyle={{ base: "xs", md: "sm" }}
-                fontWeight="semibold"
-                // color={isHighlighted ? "accent" : "white"}
-                opacity="0"
-                transition="opacity 0.3s"
-                _groupHover={{ opacity: 1 }}
-                fontFamily={"Tickerbit"}
-              >
-                {category}
-              </Text>
-            ))}
-            <Heading
-              size={{ base: "xs", md: "sm" }}
-              fontFamily={"Tickerbit"}
-              color="whiteAlpha.800"
+            <Box
+              position="absolute"
+              top="2"
+              left="2"
+              fontSize="sm"
+              color="fg.muted"
+              opacity="0"
+              transition="opacity 0.3s"
+              _groupHover={{ opacity: 1 }}
             >
-              {entry.title}
-            </Heading>
+              {entry.shortDescription}
+            </Box>
+            <Stack spacing="3" mt="8">
+              {entry.categories.map((category) => (
+                <Text
+                  textStyle={{ base: "xs", md: "sm" }}
+                  fontWeight="semibold"
+                  // color={isHighlighted ? "accent" : "white"}
+                  opacity="0"
+                  transition="opacity 0.3s"
+                  _groupHover={{ opacity: 1 }}
+                  fontFamily={"Tickerbit"}
+                >
+                  {category}
+                </Text>
+              ))}
+              <Heading
+                size={{ base: "xs", md: "sm" }}
+                fontFamily={"Tickerbit"}
+                color="whiteAlpha.800"
+              >
+                {entry.title}
+              </Heading>
+            </Stack>
           </Stack>
         </Flex>
       </Box>
