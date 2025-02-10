@@ -110,6 +110,7 @@ export const PortfolioCard = ({
             <Stack spacing="3" mt="8">
               {entry.categories.map((category) => (
                 <Text
+                  key={category}
                   textStyle={{ base: "xs", md: "sm" }}
                   fontWeight="semibold"
                   // color={isHighlighted ? "accent" : "white"}

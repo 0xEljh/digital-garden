@@ -29,9 +29,11 @@ export default function ErrorPage() {
             {siteNav.map(({ title, url }) => {
               return (
                 <Button
+                  key={url}
                   as={"a"}
                   variant="tertiary"
                   fontFamily="Aeion Mono"
+                  fontWeight="40"
                   href={url}
                 >
                   {title}

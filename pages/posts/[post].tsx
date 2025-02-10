@@ -6,6 +6,7 @@ export const getStaticPaths = async () => {
   // generate paths based on posts in /content/posts
   return {
     paths: [],
+    fallback: false,
   };
 };
 

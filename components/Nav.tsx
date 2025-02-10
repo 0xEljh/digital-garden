@@ -23,7 +23,9 @@ export function NavBar({ children }: NavBarProps) {
   );
 }
 
-interface MobileNavProps extends ButtonProps {}
+interface MobileNavProps extends ButtonProps {
+  children?: React.ReactNode;
+}
 
 export function MobileNav({ ...props }: MobileNavProps) {
   return <IconButton aria-label="Navigation menu" {...props}></IconButton>;
