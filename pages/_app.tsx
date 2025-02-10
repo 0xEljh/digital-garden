@@ -2,9 +2,9 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ChakraProvider } from "@chakra-ui/react";
 import Fonts from "@/styles/fonts";
-import {theme} from "@/styles/theme";
-import {useRouter } from "next/router";
-import {PageTransition} from "@/components/PageTransition";
+import { theme } from "@/styles/theme";
+import { useRouter } from "next/router";
+import { PageTransition } from "@/components/PageTransition";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -15,11 +15,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Fonts />
       <Head>
         <title>Elijah&apos;s Digital Garden</title>
-        <meta
-          name="description"
-          key="description"
-          content={metaDescription}
-        />
+        <meta name="description" key="description" content={metaDescription} />
         <meta
           property="og:title"
           key="og:title"

@@ -12,10 +12,17 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { QuoteBlock } from "@/components/QuoteBlock";
+import { ImageToAscii } from "@/components/AsciiImage";
 import { Banner } from "@/components/Banner";
 
 const HeroSection = () => (
   <Stack p={4}>
+    <ImageToAscii
+      imagePath="/emiya_kiritsugu.png"
+      width={300}
+      sampleFactor={12}
+      fontSize="2px"
+    />
     <Text
       fontSize={{ base: "lg", md: "2xl" }}
       color="fg.muted"
@@ -25,12 +32,8 @@ const HeroSection = () => (
       The digital garden of a full-stack deep learning engineer, trying to find
       his way in the startup world.
     </Text>
-    <Text fontSize="lg" color="gray.600" mb={6}>
-      I'm still learning, experimenting, and trying to find my footing. Explore
-      my work, insights, and projects.
-    </Text>
     <Stack direction={{ base: "column", sm: "row" }} spacing={4}>
-      <QuoteBlock colorScheme="red" dark={true}>
+      <QuoteBlock colorScheme="teal" dark={true}>
         Keeping one foot in order so I can dance with the chaos.
       </QuoteBlock>
     </Stack>
@@ -156,11 +159,9 @@ export default function Home() {
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Stack spacing={{ base: 12, md: 24 }}>
-        {isMobile ? null : <Banner />}
-        <Grid templateColumns={{ base: "1fr", md: "2fr 1fr 3fr" }} gap={12}>
-          <HeroSection />
+        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
           <PortfolioTeaser />
-
+          <HeroSection />
           <DigitalGarden />
         </Grid>
       </Stack>
