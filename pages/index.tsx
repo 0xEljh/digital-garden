@@ -1,30 +1,26 @@
 import {
   Button,
   Container,
-  Heading,
   Stack,
   Text,
   Box,
   Flex,
   useBreakpointValue,
-  SimpleGrid,
   Grid,
   Image,
+  Tag,
+  Heading,
   Link,
 } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import { QuoteBlock } from "@/components/QuoteBlock";
 import { ImageToAscii } from "@/components/AsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
-import { PortfolioCard } from "@/components/portfolio/PortfolioCard";
-import { PortfolioEntry } from "@/types/portfolio";
-import { FaDownload } from "react-icons/fa6";
+import { loadPosts } from "@/lib/utils/posts";
+import type { PortfolioEntry } from "@/types/portfolio";
+import type { Post } from "@/types/posts"; // Add this line to import the Post type
 import { SocialBar } from "@/components/SocialBar";
 import { PortfolioPreview } from "@/components/portfolio/PortfolioPreview";
-
-interface HomeProps {
-  featuredEntries: PortfolioEntry[];
-}
 
 const HeroSection = () => (
   <Stack p={4} alignItems="center">
@@ -52,131 +48,96 @@ const HeroSection = () => (
     </Stack>
   </Stack>
 );
-// 2) Portfolio Teaser
-// const PortfolioPreview = ({ entries }: { entries: PortfolioEntry[] }) => {
-//   return (
-//     <Box as="section" py={8}>
-//       <Stack spacing={6}>
-//         <Heading size="xs" fontFamily="Topoline">
-//           Recent stuff
-//         </Heading>
-//         <Container overflow="scroll" maxH="150vw">
-//           <SimpleGrid columns={1} spacing={6}>
-//             {entries.map((entry) => (
-//               <PortfolioCard key={entry.slug} entry={entry} />
-//             ))}
-//           </SimpleGrid>
-//         </Container>
-//         <Stack direction={{ base: "column-reverse", md: "row" }}>
-//           <Button
-//             leftIcon={<FaDownload />}
-//             colorScheme="teal"
-//             variant="outline"
-//             size="md"
-//             alignSelf="center"
-//             as="a"
-//             href="/api/download-resume"
-//             fontWeight="40"
-//           >
-//             My Resume
-//           </Button>
-//           <Button
-//             as="a"
-//             href="/portfolio"
-//             colorScheme="teal"
-//             variant="outline"
-//             size="md"
-//             alignSelf="center"
-//             fontWeight="40"
-//           >
-//             Full Portfolio
-//           </Button>
-//         </Stack>
-//       </Stack>
-//     </Box>
-//   );
-// };
 
-// 3) Digital Garden
-const DigitalGarden = () => {
-  // Example articles data
-  const articles = [
-    {
-      title: "Deep Learning Post 1",
-      url: "/blog/deep-learning-1",
-      thumbnail: "/images/dl-1.jpg",
-    },
-    {
-      title: "Startup Reflections",
-      url: "/blog/startup-reflections",
-      thumbnail: "/images/startup-1.jpg",
-    },
-    {
-      title: "Another Post Title",
-      url: "/blog/another-post",
-      thumbnail: "/images/post-3.jpg",
-    },
-  ];
+const DigitalGarden = ({ posts }: { posts: Post[] }) => {
+  const linkHoverStyle = useBreakpointValue({
+    base: { textDecoration: "none" },
+    md: { textDecoration: "none", transform: "scale(1.02)" },
+  });
 
   return (
-    <Box as="section" p={6} h="full">
-      <Stack spacing={4}>
-        {articles.map((article) => (
-          <Flex
-            key={article.url}
-            alignItems="center"
-            bg="white"
-            borderRadius="md"
-            boxShadow="sm"
-            overflow="hidden"
-          >
-            <Image
-              src={article.thumbnail}
-              alt={article.title}
-              boxSize="80px"
-              objectFit="cover"
-            />
-            <Box p={4}>
-              <Link href={article.url} fontWeight="bold" color="teal.600">
-                {article.title}
+    <Box as="section" py={8}>
+      <Stack spacing={6}>
+        <Heading size="xs" fontFamily="Topoline">
+          Digital Garden
+        </Heading>
+        <Stack spacing={8}>
+          {posts.map((post) => (
+            <Box key={post.slug}>
+              <Link
+                href={`/posts/${post.slug}`}
+                _hover={linkHoverStyle}
+                transition="all 0.2s"
+              >
+                <Stack spacing={2}>
+                  <Text fontSize="xl" fontWeight="medium">
+                    {post.title}
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    {new Date(post.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Text>
+                  {post.categories?.length > 0 && (
+                    <Stack direction="row" spacing={2}>
+                      {post.categories.map((category) => (
+                        <Tag key={category} variant="subtle" colorScheme="teal">
+                          {category}
+                        </Tag>
+                      ))}
+                    </Stack>
+                  )}
+                </Stack>
               </Link>
             </Box>
-          </Flex>
-        ))}
+          ))}
+        </Stack>
         <Button
-          alignSelf="start"
-          variant="solid"
-          colorScheme="teal"
           as="a"
-          href="/blog"
+          href="/posts"
+          colorScheme="teal"
+          variant="outline"
+          size="md"
+          alignSelf="center"
+          fontWeight="400"
         >
-          View All Posts
+          View all posts
         </Button>
       </Stack>
     </Box>
   );
 };
 
+interface HomeProps {
+  latestEntries: PortfolioEntry[];
+  latestPosts: Post[];
+}
+
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   const entries = await loadPortfolioEntries();
-  const featuredEntries = entries.slice(0, 3); // Show first 3 projects
+  const latestEntries = entries.slice(0, 3); // Show first 3 projects
+  const posts = await loadPosts();
+  const latestPosts = posts.slice(0, 3);
 
   return {
     props: {
-      featuredEntries,
+      latestEntries: latestEntries,
+      latestPosts: latestPosts,
     },
   };
 };
 
-export default function Home({ featuredEntries }: HomeProps) {
+export default function Home({ latestEntries, latestPosts }: HomeProps) {
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.xl">
         <Stack spacing={{ base: 12, md: 24 }}>
           <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
-            <PortfolioPreview entries={featuredEntries} />
+            <PortfolioPreview entries={latestEntries} />
             <HeroSection />
-            <DigitalGarden />
+            <DigitalGarden posts={latestPosts} />
           </Grid>
         </Stack>
       </Container>

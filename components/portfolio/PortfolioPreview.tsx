@@ -77,7 +77,7 @@ export const PortfolioPreview = ({
   return (
     <Stack spacing={6}>
       <Heading size="xs" fontFamily="Topoline">
-        Recent stuff
+        Recent projects/work
       </Heading>
       <Box
         py={16}
