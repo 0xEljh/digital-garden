@@ -7,16 +7,26 @@ import {
   Box,
   Flex,
   useBreakpointValue,
+  SimpleGrid,
   Grid,
   Image,
   Link,
 } from "@chakra-ui/react";
+import { GetStaticProps } from "next";
 import { QuoteBlock } from "@/components/QuoteBlock";
 import { ImageToAscii } from "@/components/AsciiImage";
-import { Banner } from "@/components/Banner";
+import { loadPortfolioEntries } from "@/lib/utils/portfolio";
+import { PortfolioCard } from "@/components/PortfolioCard";
+import { PortfolioEntry } from "@/types/portfolio";
+import { FaDownload } from "react-icons/fa6";
+import { SocialBar } from "@/components/SocialBar";
+
+interface HomeProps {
+  featuredEntries: PortfolioEntry[];
+}
 
 const HeroSection = () => (
-  <Stack p={4}>
+  <Stack p={4} alignItems="center">
     <ImageToAscii
       imagePath="/emiya_kiritsugu.png"
       width={300}
@@ -32,6 +42,7 @@ const HeroSection = () => (
       The digital garden of a full-stack deep learning engineer, trying to find
       his way in the startup world.
     </Text>
+    <SocialBar />
     <Stack direction={{ base: "column", sm: "row" }} spacing={4}>
       <QuoteBlock colorScheme="teal" dark={true}>
         Keeping one foot in order so I can dance with the chaos.
@@ -40,55 +51,43 @@ const HeroSection = () => (
   </Stack>
 );
 // 2) Portfolio Teaser
-const PortfolioTeaser = () => {
-  // You can replace these “projects” with real data or dynamic content
-  const projects = [
-    {
-      title: "Project A",
-      image: "/images/project-a.png",
-    },
-    {
-      title: "Project B",
-      image: "/images/project-b.png",
-    },
-  ];
-
+const PortfolioPreview = ({ entries }: { entries: PortfolioEntry[] }) => {
   return (
-    <Box as="section" p={6} h="full">
-      {/* Instead of a big heading, let the images/cards do the talking */}
-      <Stack spacing={4}>
-        {projects.map((proj) => (
-          <Flex
-            key={proj.title}
-            alignItems="center"
-            bg="white"
-            borderRadius="md"
-            boxShadow="sm"
-            overflow="hidden"
+    <Box as="section" py={8}>
+      <Stack spacing={6}>
+        <Heading size="xs" fontFamily="Topoline">
+          Recent stuff
+        </Heading>
+        <Container overflow="scroll" maxH="150vw">
+          <SimpleGrid columns={1} spacing={6}>
+            {entries.map((entry) => (
+              <PortfolioCard key={entry.slug} entry={entry} />
+            ))}
+          </SimpleGrid>
+        </Container>
+        <Stack direction={{ base: "column-reverse", md: "row" }}>
+          <Button
+            leftIcon={<FaDownload />}
+            colorScheme="teal"
+            variant="outline"
+            size="lg"
+            alignSelf="center"
+            as="a"
+            href="/api/download-resume"
           >
-            <Image
-              src={proj.image}
-              alt={proj.title}
-              boxSize="80px"
-              objectFit="cover"
-            />
-            <Box p={4}>
-              <Heading as="h3" size="sm" mb={2}>
-                {proj.title}
-              </Heading>
-              <Text fontSize="xs">A brief description of {proj.title}.</Text>
-            </Box>
-          </Flex>
-        ))}
-        <Button
-          alignSelf="start"
-          variant="ghost"
-          colorScheme="teal"
-          as="a"
-          href="/portfolio"
-        >
-          Explore Full Portfolio
-        </Button>
+            My Resume
+          </Button>
+          <Button
+            as="a"
+            href="/portfolio"
+            colorScheme="teal"
+            variant="outline"
+            size="lg"
+            alignSelf="center"
+          >
+            Full Portfolio
+          </Button>
+        </Stack>
       </Stack>
     </Box>
   );
@@ -154,17 +153,29 @@ const DigitalGarden = () => {
   );
 };
 
-export default function Home() {
-  const isMobile = useBreakpointValue({ base: true, md: false });
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  const entries = await loadPortfolioEntries();
+  const featuredEntries = entries.slice(0, 3); // Show first 3 projects
+
+  return {
+    props: {
+      featuredEntries,
+    },
+  };
+};
+
+export default function Home({ featuredEntries }: HomeProps) {
   return (
     <Box py={{ base: 8, md: 12 }}>
-      <Stack spacing={{ base: 12, md: 24 }}>
-        <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
-          <PortfolioTeaser />
-          <HeroSection />
-          <DigitalGarden />
-        </Grid>
-      </Stack>
+      <Container maxW="container.xl">
+        <Stack spacing={{ base: 12, md: 24 }}>
+          <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
+            <PortfolioPreview entries={featuredEntries} />
+            <HeroSection />
+            <DigitalGarden />
+          </Grid>
+        </Stack>
+      </Container>
     </Box>
   );
 }
