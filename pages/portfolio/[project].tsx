@@ -1,10 +1,22 @@
-import { Box, Container, Heading, Stack, Text, Button, Tag, HStack, Link as ChakraLink, useColorModeValue, Icon } from '@chakra-ui/react';
-import { GetStaticPaths, GetStaticProps } from 'next';
-import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { serialize } from 'next-mdx-remote/serialize';
-import { loadPortfolioEntries } from '@/lib/utils/portfolio';
-import { PortfolioEntry } from '@/types/portfolio';
-import { getIconComponent } from '@/lib/utils/portfolio-icons';
+import {
+  Box,
+  Container,
+  Heading,
+  Stack,
+  Text,
+  Button,
+  Tag,
+  HStack,
+  Link as ChakraLink,
+  Icon,
+} from "@chakra-ui/react";
+import NextLink from "next/link";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
+import { serialize } from "next-mdx-remote/serialize";
+import { loadPortfolioEntries } from "@/lib/utils/portfolio";
+import { PortfolioEntry } from "@/types/portfolio";
+import { getIconComponent } from "@/lib/utils/portfolio-icons";
 import { VscBrowser, VscGithub } from "react-icons/vsc";
 
 interface ProjectPageProps {
@@ -14,7 +26,7 @@ interface ProjectPageProps {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const entries = await loadPortfolioEntries();
-  
+
   return {
     paths: entries.map((entry) => ({
       params: { project: entry.slug },
@@ -23,18 +35,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps<ProjectPageProps> = async ({ params }) => {
+export const getStaticProps: GetStaticProps<ProjectPageProps> = async ({
+  params,
+}) => {
   const entries = await loadPortfolioEntries();
   const entry = entries.find((e) => e.slug === params?.project);
-  
+
   if (!entry) {
     return {
       notFound: true,
     };
   }
 
-  const content = await serialize(entry.longDescription || '');
-  
+  const content = await serialize(entry.longDescription || "");
+
   return {
     props: {
       entry,
@@ -45,84 +59,85 @@ export const getStaticProps: GetStaticProps<ProjectPageProps> = async ({ params 
 
 export default function ProjectPage({ entry, content }: ProjectPageProps) {
   const IconComponent = getIconComponent(entry.icon);
-  const highlightColor = useColorModeValue('blue.500', 'blue.300');
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.lg">
-        <Stack spacing={8}>
-          <Stack direction={{ base: 'column', md: 'row' }} spacing={6} align="center">
+        <Stack gap={8}>
+          <Stack
+            direction={{ base: "column", md: "row" }}
+            gap={6}
+            align="center"
+          >
             <Box>
               <IconComponent
                 boxSize={16}
-                highlightColor={highlightColor}
+                highlightColor={"yellow.500"}
                 isHighlighted={true}
               />
             </Box>
-            <Stack flex={1} spacing={4}>
-              <Heading size="2xl" fontFamily="Topoline">{entry.title}</Heading>
+            <Stack flex={1} gap={4}>
+              <Heading size="2xl" fontFamily="Topoline">
+                {entry.title}
+              </Heading>
               <Text fontSize="xl" color="gray.500">
                 {entry.shortDescription}
               </Text>
-              <HStack spacing={4} flexWrap="wrap">
+              <HStack gap={4} flexWrap="wrap">
                 {entry.categories.map((category) => (
-                  <Tag key={category} size="md">
+                  <Tag.Root key={category} size="md">
                     {category}
-                  </Tag>
+                  </Tag.Root>
                 ))}
               </HStack>
             </Stack>
           </Stack>
 
-          <HStack spacing={4}>
+          <HStack gap={4}>
             {entry.link && (
-              <Button
-                as="a"
-                href={entry.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                leftIcon={<Icon as={VscBrowser}  boxSize={5} />}
-                size="lg"
-              >
-                Visit Project
+              <Button asChild rel="noopener noreferrer" size="lg">
+                <NextLink target="_blank" href={entry.link}>
+                  <Icon as={VscBrowser} boxSize={5} />
+                  Visit Project
+                </NextLink>
               </Button>
             )}
             {entry.github && (
               <Button
-                as="a"
-                href={entry.github}
-                target="_blank"
+                asChild
                 rel="noopener noreferrer"
-                leftIcon={<Icon as={VscGithub} boxSize={5} />}
                 variant="outline"
                 size="lg"
               >
-                View Source 
+                <NextLink href={entry.github} target="_blank">
+                  <Icon as={VscGithub} boxSize={5} />
+                  View Source
+                </NextLink>
               </Button>
             )}
           </HStack>
 
           {entry.techStack && (
             <Box>
-              <Text fontWeight="bold" mb={2}>Tech Stack</Text>
-              <HStack spacing={2} flexWrap="wrap">
+              <Text fontWeight="bold" mb={2}>
+                Tech Stack
+              </Text>
+              <HStack gap={2} flexWrap="wrap">
                 {entry.techStack.map((tech) => (
-                  <Tag key={tech} size="sm" variant="subtle">
+                  <Tag.Root key={tech} size="sm" variant="subtle">
                     {tech}
-                  </Tag>
+                  </Tag.Root>
                 ))}
               </HStack>
             </Box>
           )}
 
           <Box
-            bg={bgColor}
+            bg={"gray.200"}
             p={8}
             borderRadius="lg"
             border="1px"
-            borderColor={borderColor}
+            borderColor={"gray.200"}
           >
             <MDXRemote {...content} />
           </Box>

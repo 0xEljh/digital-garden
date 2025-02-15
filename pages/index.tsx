@@ -12,14 +12,15 @@ import {
 } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
 import NextLink from "next/link";
-import { QuoteBlock } from "@/components/QuoteBlock";
+import { QuoteBlock } from "@/components/common/QuoteBlock";
 import { ImageToAscii } from "@/components/AsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { loadPosts } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
 import type { Post } from "@/types/posts"; // Add this line to import the Post type
-import { SocialBar } from "@/components/SocialBar";
+import { SocialBar } from "@/components/common/SocialBar";
 import { PortfolioPreview } from "@/components/portfolio/PortfolioPreview";
+import { ReactElement } from "react";
 
 const HeroSection = () => (
   <Stack p={4} alignItems="center">
@@ -144,3 +145,7 @@ export default function Home({ latestEntries, latestPosts }: HomeProps) {
     </Box>
   );
 }
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return page; // no layout for this page for now
+};

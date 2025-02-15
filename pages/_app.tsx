@@ -2,13 +2,30 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import Fonts from "@/styles/fonts";
 import { useRouter } from "next/router";
-import { Provider } from "@/components/ui/provider";
-import { PageTransition } from "@/components/PageTransition";
 
-export default function App({ Component, pageProps }: AppProps) {
+import type { ReactElement, ReactNode } from "react";
+import type { NextPage } from "next";
+
+import { Provider } from "@/components/ui/provider";
+import { PageTransition } from "@/components/animations/PageTransition";
+import { DefaultLayout } from "@/components/layout";
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
   const metaDescription =
     "Digital garden of a full-stack deep learning engineer, trying to find his way in the startup world.";
+
+  const getLayout =
+    Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
+
   return (
     <Provider>
       <Fonts />
@@ -37,7 +54,7 @@ export default function App({ Component, pageProps }: AppProps) {
         />
       </Head>
       <PageTransition key={router.asPath}>
-        <Component {...pageProps} />
+        {getLayout(<Component {...pageProps} />)}
       </PageTransition>
     </Provider>
   );
