@@ -30,6 +30,7 @@ export const AIBrainIcon = ({
   return (
     <Box
       bg={BACKGROUND_COLOR}
+      {...props}
       transition="background-color 0.5s ease-in-out, color 0.5s ease-in-out"
     >
       <AIBrain
@@ -48,7 +49,7 @@ export const UpChartIcon = ({
   ...props
 }: HighlightableIconProps) => {
   return (
-    <Box bg="black">
+    <Box bg={BACKGROUND_COLOR}>
       <UpChart
         // color={SHADE_COLOR}
         boxSize={props.boxSize}

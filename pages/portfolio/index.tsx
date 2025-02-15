@@ -29,7 +29,7 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.xl">
-        <Stack spacing={8}>
+        <Stack gap={8}>
           <Heading size="2xl" fontFamily="Topoline">
             Portfolio
           </Heading>

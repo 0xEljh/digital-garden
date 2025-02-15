@@ -8,12 +8,12 @@ import {
   Grid,
   Tag,
   Heading,
-  Link as ChakraLink,
 } from "@chakra-ui/react";
-import { GetStaticProps } from "next";
 import NextLink from "next/link";
+import { Link } from "@/components/ui/link";
+import { GetStaticProps } from "next";
 import { QuoteBlock } from "@/components/common/QuoteBlock";
-import { ImageToAscii } from "@/components/AsciiImage";
+import { ImageToAscii } from "@/components/common/AsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { loadPosts } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
@@ -64,35 +64,37 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
         <Stack gap={8}>
           {posts.map((post) => (
             <Box key={post.slug}>
-              <ChakraLink asChild _hover={linkHoverStyle} transition="all 0.2s">
-                <NextLink href={`/posts/${post.slug}`}>
-                  <Stack gap={2}>
-                    <Text fontSize="xl" fontWeight="medium">
-                      {post.title}
-                    </Text>
-                    <Text fontSize="sm" color="gray.500">
-                      {new Date(post.date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </Text>
-                    {post.categories?.length > 0 && (
-                      <Stack direction="row" gap={2}>
-                        {post.categories.map((category) => (
-                          <Tag.Root
-                            key={category}
-                            variant="subtle"
-                            colorScheme="teal"
-                          >
-                            {category}
-                          </Tag.Root>
-                        ))}
-                      </Stack>
-                    )}
-                  </Stack>
-                </NextLink>
-              </ChakraLink>
+              <Link
+                _hover={linkHoverStyle}
+                transition="all 0.2s"
+                href={`/posts/${post.slug}`}
+              >
+                <Stack gap={2}>
+                  <Text fontSize="xl" fontWeight="medium">
+                    {post.title}
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    {new Date(post.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Text>
+                  {post.categories?.length > 0 && (
+                    <Stack direction="row" gap={2}>
+                      {post.categories.map((category) => (
+                        <Tag.Root
+                          key={category}
+                          variant="subtle"
+                          colorScheme="teal"
+                        >
+                          {category}
+                        </Tag.Root>
+                      ))}
+                    </Stack>
+                  )}
+                </Stack>
+              </Link>
             </Box>
           ))}
         </Stack>

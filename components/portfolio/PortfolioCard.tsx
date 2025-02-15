@@ -4,10 +4,10 @@ import {
   Text,
   Stack,
   Tag,
-  Link,
   Flex,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { Link } from "@/components/ui/link";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
@@ -40,47 +40,41 @@ export const PortfolioCard = ({
 
   return (
     <Link
+      height="100%"
+      width="100%"
       _hover={{ textDecor: "none" }}
-      role="group"
+      className="group"
       href={"/portfolio/" + entry.slug}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <Box
-        // bg={isHighlighted ? "blue.800" : "black"}
         height="100%"
+        width="100%"
         _groupHover={{ shadow: "dark" }}
         position="relative"
         bg="black"
         minH="xs"
+        overflow="hidden"
+        borderRadius="md"
+        boxShadow="lg"
         ref={ref}
       >
-        <Flex
+        <Box
           position="absolute"
-          top="5"
-          right="0"
-          p="1.5"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
           zIndex={0}
-          maxWidth="80%" // Ensure the box doesn't exceed the width of the Flex container
         >
-          {/* <Text
-            opacity="0"
-            transition="opacity 0.3s"
-            _groupHover={{ opacity: 1 }}
-            color="gray.300"
-            overflowWrap={"break-word"}
-            fontFamily="Aeion Mono"
-            fontWeight={40}
-            fontSize={{ base: "sm", md: "md" }}
-          >
-            {entry.shortDescription}
-          </Text> */}
           <IconComponent
-            boxSize={40}
+            width="100%"
+            height="100%"
             highlightColor="yellow.400"
             isHighlighted={isHighlighted || isHovered}
           />
-        </Flex>
+        </Box>
         <Flex direction="column-reverse" height="100%">
           <Stack
             gap="3"

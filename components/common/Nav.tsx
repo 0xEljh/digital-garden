@@ -5,11 +5,10 @@ import {
   Container,
   HStack,
   Spacer,
-  Button,
-  Link,
   Stack,
   type StackProps,
 } from "@chakra-ui/react";
+import { Link } from "@/components/ui/link";
 import { CollapsibleTrigger } from "@/components/ui/collapsible-trigger";
 
 export const NavbarLinks = (props: StackProps) => {
@@ -28,6 +27,7 @@ export const NavbarLinks = (props: StackProps) => {
           _hover={{
             _hover: { color: "colorPalette.fg", textDecoration: "none" },
           }}
+          href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
         >
           {item}
         </Link>

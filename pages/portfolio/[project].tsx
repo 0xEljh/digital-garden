@@ -7,7 +7,6 @@ import {
   Button,
   Tag,
   HStack,
-  Link as ChakraLink,
   Icon,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
