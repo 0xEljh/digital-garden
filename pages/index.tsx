@@ -4,15 +4,14 @@ import {
   Stack,
   Text,
   Box,
-  Flex,
   useBreakpointValue,
   Grid,
-  Image,
   Tag,
   Heading,
-  Link,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { GetStaticProps } from "next";
+import NextLink from "next/link";
 import { QuoteBlock } from "@/components/QuoteBlock";
 import { ImageToAscii } from "@/components/AsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
@@ -41,7 +40,7 @@ const HeroSection = () => (
       his way in the startup world.
     </Text>
     <SocialBar />
-    <Stack direction={{ base: "column", sm: "row" }} spacing={4}>
+    <Stack direction={{ base: "column", sm: "row" }} gap={4}>
       <QuoteBlock colorScheme="teal" dark={true}>
         Keeping one foot in order so I can dance with the chaos.
       </QuoteBlock>
@@ -57,53 +56,54 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
 
   return (
     <Box as="section" py={8}>
-      <Stack spacing={6}>
+      <Stack gap={6}>
         <Heading size="xs" fontFamily="Topoline">
           Digital Garden
         </Heading>
-        <Stack spacing={8}>
+        <Stack gap={8}>
           {posts.map((post) => (
             <Box key={post.slug}>
-              <Link
-                href={`/posts/${post.slug}`}
-                _hover={linkHoverStyle}
-                transition="all 0.2s"
-              >
-                <Stack spacing={2}>
-                  <Text fontSize="xl" fontWeight="medium">
-                    {post.title}
-                  </Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {new Date(post.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </Text>
-                  {post.categories?.length > 0 && (
-                    <Stack direction="row" spacing={2}>
-                      {post.categories.map((category) => (
-                        <Tag key={category} variant="subtle" colorScheme="teal">
-                          {category}
-                        </Tag>
-                      ))}
-                    </Stack>
-                  )}
-                </Stack>
-              </Link>
+              <ChakraLink asChild _hover={linkHoverStyle} transition="all 0.2s">
+                <NextLink href={`/posts/${post.slug}`}>
+                  <Stack gap={2}>
+                    <Text fontSize="xl" fontWeight="medium">
+                      {post.title}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      {new Date(post.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </Text>
+                    {post.categories?.length > 0 && (
+                      <Stack direction="row" gap={2}>
+                        {post.categories.map((category) => (
+                          <Tag.Root
+                            key={category}
+                            variant="subtle"
+                            colorScheme="teal"
+                          >
+                            {category}
+                          </Tag.Root>
+                        ))}
+                      </Stack>
+                    )}
+                  </Stack>
+                </NextLink>
+              </ChakraLink>
             </Box>
           ))}
         </Stack>
         <Button
-          as="a"
-          href="/posts"
+          asChild
           colorScheme="teal"
           variant="outline"
           size="md"
           alignSelf="center"
           fontWeight="400"
         >
-          View all posts
+          <NextLink href="/posts">View all posts</NextLink>
         </Button>
       </Stack>
     </Box>
@@ -133,7 +133,7 @@ export default function Home({ latestEntries, latestPosts }: HomeProps) {
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.xl">
-        <Stack spacing={{ base: 12, md: 24 }}>
+        <Stack gap={{ base: 12, md: 24 }}>
           <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
             <PortfolioPreview entries={latestEntries} />
             <HeroSection />

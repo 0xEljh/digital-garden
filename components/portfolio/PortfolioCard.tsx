@@ -5,14 +5,12 @@ import {
   Stack,
   Tag,
   Link,
-  useColorModeValue,
   Flex,
-  useBoolean,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
 
 interface PortfolioCardProps {
@@ -25,19 +23,19 @@ export const PortfolioCard = ({
   isHighlighted = false,
 }: PortfolioCardProps) => {
   const IconComponent = getIconComponent(entry.icon);
-  const [isHovered, setIsHovered] = useBoolean();
+  const [isHovered, setIsHovered] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 1.0 });
 
   useEffect(() => {
-    if (isInView && isMobile) setIsHovered.on();
-    if (!isInView && isMobile) setIsHovered.off();
+    if (isInView && isMobile) setIsHovered(true);
+    if (!isInView && isMobile) setIsHovered(false);
     // detect state transition between mobile and desktop
   }, [isMobile, isInView]);
 
   useEffect(() => {
-    if (!isMobile) setIsHovered.off();
+    if (!isMobile) setIsHovered(false);
   }, [isMobile]);
 
   return (
@@ -45,9 +43,8 @@ export const PortfolioCard = ({
       _hover={{ textDecor: "none" }}
       role="group"
       href={"/portfolio/" + entry.slug}
-      isExternal
-      onMouseEnter={setIsHovered.on}
-      onMouseLeave={setIsHovered.off}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Box
         // bg={isHighlighted ? "blue.800" : "black"}
@@ -86,7 +83,7 @@ export const PortfolioCard = ({
         </Flex>
         <Flex direction="column-reverse" height="100%">
           <Stack
-            spacing="3"
+            gap="3"
             alignSelf="start"
             w="xs"
             paddingEnd="16"
@@ -107,7 +104,7 @@ export const PortfolioCard = ({
             >
               {entry.shortDescription}
             </Box>
-            <Stack spacing="3" mt="8">
+            <Stack gap="3" mt="8">
               {entry.categories.map((category) => (
                 <Text
                   key={category}

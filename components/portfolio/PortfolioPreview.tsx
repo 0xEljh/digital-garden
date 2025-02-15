@@ -1,13 +1,6 @@
 import { AnimatePresence, motion, useCycle } from "motion/react";
-import {
-  Box,
-  Heading,
-  Container,
-  Stack,
-  Button,
-  useColorModeValue,
-  Flex,
-} from "@chakra-ui/react";
+import { Box, Heading, Container, Stack, Button, Flex } from "@chakra-ui/react";
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { PortfolioCard } from "./PortfolioCard";
 import type { PortfolioEntry } from "@/types/portfolio";
@@ -24,7 +17,6 @@ export const PortfolioPreview = ({
   const [page, cyclePage] = useCycle(...entries.map((_, i) => i));
   const [direction, setDirection] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
-  const cardBg = useColorModeValue("white", "gray.800");
   const intervalRef = useRef<NodeJS.Timeout>(null);
 
   // Auto-rotate every 8 seconds when not hovered
@@ -75,7 +67,7 @@ export const PortfolioPreview = ({
   };
 
   return (
-    <Stack spacing={6}>
+    <Stack gap={6}>
       <Heading size="xs" fontFamily="Topoline">
         Recent projects/work
       </Heading>
@@ -84,7 +76,7 @@ export const PortfolioPreview = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Stack spacing={8} align="center" direction="column">
+        <Stack gap={8} align="center" direction="column">
           <Box position="relative" w="full" maxW="container.lg" h="400px">
             <AnimatePresence initial={false} custom={direction}>
               <MotionBox
@@ -117,27 +109,6 @@ export const PortfolioPreview = ({
                 <PortfolioCard entry={entries[page]} />
               </MotionBox>
             </AnimatePresence>
-
-            {/* Navigation Arrows */}
-            {/* {entries.length > 1 && (
-            <>
-              <MotionButton
-                aria-label="Previous project"
-                onClick={() => paginate(-1)}
-                // ... (keep button styles the same)
-              >
-                ←
-              </MotionButton>
-
-              <MotionButton
-                aria-label="Next project"
-                onClick={() => paginate(1)}
-                // ... (keep button styles the same)
-              >
-                →
-              </MotionButton>
-            </>
-          )} */}
           </Box>
 
           {/* Pagination Dots */}
@@ -160,27 +131,27 @@ export const PortfolioPreview = ({
 
           <Stack direction={{ base: "column-reverse", md: "row" }}>
             <Button
-              leftIcon={<FaDownload />}
               colorScheme="teal"
               variant="outline"
               size="md"
               alignSelf="center"
-              as="a"
-              href="/api/download-resume"
               fontWeight="40"
+              asChild
             >
-              My Resume
+              <Link href="/api/download-resume">
+                <FaDownload />
+                My Resume
+              </Link>
             </Button>
             <Button
-              as="a"
-              href="/portfolio"
+              asChild
               colorScheme="teal"
               variant="outline"
               size="md"
               alignSelf="center"
               fontWeight="40"
             >
-              Full Portfolio
+              <Link href="/portfolio">Full Portfolio</Link>
             </Button>
           </Stack>
         </Stack>

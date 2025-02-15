@@ -1,9 +1,8 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { ChakraProvider } from "@chakra-ui/react";
 import Fonts from "@/styles/fonts";
-import { theme } from "@/styles/theme";
 import { useRouter } from "next/router";
+import { Provider } from "@/components/ui/provider";
 import { PageTransition } from "@/components/PageTransition";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -11,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const metaDescription =
     "Digital garden of a full-stack deep learning engineer, trying to find his way in the startup world.";
   return (
-    <ChakraProvider theme={theme}>
+    <Provider>
       <Fonts />
       <Head>
         <title>Elijah&apos;s Digital Garden</title>
@@ -40,6 +39,6 @@ export default function App({ Component, pageProps }: AppProps) {
       <PageTransition key={router.asPath}>
         <Component {...pageProps} />
       </PageTransition>
-    </ChakraProvider>
+    </Provider>
   );
 }
