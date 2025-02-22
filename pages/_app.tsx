@@ -10,7 +10,7 @@ import { Provider } from "@/components/ui/provider";
 import { PageTransition } from "@/components/animations/PageTransition";
 import { DefaultLayout } from "@/components/layout";
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
 

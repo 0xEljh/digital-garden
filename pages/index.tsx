@@ -13,7 +13,7 @@ import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
 import { QuoteBlock } from "@/components/common/QuoteBlock";
-import { FlickeringAsciiImage } from "@/components/common/AsciiImage";
+import { DynamicFlickeringAsciiImage } from "@/components/common/DynamicAsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { loadPosts } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
@@ -24,7 +24,7 @@ import { ReactElement } from "react";
 
 const HeroSection = () => (
   <Stack p={4} alignItems="center">
-    <FlickeringAsciiImage
+    <DynamicFlickeringAsciiImage
       imagePath="/emiya_kiritsugu.png"
       width={300}
       sampleFactor={12}
