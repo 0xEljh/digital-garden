@@ -1,4 +1,5 @@
 import { Button, Container, Stack, Text } from "@chakra-ui/react";
+import { Link } from "@/components/ui/link";
 
 const siteNav = [
   { title: "Home", url: "/" },
@@ -30,13 +31,14 @@ export default function ErrorPage() {
               return (
                 <Button
                   key={url}
-                  as={"a"}
-                  variant="tertiary"
+                  asChild
+                  variant="subtle"
                   fontFamily="Aeion Mono"
                   fontWeight="40"
-                  href={url}
                 >
-                  {title}
+                  <Link href={url}>
+                    {title}
+                  </Link>
                 </Button>
               );
             })}
@@ -46,3 +48,7 @@ export default function ErrorPage() {
     </Stack>
   );
 }
+
+ErrorPage.getLayout = function getLayout(page: React.ReactElement) {
+  return page; // no layout for this page
+};

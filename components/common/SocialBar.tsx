@@ -2,6 +2,7 @@ import { ButtonGroup, IconButton, useToken, HStack } from "@chakra-ui/react";
 import { FaXTwitter, FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa6";
 import { motion } from "motion/react";
 import { Box } from "@chakra-ui/react";
+import { Link } from "@/components/ui/link";
 
 export const MotionBox = motion.create(Box);
 
@@ -21,51 +22,53 @@ function AnimatedIconButton({
 }: AnimatedIconButtonProps) {
   const [initialColor, highlightColor] = useToken("colors", [
     "gray.600",
-    "brand.200",
+    "teal.200",
   ]);
 
   return (
-    <MotionBox
-      animate={{ color: [null, highlightColor, initialColor] }}
-      transition={{ repeat: Infinity, duration: 0.75, repeatDelay: 2, delay }}
-    >
-      <IconButton
-        as="a"
-        href={href}
-        aria-label={ariaLabel}
-        icon={icon}
-        color="inherit"
-      />
-    </MotionBox>
+    <Link href={href}>
+      <MotionBox
+        animate={{ color: [null, highlightColor, initialColor] }}
+        transition={{ repeat: Infinity, duration: 0.75, repeatDelay: 2, delay }}
+      >
+        <IconButton
+          aria-label={ariaLabel}
+          color="inherit"
+        >
+          {icon}
+        </IconButton>
+      </MotionBox>
+    </Link>
   );
 }
 
 const socials = [
-  {
-    href: "https://www.linkedin.com/in/0xEljh/",
-    ariaLabel: "LinkedIn",
-    icon: <FaLinkedin />,
-  },
   {
     href: "https://github.com/0xEljh",
     ariaLabel: "GitHub",
     icon: <FaGithub />,
   },
   {
-    href: "https://twitter.com/0xEljh",
-    ariaLabel: "Twitter",
-    icon: <FaXTwitter />,
+    href: "https://www.linkedin.com/in/0xEljh/",
+    ariaLabel: "LinkedIn",
+    icon: <FaLinkedin />,
   },
   {
     href: "mailto:elijah@0xeljh.com",
     ariaLabel: "Email",
     icon: <FaEnvelope />,
   },
+
+  {
+    href: "https://twitter.com/0xEljh",
+    ariaLabel: "Twitter",
+    icon: <FaXTwitter />,
+  },
 ];
 
 export function SocialBar({ ...props }: any) {
   return (
-    <ButtonGroup variant="tertiary" {...props}>
+    <ButtonGroup variant="subtle" {...props}>
       {socials.map((social, i) => (
         <AnimatedIconButton
           key={i}
@@ -94,8 +97,8 @@ export function SocialShareBar({ slug, title, ...props }: SocialShareBarProps) {
   )}`;
 
   return (
-    <HStack spacing="4" {...props}>
-      <ButtonGroup variant="tertiary">
+    <HStack gap="4" {...props}>
+      <ButtonGroup variant="surface">
         <AnimatedIconButton
           href={twitterShareUrl}
           ariaLabel="Share on Twitter"

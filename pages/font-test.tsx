@@ -1,13 +1,13 @@
-import { Box, Container, Heading, Text, VStack, Divider } from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack, Separator } from "@chakra-ui/react";
 
 export default function Home() {
   return (
     <Container maxW="container.lg" py={10}>
-      <VStack spacing={8} align="stretch">
+      <VStack gap={8} align="stretch">
         {/* Aeion Mono - Variable Font */}
         <Box>
           <Heading mb={4} fontFamily="inherit">Aeion Mono (Variable Font)</Heading>
-          <VStack align="stretch" spacing={3} fontSize="lg">
+          <VStack align="stretch" gap={3} fontSize="lg">
             <Text fontFamily="'Aeion Mono'" fontWeight={1}>
               Aeion Mono Light (1) - The quick brown fox jumps over the lazy dog
             </Text>
@@ -23,12 +23,12 @@ export default function Home() {
           </VStack>
         </Box>
 
-        <Divider />
+        <Separator />
 
         {/* Topoline - Variable Font */}
         <Box>
           <Heading mb={4} fontFamily="inherit">Topoline (Variable Font)</Heading>
-          <VStack align="stretch" spacing={3}>
+          <VStack align="stretch" gap={3}>
             <Text fontFamily="'Topoline'" fontWeight={100}>
               Topoline Light (100) - The quick brown fox jumps over the lazy dog
             </Text>
@@ -44,7 +44,7 @@ export default function Home() {
           </VStack>
         </Box>
 
-        <Divider />
+        <Separator />
 
         {/* Tickerbit */}
         <Box>
@@ -54,7 +54,7 @@ export default function Home() {
           </Text>
         </Box>
 
-        <Divider />
+        <Separator />
 
         {/* YE Display */}
         <Box>
