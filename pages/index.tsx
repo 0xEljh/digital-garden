@@ -13,7 +13,7 @@ import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
 import { QuoteBlock } from "@/components/common/QuoteBlock";
-import { DynamicFlickeringAsciiImage } from "@/components/common/DynamicAsciiImage";
+import { DynamicFlickeringAsciiImage } from "@/components/common/AsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { loadPosts } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
@@ -58,7 +58,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
   return (
     <Box as="section" py={8}>
       <Stack gap={6}>
-        <Heading size="xs" fontFamily="Topoline">
+        <Heading size="md" fontFamily="Topoline" fontWeight="100">
           Digital Garden
         </Heading>
         <Stack gap={8}>

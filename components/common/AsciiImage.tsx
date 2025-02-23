@@ -2,6 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Box, Text } from "@chakra-ui/react";
 import { motion, cubicBezier, steps } from "motion/react";
 import { convertImageToAscii } from "../../lib/utils/asciiConverter";
+import dynamic from "next/dynamic";
+
 
 interface AsciiImageProps {
   imagePath: string;
@@ -15,7 +17,7 @@ interface AsciiImageProps {
 export const AsciiImage = ({
   imagePath,
   width = 100,
-  sampleFactor = 4,
+  sampleFactor = 2,
   fontSize = "8px",
 }: AsciiImageProps) => {
   const [asciiArt, setAsciiArt] = useState<string>("");
@@ -333,3 +335,20 @@ export const HighlightableAsciiImage = ({
     </Box>
   );
 };
+
+export const DynamicFlickeringAsciiImage = dynamic(
+  () =>
+    import("./AsciiImage").then((mod) => mod.FlickeringAsciiImage),
+  {
+    ssr: false, // Disable server-side rendering
+    loading: () => null, // Optional loading component
+  }
+);
+
+export const DynamicAsciiImage = dynamic(
+  () => import("./AsciiImage").then((mod) => mod.AsciiImage),
+  {
+    ssr: false, // Disable server-side rendering
+    loading: () => null, // Optional loading component
+  }
+);

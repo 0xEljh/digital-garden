@@ -68,7 +68,7 @@ export const PortfolioPreview = ({
 
   return (
     <Stack gap={6}>
-      <Heading size="xs" fontFamily="Topoline">
+      <Heading size="md" fontFamily="Topoline" fontWeight="100">
         Recent projects/work
       </Heading>
       <Box

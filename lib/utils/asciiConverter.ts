@@ -16,11 +16,7 @@ export const convertImageToAscii = async (
   image: HTMLImageElement,
   options: AsciiConversionOptions = {}
 ): Promise<string> => {
-  const {
-    width = 100,
-    sampleFactor = 4,
-    cellAspect = 0.42,
-  } = options;
+  const { width = 100, sampleFactor = 4, cellAspect = 0.4 } = options;
 
   // Calculate ASCII dimensions (in characters)
   const asciiWidth = width;
@@ -36,7 +32,7 @@ export const convertImageToAscii = async (
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
   const ctx = canvas.getContext("2d");
-  
+
   if (!ctx) {
     throw new Error("Could not get canvas context");
   }

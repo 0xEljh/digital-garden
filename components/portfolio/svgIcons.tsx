@@ -1,4 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/react";
+import { DynamicAsciiImage } from "@/components/common/AsciiImage";
 import {
   AIBrain,
   UpChart,
@@ -171,14 +172,7 @@ export const LightSabreIcon = ({
   ...props
 }: HighlightableIconProps) => {
   return (
-    <Box bg="black">
-      <LightSabre
-        boxSize={props.boxSize}
-        bg={SHADE_COLOR}
-        color={isHighlighted ? highlightColor : SHADE_COLOR}
-        transition="color 0.5s ease-in-out"
-      />
-    </Box>
+    <DynamicAsciiImage imagePath="/images/lightsabre.jpg" />
   );
 };
 

@@ -5,26 +5,43 @@ import {
   UpChartIcon,
   EyeIcon,
   BrowserIcon,
-  UnderRockIcon,
   WaveIcon,
   MedalIcon,
-  CryptoChartIcon,
-  LightSabreIcon,
   LockModelIcon,
   HighlightableIconProps,
 } from "@/components/portfolio/svgIcons";
+
+import {
+  LightSabreIcon,
+  PostQuantumEncryptionIcon,
+  DreamboothIcon,
+  CryptoChartIcon,
+  UnderTheRockIcon,
+  ETHTokyo23Icon,
+  MaritimeSatelliteIcon,
+  EdgeAIIcon,
+  CandlestickChartIcon,
+  DegenLogoIcon,
+} from "@/components/portfolio/AsciiIcons";
 
 const iconComponents = {
   AIBrainIcon,
   UpChartIcon,
   EyeIcon,
   BrowserIcon,
-  UnderRockIcon,
   WaveIcon,
   MedalIcon,
   CryptoChartIcon,
   LightSabreIcon,
   LockModelIcon,
+  PostQuantumEncryptionIcon,
+  DreamboothIcon,
+  UnderTheRockIcon,
+  ETHTokyo23Icon,
+  MaritimeSatelliteIcon,
+  EdgeAIIcon,
+  CandlestickChartIcon,
+  DegenLogoIcon,
 };
 
 export const getIconComponent = (
