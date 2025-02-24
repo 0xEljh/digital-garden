@@ -6,9 +6,12 @@ shortDescription: "Diversified crypto index fund strategies at size"
 icon: "CryptoChartIcon"
 categories: ["Data Science", "Research"]
 date: "2023-05-10"
-techStack: ["Python", "Jupyter Notebook", "Pandas"]
+techStack: ["Python", "bt", "Pandas"]
 ---
 
 ## Project Overview
 
-This project involves backtesting diversified crypto index fund strategies at size.
+My client wanted to test the thesis of a crypto index fund that would adequately capture the skewness of crypto returns, heavily inspired by Bassembinder.
+I gathered crypto data for over 2,000+ eligible tokens spanning a decade, including many of which that would eventually go to zero (and did lots of data cleaning). 
+Using a generous liquidity filter (greater than 1 million market cap), we experimented with and benchmarked various portfolio strategies, taking into reasonable account slippage, buy limits, and liquidity issues by modelling them in these backtests.
+We hence overall found that buying every token at equal weight (without rebalancing) had the best overall performance (compared at various time scales, entries, etc.), short of picking the winners (BTC and ETH) directly.

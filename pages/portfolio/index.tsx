@@ -46,9 +46,9 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
             {entries.map((entry, index) => (
               <GridItem
                 key={entry.slug}
-                // colSpan={{ base: 1, md: index % 2 === 0 ? 1 : entry.size }}
-                colSpan={{ base: 1, md: entry.size }}
-                // rowSpan={index % 2 === 0 ? entry.size : 1}
+              // colSpan={{ base: 1, md: index % 2 === 0 ? 1 : entry.size }}
+              // colSpan={{ base: 1, md: entry.size }}
+              // rowSpan={index % 2 === 0 ? entry.size : 1}
               >
                 <PortfolioCard entry={entry} />
               </GridItem>

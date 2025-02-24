@@ -3,7 +3,7 @@ import {
   Heading,
   Text,
   Stack,
-  Tag,
+  Center,
   Flex,
   useBreakpointValue,
 } from "@chakra-ui/react";
@@ -49,15 +49,12 @@ export const PortfolioCard = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Box
-        height="100%"
-        width="100%"
-        _groupHover={{ shadow: "dark" }}
         position="relative"
+        w="100%"
+        h="100%"
         bg="black"
         minH="xs"
         overflow="hidden"
-        borderRadius="md"
-        boxShadow="lg"
         ref={ref}
       >
         <Box
@@ -68,61 +65,64 @@ export const PortfolioCard = ({
           height="100%"
           zIndex={0}
         >
-          <IconComponent
-            width="100%"
-            height="100%"
-            highlightColor="yellow.400"
-            isHighlighted={isHighlighted || isHovered}
-          />
+          <Center>
+            <IconComponent
+              width="100%"
+              height="100%"
+              highlightColor="yellow.400"
+              isHighlighted={isHighlighted || isHovered}
+            />
+          </Center>
         </Box>
         <Flex direction="column-reverse" height="100%">
           <Stack
             gap="3"
             alignSelf="start"
-            w="xs"
+            // w="md"
             paddingEnd="16"
             paddingTop="8"
             paddingBottom="4"
             px={4}
             zIndex={10}
           >
-            <Box
-              position="absolute"
-              top="2"
-              left="2"
-              fontSize="sm"
-              color="fg.muted"
-              opacity="0"
-              transition="opacity 0.3s"
-              _groupHover={{ opacity: 1 }}
-            >
-              {entry.shortDescription}
-            </Box>
-            <Stack gap="3" mt="8">
-              {entry.categories.map((category) => (
-                <Text
-                  key={category}
-                  textStyle={{ base: "xs", md: "sm" }}
-                  fontWeight="semibold"
-                  // color={isHighlighted ? "accent" : "white"}
-                  opacity="0"
-                  transition="opacity 0.3s"
-                  _groupHover={{ opacity: 1 }}
-                  fontFamily={"Tickerbit"}
-                >
-                  {category}
-                </Text>
-              ))}
-              <Heading
-                size={{ base: "xs", md: "sm" }}
+            {entry.categories.map((category) => (
+              <Text
+                key={category}
+                textStyle={{ base: "xs", md: "sm" }}
+                fontWeight="semibold"
+                // color={isHighlighted ? "accent" : "white"}
+                opacity="0"
+                transition="opacity 0.3s"
+                _groupHover={{ opacity: 1 }}
                 fontFamily={"Tickerbit"}
-                color="whiteAlpha.800"
               >
-                {entry.title}
-              </Heading>
-            </Stack>
+                {category}
+              </Text>
+            ))}
+            <Heading
+              textAlign="center"
+              size={{ base: "xs", md: "sm" }}
+              fontFamily={"Tickerbit"}
+              color="whiteAlpha.800"
+            >
+              {entry.title}
+            </Heading>
           </Stack>
         </Flex>
+        <Text
+          position="absolute"
+          top="2"
+          left="2"
+          fontSize="sm"
+          color="fg.muted"
+          opacity="0"
+          transition="opacity 0.3s"
+          _groupHover={{ opacity: 1 }}
+          maxW="sm"
+          textWrap="break-word"
+        >
+          {entry.shortDescription}
+        </Text>
       </Box>
     </Link>
   );

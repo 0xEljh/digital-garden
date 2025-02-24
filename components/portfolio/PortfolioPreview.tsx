@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useCycle } from "motion/react";
-import { Box, Heading, Container, Stack, Button, Flex } from "@chakra-ui/react";
+import { Box, Heading, Container, Stack, Button, Flex, Center } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { PortfolioCard } from "./PortfolioCard";
@@ -7,7 +7,6 @@ import type { PortfolioEntry } from "@/types/portfolio";
 import { FaDownload } from "react-icons/fa6";
 
 const MotionBox = motion.create(Box);
-const MotionButton = motion.create(Button);
 
 export const PortfolioPreview = ({
   entries,
@@ -34,13 +33,6 @@ export const PortfolioPreview = ({
     };
   }, [isHovered, cyclePage, entries.length]);
 
-  const paginate = (newDirection: number) => {
-    setDirection(newDirection);
-    cyclePage();
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-  };
 
   const variants = {
     enter: (direction: number) => ({
@@ -67,95 +59,96 @@ export const PortfolioPreview = ({
   };
 
   return (
-    <Stack gap={6}>
-      <Heading size="md" fontFamily="Topoline" fontWeight="100">
+    <Stack gap={6} align="center">
+      <Heading size="md" fontFamily="Topoline" fontWeight="100" w="full" textAlign="left">
         Recent projects/work
       </Heading>
-      <Box
-        py={16}
+      <Stack
+        gap={8}
+        align="center"
+        direction="column"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        overflowX="hidden"
+        w="full"
       >
-        <Stack gap={8} align="center" direction="column">
-          <Box position="relative" w="full" maxW="container.lg" h="400px">
-            <AnimatePresence initial={false} custom={direction}>
-              <MotionBox
-                key={page}
-                custom={direction}
-                variants={variants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                position="absolute"
-                w="full"
-                h="full"
-                cursor="grab"
-                whileTap="grabbing"
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2}
-                onDragEnd={(e, { offset, velocity }) => {
-                  const swipe = Math.abs(offset.x) * velocity.x;
-                  if (swipe < -10000) {
-                    setDirection(1);
-                    cyclePage();
-                  }
-                  if (swipe > 10000) {
-                    setDirection(-1);
-                    cyclePage();
-                  }
-                }}
-              >
-                <PortfolioCard entry={entries[page]} />
-              </MotionBox>
-            </AnimatePresence>
-          </Box>
-
-          {/* Pagination Dots */}
-          {entries.length > 1 && (
-            <Flex gap={3} justify="center">
-              {entries.map((_, index) => (
-                <MotionButton
-                  key={index}
-                  onClick={() => {
-                    setDirection(index > page ? 1 : -1);
-                    cyclePage(index);
-                  }}
-                  p={0}
-                  rounded="full"
-                  size="xs"
-                />
-              ))}
-            </Flex>
-          )}
-
-          <Stack direction={{ base: "column-reverse", md: "row" }}>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size="md"
-              alignSelf="center"
-              fontWeight="40"
-              asChild
+        <Box position="relative" w="full" maxW="container.lg" h="350px">
+          <AnimatePresence initial={false} custom={direction}>
+            <MotionBox
+              key={page}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              position="absolute"
+              w="full"
+              h="full"
+              cursor="grab"
+              whileTap="grabbing"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = Math.abs(offset.x) * velocity.x;
+                if (swipe < -10000) {
+                  setDirection(1);
+                  cyclePage();
+                }
+                if (swipe > 10000) {
+                  setDirection(-1);
+                  cyclePage();
+                }
+              }}
             >
-              <Link href="/api/download-resume">
-                <FaDownload />
-                My Resume
-              </Link>
-            </Button>
+              <PortfolioCard entry={entries[page]} />
+            </MotionBox>
+          </AnimatePresence>
+        </Box>
+      </Stack>
+
+      {/* Pagination Dots */}
+      {entries.length > 1 && (
+        <Stack gap={3} justify="center" direction="row">
+          {entries.map((_, index) => (
             <Button
-              asChild
-              colorScheme="teal"
-              variant="outline"
-              size="md"
-              alignSelf="center"
-              fontWeight="40"
-            >
-              <Link href="/portfolio">Full Portfolio</Link>
-            </Button>
-          </Stack>
+              key={index}
+              onClick={() => {
+                setDirection(index > page ? 1 : -1);
+                cyclePage(index);
+              }}
+              p={0}
+              rounded="full"
+              size="xs"
+            />
+          ))}
         </Stack>
-      </Box>
-    </Stack>
+      )}
+      <Stack direction={{ base: "column-reverse", md: "row" }}>
+        <Button
+          colorScheme="teal"
+          variant="outline"
+          size="md"
+          alignSelf="center"
+          // fontWeight="40"
+          asChild
+        >
+          <Link href="/api/download-resume">
+            <FaDownload />
+            My Resume
+          </Link>
+        </Button>
+        <Button
+          asChild
+          colorScheme="teal"
+          variant="outline"
+          size="md"
+          alignSelf="center"
+        // fontWeight="40"
+        >
+          <Link href="/portfolio">Full Portfolio</Link>
+        </Button>
+      </Stack>
+    </Stack >
   );
 };

@@ -52,7 +52,7 @@ const HeroSection = () => (
 const DigitalGarden = ({ posts }: { posts: Post[] }) => {
   const linkHoverStyle = useBreakpointValue({
     base: { textDecoration: "none" },
-    md: { textDecoration: "none", transform: "scale(1.02)" },
+    md: { textDecoration: "none", transform: "scale(1.02) translateX(-20px)" },
   });
 
   return (

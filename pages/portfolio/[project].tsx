@@ -132,7 +132,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
           )}
 
           <Box
-            bg={"gray.200"}
+            bg={"gray.900"}
             p={8}
             borderRadius="lg"
             border="1px"

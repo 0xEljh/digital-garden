@@ -35,11 +35,11 @@ export default function PostsIndexPage({ posts }: PageProps) {
                 p={6}
                 borderWidth="1px"
                 borderRadius="lg"
-                _hover={{ bg: "gray.50" }}
+                _hover={{ bg: "gray.900", transform: "rotate(0.5deg)" }}
                 transition="background 0.2s"
               >
                 <Stack gap={3}>
-                  <Heading size="lg">
+                  <Heading size="lg" fontFamily="Tickerbit">
                     <LinkOverlay as={NextLink} href={`/posts/${post.slug}`}>
                       {post.title}
                     </LinkOverlay>
