@@ -19,22 +19,63 @@ export function StyledProse({ children, ...props }: styledProseProps) {
     return (
         <Box
             css={{
-                // prose styles
-                "& h1, & h2, & h3, & h4, & h5, & h6": {
+                // Heading styles with subtle differentiation
+                "& h1": {
                     color: "fg.default",
                     fontSize: "4xl",
                     lineHeight: "tall",
-                    // my: "1em",
-                    mt: 16, // top margin larger than bottom to suggest association
+                    fontFamily: "Aeion Mono",
+                    mt: 16,
+                    mb: 6,
+                },
+                "& h2": {
+                    color: "fg.default",
+                    fontSize: "3xl",
+                    lineHeight: "tall",
+                    fontFamily: "Aeion Mono",
+                    mt: 14,
+                    mb: 5,
+                },
+                "& h3": {
+                    color: "fg.default",
+                    fontSize: "2xl",
+                    lineHeight: "tall",
+                    fontFamily: "Aeion Mono",
+                    mt: 12,
                     mb: 4,
                 },
-                "& p, i, ul, li": {
+                // Paragraph styles
+                "& p": {
                     color: "fg.muted",
                     fontSize: ["lg", "xl"],
                     lineHeight: "taller",
-                    mb: 4, // Increased bottom margin for paragraphs
+                    mb: 4,
                 },
-                "& a": { color: "brand.secondary" },
+                // List styles
+                "& ul, & ol": {
+                    color: "fg.muted",
+                    fontSize: ["lg", "xl"],
+                    lineHeight: "taller",
+                    mb: 4,
+                    pl: 6, // Left padding for list indentation
+                },
+                "& li": {
+                    mb: 2, // Space between list items
+                    position: "relative",
+                    "&::before": {
+                        content: '"•"', // Bullet point
+                        position: "absolute",
+                        left: -4,
+                        color: "fg.subtle", // Slightly muted bullet color
+                    },
+                },
+                // Nested list adjustments
+                "& ul ul, & ol ol, & ul ol, & ol ul": {
+                    mt: 2,
+                    mb: 0,
+                    pl: 4, // Slightly less padding for nested lists
+                },
+                "& a": { color: "teal.200" },
                 maxWidth: "container.lg",
             }}
             {...props}
