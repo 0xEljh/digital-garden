@@ -1,136 +1,190 @@
-import { AnimatePresence, motion, useCycle } from "motion/react";
-import { Box, Heading, Container, Stack, Button, Flex, Center } from "@chakra-ui/react";
+import { AnimatePresence, motion } from "motion/react";
+import { Box, Heading, Stack, Button, Flex, HStack, Text, Center } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { PortfolioCard } from "./PortfolioCard";
 import type { PortfolioEntry } from "@/types/portfolio";
 import { FaDownload } from "react-icons/fa6";
+import { getIconComponent } from "@/lib/utils/portfolio-icons";
 
 const MotionBox = motion.create(Box);
+const MotionFlex = motion.create(Flex);
 
 export const PortfolioPreview = ({
   entries,
 }: {
   entries: PortfolioEntry[];
 }) => {
-  const [page, cyclePage] = useCycle(...entries.map((_, i) => i));
-  const [direction, setDirection] = useState(1);
+  const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout>(null);
 
-  // Auto-rotate every 8 seconds when not hovered
+  // Auto-collapse panels when not hovered
   useEffect(() => {
-    if (!isHovered && entries.length > 1) {
-      intervalRef.current = setInterval(() => {
-        setDirection(1);
-        cyclePage();
-      }, 8000);
+    if (!isHovered && expandedPanel) {
+      const timer = setTimeout(() => {
+        setExpandedPanel(null);
+      }, 5000);
+      return () => clearTimeout(timer);
     }
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isHovered, cyclePage, entries.length]);
+  }, [isHovered, expandedPanel]);
 
-
-  const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? "20%" : "-20%",
-      opacity: 0,
-      scale: 0.8,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 120,
-        damping: 20,
-      },
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? "-100%" : "100%",
-      opacity: 0,
-      scale: 0.95,
-      transition: { duration: 0.2 },
-    }),
+  const handleMouseEnter = (slug: string) => {
+    setExpandedPanel(slug);
+    setIsHovered(true);
   };
 
   return (
-    <Stack gap={6} align="center">
+    <Stack gap={6} w="full" align="center">
       <Heading size="md" fontFamily="Topoline" fontWeight="100" w="full" textAlign="left">
         Recent projects/work
       </Heading>
-      <Stack
-        gap={8}
-        align="center"
-        direction="column"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        overflowX="hidden"
+      
+      <Stack direction="row"
+        gap={2} 
+        overflow="auto" 
         w="full"
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <Box position="relative" w="full" maxW="container.lg" h="350px">
-          <AnimatePresence initial={false} custom={direction}>
-            <MotionBox
-              key={page}
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              position="absolute"
-              w="full"
-              h="full"
-              cursor="grab"
-              whileTap="grabbing"
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(e, { offset, velocity }) => {
-                const swipe = Math.abs(offset.x) * velocity.x;
-                if (swipe < -10000) {
-                  setDirection(1);
-                  cyclePage();
-                }
-                if (swipe > 10000) {
-                  setDirection(-1);
-                  cyclePage();
-                }
+        {entries.map((entry) => {
+          const IconComponent = getIconComponent(entry.icon);
+          
+          return (
+            <MotionFlex
+              key={entry.slug}
+              h="350px"
+              borderRadius="xl"
+              position="relative"
+              backdropFilter="blur(8px)"
+              border="1px solid"
+              borderColor={
+                expandedPanel === entry.slug ? "gray.700" : "gray.800"
+              }
+              bg={
+                expandedPanel === entry.slug ? "gray.800" : "gray.800"
+              }
+              _before={{
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                borderRadius: "xl",
+                opacity: 0.2,
+                bgGradient: `linear(to-br, transparent, transparent)`, // placeholder for now.
+                zIndex: -1,
               }}
+              initial={false}
+              animate={{
+                width: expandedPanel === entry.slug ? "384px" : "80px",
+                opacity: 1,
+                backgroundColor: expandedPanel === entry.slug ? "rgba(45, 55, 72, 0.4)" : "rgba(45, 55, 72, 0.2)",
+              }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              onMouseEnter={() => handleMouseEnter(entry.slug)}
             >
-              <PortfolioCard entry={entries[page]} />
-            </MotionBox>
-          </AnimatePresence>
-        </Box>
+              {/* Glass shine effect */}
+              {expandedPanel === entry.slug && (
+                <Box
+                  position="absolute"
+                  insetX="0"
+                  top="0"
+                  h="1px"
+                  bgGradient="linear(to-r, transparent, gray.400, transparent)"
+                />
+              )}
+
+              {/* Collapsed state */}
+              {expandedPanel !== entry.slug && (
+                <Flex
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  w="full"
+                  h="full"
+                >
+                  <Text
+                    as={motion.div}
+                    fontSize="sm"
+                    // fontWeight="medium"
+                    // letterSpacing="wide"
+                    color="gray.300"
+                    opacity={0.9}
+                    style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                  >
+                    {entry.title}
+                  </Text>
+                </Flex>
+              )}
+
+              {/* Expanded state */}
+              <AnimatePresence>
+                {expandedPanel === entry.slug && (
+                  <MotionFlex
+                    flexDirection="column"
+                    p={5}
+                    h="full"
+                    w="full"
+                    overflow="hidden"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    position="relative"
+                  >
+                    <Box
+                      position="absolute"
+                      top="0"
+                      left="0"
+                      width="100%"
+                      height="100%"
+                      zIndex={0}
+                    >
+                      <Center>
+                        <IconComponent
+                          width="100%"
+                          height="100%"
+                          highlightColor="yellow.400"
+                          isHighlighted={false}
+                        />
+                      </Center>
+                    </Box>
+                    <Stack mb={3}>
+                      <Heading size="md" color="white" fontFamily={"Tickerbit"}>
+                        {entry.title}
+                      </Heading>
+                    </Stack>
+
+                    <Text color="gray.300" mb={5} fontSize="sm" lineHeight="relaxed">
+                      {entry.shortDescription}
+                    </Text>
+
+                    <Box mt="auto">
+                      <Button
+                        asChild
+                        variant="solid"
+                        bg="gray.700"
+                        _hover={{ bg: "gray.600" }}
+                        size="sm"
+                        borderRadius="lg"
+                        transition="colors 0.3s"
+                      >
+                        <Link href={`/portfolio/${entry.slug}`}>
+                          View Project
+                        </Link>
+                      </Button>
+                    </Box>
+                  </MotionFlex>
+                )}
+              </AnimatePresence>
+            </MotionFlex>
+          );
+        })}
       </Stack>
 
-      {/* Pagination Dots */}
-      {entries.length > 1 && (
-        <Stack gap={3} justify="center" direction="row">
-          {entries.map((_, index) => (
-            <Button
-              key={index}
-              onClick={() => {
-                setDirection(index > page ? 1 : -1);
-                cyclePage(index);
-              }}
-              p={0}
-              rounded="full"
-              size="xs"
-            />
-          ))}
-        </Stack>
-      )}
       <Stack direction={{ base: "column-reverse", md: "row" }}>
         <Button
           colorScheme="teal"
           variant="outline"
           size="md"
           alignSelf="center"
-          // fontWeight="40"
           asChild
         >
           <Link href="/api/download-resume">
@@ -144,11 +198,10 @@ export const PortfolioPreview = ({
           variant="outline"
           size="md"
           alignSelf="center"
-        // fontWeight="40"
         >
           <Link href="/portfolio">Full Portfolio</Link>
         </Button>
       </Stack>
-    </Stack >
+    </Stack>
   );
 };
