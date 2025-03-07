@@ -1,15 +1,15 @@
 import dynamic from "next/dynamic";
 import { ComponentType } from "react";
-import {
-  AIBrainIcon,
-  UpChartIcon,
-  EyeIcon,
-  BrowserIcon,
-  WaveIcon,
-  MedalIcon,
-  LockModelIcon,
-  HighlightableIconProps,
-} from "@/components/portfolio/svgIcons";
+// import {
+//   AIBrainIcon,
+//   UpChartIcon,
+//   EyeIcon,
+//   BrowserIcon,
+//   WaveIcon,
+//   MedalIcon,
+//   LockModelIcon,
+//   HighlightableIconProps,
+// } from "@/components/portfolio/svgIcons";
 
 import {
   LightSabreIcon,
@@ -22,18 +22,12 @@ import {
   EdgeAIIcon,
   CandlestickChartIcon,
   DegenLogoIcon,
+  AsciiIconProps,
 } from "@/components/portfolio/AsciiIcons";
 
 const iconComponents = {
-  AIBrainIcon,
-  UpChartIcon,
-  EyeIcon,
-  BrowserIcon,
-  WaveIcon,
-  MedalIcon,
   CryptoChartIcon,
   LightSabreIcon,
-  LockModelIcon,
   PostQuantumEncryptionIcon,
   DreamboothIcon,
   UnderTheRockIcon,
@@ -46,6 +40,6 @@ const iconComponents = {
 
 export const getIconComponent = (
   iconName: string
-): ComponentType<HighlightableIconProps> => {
+): ComponentType<AsciiIconProps> => {
   return iconComponents[iconName as keyof typeof iconComponents];
 };

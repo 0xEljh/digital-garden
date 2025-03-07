@@ -1,71 +1,227 @@
 import { DynamicAsciiImage } from "@/components/common/AsciiImage"
+import { BoxProps } from "@chakra-ui/react"
+import { useMemo } from "react"
 
-export const LightSabreIcon = () => {
+// Common interface for all ASCII icons, extending BoxProps to be consistent with SVG icons
+export interface AsciiIconProps extends BoxProps {
+    width?: number;
+    sampleFactor?: number;
+    fontSize?: string;
+    highlightColor?: string;
+    isHighlighted?: boolean;
+}
+
+// Helper function to calculate fontSize based on width
+const calculateFontSize = (width: number, ratio: number = 0.0167): string => {
+    return `${Math.max(1, Math.round(width * ratio))}px`;
+}
+
+export const LightSabreIcon = ({ 
+    width = 120, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.033); // 4px at width=120
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/lightsabre.jpg" width={120} sampleFactor={2}
-            fontSize="4px" />
+        <DynamicAsciiImage 
+            imagePath="/images/lightsabre.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const PostQuantumEncryptionIcon = () => {
+export const PostQuantumEncryptionIcon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/post-quantum-encryption.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/post-quantum-encryption.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const DreamboothIcon = () => {
+export const DreamboothIcon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/dreambooth.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/dreambooth.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const CryptoChartIcon = () => {
+export const CryptoChartIcon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/crypto-candlestick-charts.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/crypto-candlestick-charts.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const CandlestickChartIcon = () => {
+export const CandlestickChartIcon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/candlestick-charts.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/candlestick-charts.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const UnderTheRockIcon = () => {
+export const UnderTheRockIcon = ({ 
+    width = 120, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.033); // 4px at width=120
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/under-the-rock.jpg" width={120} sampleFactor={2}
-            fontSize="4px" />
+        <DynamicAsciiImage 
+            imagePath="/images/under-the-rock.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const ETHTokyo23Icon = () => {
+export const ETHTokyo23Icon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/ethtokyo23-square.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/ethtokyo23-square.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const EdgeAIIcon = () => {
+export const EdgeAIIcon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/edge-ai.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/edge-ai.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const MaritimeSatelliteIcon = () => {
+export const MaritimeSatelliteIcon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/maritime-satellite.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/maritime-satellite.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }
 
-export const DegenLogoIcon = () => {
+export const DegenLogoIcon = ({ 
+    width = 240, 
+    sampleFactor,
+    fontSize,
+    ...props 
+}: AsciiIconProps) => {
+    const calculatedFontSize = useMemo(() => {
+        return fontSize || calculateFontSize(width, 0.0083); // 2px at width=240
+    }, [width, fontSize]);
+
     return (
-        <DynamicAsciiImage imagePath="/images/degen-logo.jpg" width={240} sampleFactor={2}
-            fontSize="2px" />
+        <DynamicAsciiImage 
+            imagePath="/images/degen-logo.jpg" 
+            width={width} 
+            sampleFactor={sampleFactor || 2}
+            fontSize={calculatedFontSize} 
+            {...props}
+        />
     )
 }

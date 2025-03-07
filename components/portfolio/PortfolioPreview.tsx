@@ -139,8 +139,6 @@ export const PortfolioPreview = ({
                     >
                       <Center>
                         <IconComponent
-                          width="100%"
-                          height="100%"
                           highlightColor="yellow.400"
                           isHighlighted={false}
                         />
