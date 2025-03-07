@@ -10,10 +10,10 @@ categories: ["deep learning", "math"]
 
 ### Pre-text from Cross Entropy for negative log likelihood:
   $$\mathcal{L} = - \log \frac{e^{z_{y_i}}}{\sum_{k} e^{z_k}} = - z_{y_i} + \log \sum_{k} e^{z_k}$$
-  - i.e., it can be broken down into two terms: the negative dot product and log sum exponent.
-  - The general goal of the whole "cut cross entropy" approach is to avoid direct computation of $z_k$ naively.
-  - The naive approach would be to compute $C^T E = z_k$, which is potentially very large due to vocab sizes (the paper says this can account for about 40% of all GPU memory requirements)
-  - If this looks foreign, check out [this derivation of cross-entropy loss first](/posts/cross-entropy)
+  i.e., it can be broken down into two terms: the negative dot product and log sum exponent.
+  The general goal of the whole "cut cross entropy" approach is to avoid direct computation of $z_k$ naively.
+  The naive approach would be to compute $C^T E = z_k$, which is potentially very large due to vocab sizes (the paper says this can account for about 40% of all GPU memory requirements)
+  If this looks foreign, check out [this derivation of cross-entropy loss first](/posts/cross-entropy)
 
 ## Breakdown of forward
   - Because this is operating on the loss layer, the inputs are going to be embeddings (mini-batch x dim), classifier/candidate/class embeddings (dim x vocab), a bias (vocab x 1), and other CCE params.

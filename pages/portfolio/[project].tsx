@@ -67,7 +67,7 @@ const MotionBox = motion.create(Box);
 
 export default function ProjectPage({ entry, content }: ProjectPageProps) {
   const IconComponent = getIconComponent(entry.icon);
-  const iconWidth = useBreakpointValue({ base: 240, md: 400 });
+  const iconWidth = useBreakpointValue({ base: 240, md: 400, lg: 600 });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -116,11 +116,14 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
         <Stack
           flex={1}
           gap={4}
-          bg="blackAlpha.700"
+          bg={{ base: "blackAlpha.400", md: "blackAlpha.700" }}
           p={8}
-          borderRadius="lg"
+          m={{ base: 0, md: 4 }}
+          borderRadius="2xl"
           border="1px"
-          borderColor={"gray.200"}
+          borderColor={"cyan.700"}
+          boxShadow="0 0 25px rgba(0, 200, 255, 0.20)"
+          backdropFilter="blur(10px)"
           overflowY="scroll"
           h="100%"
           pr={4}
@@ -150,55 +153,28 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
       </GridItem>
 
       {/* Attributes: Occupy right column */}
-      <GridItem colSpan={{ base: 1, md: 2 }} colStart={{ base: 1, md: 5 }} rowSpan={{base: 1, md: 2}}>
+      <GridItem
+        colSpan={{ base: 1, md: 2 }}
+        colStart={{ base: 1, md: 5 }}
+        rowSpan={{ base: 1, md: 2 }}
+      >
         <Center h="full">
-        <MotionBox
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          zIndex={1}
-        >
-          <Stack
-            gap={6}
-            bg="blackAlpha.700"
-            p={6}
-            borderRadius="lg"
-            border="1px"
-            borderColor={"cyan.700"}
-            boxShadow="0 0 20px rgba(0, 200, 255, 0.15)"
-            backdropFilter="blur(10px)"
+          <MotionBox
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            zIndex={1}
           >
-            <MotionBox variants={itemVariants}>
-              <Text
-                fontSize="xl"
-                fontWeight="bold"
-                mb={3}
-                textTransform="uppercase"
-                letterSpacing="wider"
-                color="cyan.300"
-              >
-                Categories
-              </Text>
-              <HStack gap={3} flexWrap="wrap">
-                {entry.categories.map((category) => (
-                  <Tag.Root
-                    key={category}
-                    size="md"
-                    bg="blackAlpha.600"
-                    color="cyan.100"
-                    borderWidth="1px"
-                    borderColor="cyan.700"
-                    _hover={{ bg: "cyan.900", transform: "translateY(-2px)" }}
-                    transition="all 0.2s"
-                    p={2}
-                  >
-                    {category}
-                  </Tag.Root>
-                ))}
-              </HStack>
-            </MotionBox>
-
-            {entry.techStack && (
+            <Stack
+              gap={6}
+              bg={{ base: "blackAlpha.400", md: "blackAlpha.700" }}
+              p={8}
+              borderRadius="lg"
+              border="1px"
+              borderColor={"cyan.700"}
+              boxShadow="0 0 25px rgba(0, 200, 255, 0.20)"
+              backdropFilter="blur(10px)"
+            >
               <MotionBox variants={itemVariants}>
                 <Text
                   fontSize="xl"
@@ -208,87 +184,123 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                   letterSpacing="wider"
                   color="cyan.300"
                 >
-                  Tech Stack
+                  Category
                 </Text>
-                <Wrap gap={3}>
-                  {entry.techStack.map((tech) => (
-                    <WrapItem key={tech}>
-                      <Tag.Root
-                        size="md"
-                        variant="subtle"
-                        bg="blackAlpha.600"
-                        color="cyan.100"
-                        borderWidth="1px"
-                        borderColor="cyan.700"
-                        p={2}
+                <HStack gap={3} flexWrap="wrap">
+                  {entry.categories.map((category) => (
+                    <Tag.Root
+                      key={category}
+                      size="md"
+                      bg="blackAlpha.600"
+                      color="cyan.100"
+                      borderWidth="1px"
+                      borderColor="cyan.700"
+                      _hover={{ bg: "cyan.900", transform: "translateY(-2px)" }}
+                      transition="all 0.2s"
+                      p={2}
+                    >
+                      {category}
+                    </Tag.Root>
+                  ))}
+                </HStack>
+              </MotionBox>
+
+              {entry.techStack && (
+                <MotionBox variants={itemVariants}>
+                  <Text
+                    fontSize="xl"
+                    fontWeight="bold"
+                    mb={3}
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                    color="cyan.300"
+                  >
+                    Tech Stack
+                  </Text>
+                  <Wrap gap={3}>
+                    {entry.techStack.map((tech) => (
+                      <WrapItem key={tech}>
+                        <Tag.Root
+                          size="md"
+                          variant="subtle"
+                          bg="blackAlpha.600"
+                          color="cyan.100"
+                          borderWidth="1px"
+                          borderColor="cyan.700"
+                          p={2}
+                          _hover={{
+                            bg: "cyan.900",
+                            transform: "translateY(-2px)",
+                          }}
+                          transition="all 0.2s"
+                        >
+                          {tech}
+                        </Tag.Root>
+                      </WrapItem>
+                    ))}
+                  </Wrap>
+                </MotionBox>
+              )}
+
+              {(entry.link || entry.github) && (
+                <MotionBox variants={itemVariants}>
+                  <Text
+                    fontSize="xl"
+                    fontWeight="bold"
+                    mb={3}
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                    color="cyan.300"
+                  >
+                    Links
+                  </Text>
+                  <HStack gap={4}>
+                    {entry.link && (
+                      <Button
+                        asChild
+                        rel="noopener noreferrer"
+                        size="lg"
+                        bg="cyan.600"
+                        color="white"
                         _hover={{
-                          bg: "cyan.900",
+                          bg: "cyan.500",
+                          transform: "translateY(-2px)",
+                        }}
+                        boxShadow="0 0 15px rgba(0, 200, 255, 0.3)"
+                        transition="all 0.2s"
+                      >
+                        <NextLink target="_blank" href={entry.link}>
+                          <Icon as={VscBrowser} boxSize={5} mr={2} />
+                          Visit Project
+                        </NextLink>
+                      </Button>
+                    )}
+                    {entry.github && (
+                      <Button
+                        asChild
+                        rel="noopener noreferrer"
+                        variant="outline"
+                        size="lg"
+                        borderColor="cyan.600"
+                        color="cyan.100"
+                        _hover={{
+                          bg: "blackAlpha.400",
+                          borderColor: "cyan.400",
                           transform: "translateY(-2px)",
                         }}
                         transition="all 0.2s"
                       >
-                        {tech}
-                      </Tag.Root>
-                    </WrapItem>
-                  ))}
-                </Wrap>
-              </MotionBox>
-            )}
-
-            <MotionBox variants={itemVariants}>
-              <Text
-                fontSize="xl"
-                fontWeight="bold"
-                mb={3}
-                textTransform="uppercase"
-                letterSpacing="wider"
-                color="cyan.300"
-              >
-                Links
-              </Text>
-              <HStack gap={4}>
-                {entry.link && (
-                  <Button
-                    asChild
-                    rel="noopener noreferrer"
-                    size="lg"
-                    bg="cyan.600"
-                    color="white"
-                    _hover={{ bg: "cyan.500", transform: "translateY(-2px)" }}
-                    boxShadow="0 0 15px rgba(0, 200, 255, 0.3)"
-                    transition="all 0.2s"
-                  >
-                    <NextLink target="_blank" href={entry.link}>
-                      <Icon as={VscBrowser} boxSize={5} mr={2} />
-                      Visit Project
-                    </NextLink>
-                  </Button>
-                )}
-                {entry.github && (
-                  <Button
-                    asChild
-                    rel="noopener noreferrer"
-                    variant="outline"
-                    size="lg"
-                    borderColor="cyan.600"
-                    color="cyan.100"
-                    _hover={{
-                      bg: "blackAlpha.400",
-                      borderColor: "cyan.400",
-                      transform: "translateY(-2px)",
-                    }}
-                    transition="all 0.2s"
-                  >
-                    <NextLink href={entry.github} target="_blank">
-                      <Icon as={VscGithub} boxSize={5} mr={2} />
-                      View Source
-                    </NextLink>
-                  </Button>
-                )}
-              </HStack>
-            </MotionBox>
-          </Stack>
-        </MotionBox>
+                        <NextLink href={entry.github} target="_blank">
+                          <Icon as={VscGithub} boxSize={5} mr={2} />
+                          View Source
+                        </NextLink>
+                      </Button>
+                    )}
+                  </HStack>
+                </MotionBox>
+              )}
+            </Stack>
+          </MotionBox>
         </Center>
       </GridItem>
     </Grid>

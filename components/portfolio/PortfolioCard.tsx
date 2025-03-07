@@ -26,12 +26,12 @@ export const PortfolioCard = ({
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 1.0 });
+  const isInView = useInView(ref, { amount: 0.8 });
 
   useEffect(() => {
+    console.log("ishoveredmobile", isInView && isMobile, isHovered)
     if (isInView && isMobile) setIsHovered(true);
     if (!isInView && isMobile) setIsHovered(false);
-    // detect state transition between mobile and desktop
   }, [isMobile, isInView]);
 
   useEffect(() => {
@@ -45,8 +45,8 @@ export const PortfolioCard = ({
       _hover={{ textDecor: "none" }}
       className="group"
       href={"/portfolio/" + entry.slug}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // onMouseEnter={() => setIsHovered(true)}
+      // onMouseLeave={() => setIsHovered(false)}
     >
       <Box
         position="relative"
@@ -67,6 +67,7 @@ export const PortfolioCard = ({
         >
           <Center>
             <IconComponent
+              width={220}
               highlightColor="yellow.400"
               isHighlighted={isHighlighted || isHovered}
             />
@@ -80,7 +81,7 @@ export const PortfolioCard = ({
             paddingEnd="16"
             paddingTop="8"
             paddingBottom="4"
-            px={4}
+            px={{ base: 6, md: 4 }}
             zIndex={10}
           >
             {entry.categories.map((category) => (
@@ -88,8 +89,7 @@ export const PortfolioCard = ({
                 key={category}
                 textStyle={{ base: "xs", md: "sm" }}
                 fontWeight="semibold"
-                // color={isHighlighted ? "accent" : "white"}
-                opacity="0"
+                opacity={isHovered ? 1 : 0}
                 transition="opacity 0.3s"
                 _groupHover={{ opacity: 1 }}
                 fontFamily={"Tickerbit"}
@@ -99,7 +99,7 @@ export const PortfolioCard = ({
             ))}
             <Heading
               textAlign="center"
-              size={{ base: "xs", md: "sm" }}
+              size={{ base: "md", md: "sm" }}
               fontFamily={"Tickerbit"}
               color="whiteAlpha.800"
             >
@@ -109,11 +109,11 @@ export const PortfolioCard = ({
         </Flex>
         <Text
           position="absolute"
-          top="2"
-          left="2"
+          top={{base: 8, md: 2}}
+          left={{base: 6, md: 2}}
           fontSize="sm"
           color="fg.muted"
-          opacity="0"
+          opacity={isHovered ? 1 : 0}
           transition="opacity 0.3s"
           _groupHover={{ opacity: 1 }}
           maxW="sm"

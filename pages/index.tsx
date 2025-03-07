@@ -87,6 +87,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
                           key={category}
                           variant="subtle"
                           colorScheme="teal"
+                          color="cyan.600"
                         >
                           {category}
                         </Tag.Root>

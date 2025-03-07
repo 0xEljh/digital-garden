@@ -15,7 +15,7 @@ export const PortfolioPreview = ({
 }: {
   entries: PortfolioEntry[];
 }) => {
-  const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
+  const [expandedPanel, setExpandedPanel] = useState<string | null>(entries.length > 0 ? entries[0].slug : null);
   const [isHovered, setIsHovered] = useState(false);
 
   // Auto-collapse panels when not hovered
@@ -23,7 +23,7 @@ export const PortfolioPreview = ({
     if (!isHovered && expandedPanel) {
       const timer = setTimeout(() => {
         setExpandedPanel(null);
-      }, 5000);
+      }, 15000);
       return () => clearTimeout(timer);
     }
   }, [isHovered, expandedPanel]);
@@ -51,7 +51,7 @@ export const PortfolioPreview = ({
           return (
             <MotionFlex
               key={entry.slug}
-              h="350px"
+              h={{base: "350px", md: "480px"}}
               borderRadius="xl"
               position="relative"
               backdropFilter="blur(8px)"
@@ -102,12 +102,11 @@ export const PortfolioPreview = ({
                 >
                   <Text
                     as={motion.div}
-                    fontSize="sm"
-                    // fontWeight="medium"
-                    // letterSpacing="wide"
-                    color="gray.300"
-                    opacity={0.9}
+                    fontSize={{base: "sm", md: "md"}}
+                    color="fg.muted"
                     style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                    textWrap="pretty"
+                    flex="none"
                   >
                     {entry.title}
                   </Text>
@@ -137,7 +136,7 @@ export const PortfolioPreview = ({
                       height="100%"
                       zIndex={0}
                     >
-                      <Center>
+                      <Center h="100%">
                         <IconComponent
                           highlightColor="yellow.400"
                           isHighlighted={false}

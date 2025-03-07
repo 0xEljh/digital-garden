@@ -1,15 +1,4 @@
-import dynamic from "next/dynamic";
 import { ComponentType } from "react";
-// import {
-//   AIBrainIcon,
-//   UpChartIcon,
-//   EyeIcon,
-//   BrowserIcon,
-//   WaveIcon,
-//   MedalIcon,
-//   LockModelIcon,
-//   HighlightableIconProps,
-// } from "@/components/portfolio/svgIcons";
 
 import {
   LightSabreIcon,
@@ -23,6 +12,10 @@ import {
   CandlestickChartIcon,
   DegenLogoIcon,
   AsciiIconProps,
+  BattleBotIcon,
+  AirdropIcon,
+  BacksimIcon
+  
 } from "@/components/portfolio/AsciiIcons";
 
 const iconComponents = {
@@ -36,6 +29,9 @@ const iconComponents = {
   EdgeAIIcon,
   CandlestickChartIcon,
   DegenLogoIcon,
+  BattleBotIcon,
+  AirdropIcon,
+  BacksimIcon
 };
 
 export const getIconComponent = (
