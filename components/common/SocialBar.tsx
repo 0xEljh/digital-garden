@@ -1,10 +1,10 @@
-import { ButtonGroup, IconButton, useToken, HStack } from "@chakra-ui/react";
+import { ButtonGroup, IconButton, useToken, HStack, Button, Icon } from "@chakra-ui/react";
 import { FaXTwitter, FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa6";
 import { motion } from "motion/react";
 import { Box } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
 
-export const MotionBox = motion.create(Box);
+export const MotionButton = motion.create(IconButton);
 
 // AnimatedIconButton Component
 interface AnimatedIconButtonProps {
@@ -27,17 +27,13 @@ function AnimatedIconButton({
 
   return (
     <Link href={href}>
-      <MotionBox
+      <MotionButton
         animate={{ color: [null, highlightColor, initialColor] }}
         transition={{ repeat: Infinity, duration: 0.75, repeatDelay: 2, delay }}
+        aria-label={ariaLabel}
       >
-        <IconButton
-          aria-label={ariaLabel}
-          color="inherit"
-        >
-          {icon}
-        </IconButton>
-      </MotionBox>
+        {icon}
+      </MotionButton>
     </Link>
   );
 }
@@ -68,7 +64,7 @@ const socials = [
 
 export function SocialBar({ ...props }: any) {
   return (
-    <ButtonGroup variant="subtle" {...props}>
+    <ButtonGroup variant="outline" {...props}>
       {socials.map((social, i) => (
         <AnimatedIconButton
           key={i}

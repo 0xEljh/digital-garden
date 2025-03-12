@@ -10,12 +10,14 @@ import {
 import { GetStaticPaths, GetStaticProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
 import { loadPosts } from "@/lib/utils/posts";
-import type { Post } from "@/types/posts";
+import type { Post, PostMetaData } from "@/types/posts";
+import { PostCardGrid } from "@/components/garden/postCardGrid";
 import { StyledProse } from "@/components/common/StyledProse";
 import "katex/dist/katex.min.css";
 
 interface PostPageProps {
   post: Post;
+  relatedPosts: PostMetaData[];
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -41,6 +43,18 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
 }) => {
   const posts = await loadPosts();
   const post = posts.find((p) => p.slug === params?.post);
+  
+  // get related posts, but only send the metadata
+  const relatedPosts = posts.filter((p) => post?.relatedPosts.includes(p.slug)).map(
+    (p) => ({
+      title: p.title,
+      slug: p.slug,
+      categories: p.categories,
+      date: p.date,
+      relatedPosts: p.relatedPosts,
+      readTime: p.readTime,
+    })
+  );
 
   if (!post) {
     return {
@@ -51,11 +65,12 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
   return {
     props: {
       post,
+      relatedPosts: relatedPosts,
     },
   };
 };
 
-export default function PostPage({ post }: PostPageProps) {
+export default function PostPage({ post, relatedPosts }: PostPageProps) {
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.lg">
@@ -76,22 +91,19 @@ export default function PostPage({ post }: PostPageProps) {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
-              })}
+              })} · {post.readTime} min read
             </Text>
           </Stack>
-
           <StyledProse fontWeight="30">
             <MDXRemote {...post.content} />
           </StyledProse>
 
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
-            <Stack gap={4}>
-              <Heading size="lg">Related Posts</Heading>
-              <Stack>
-                {post.relatedPosts.map((relatedPost) => (
-                  <Text key={relatedPost.slug}>{relatedPost.title}</Text>
-                ))}
-              </Stack>
+          {relatedPosts && relatedPosts.length > 0 && (
+            <Stack gap={{base: 4, md: 6}} py={{base: 8, md: 12}}>
+              <Heading size="2xl" fontFamily="Topoline">
+                Related Posts
+              </Heading>
+              <PostCardGrid posts={relatedPosts} />
             </Stack>
           )}
         </Stack>

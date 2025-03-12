@@ -10,7 +10,7 @@ interface NextLinkProps extends LinkProps {
 
 export const Link = ({ href, children, ...chakraProps }: NextLinkProps) => {
   return (
-    <ChakraLink asChild {...chakraProps}>
+    <ChakraLink asChild {...chakraProps} _hover={{ textDecoration: "none" }}>
       <NextLink href={href}>{children}</NextLink>
     </ChakraLink>
   );

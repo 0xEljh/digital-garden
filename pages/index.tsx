@@ -8,6 +8,7 @@ import {
   Grid,
   Tag,
   Heading,
+  HStack,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
@@ -17,7 +18,7 @@ import { DynamicFlickeringAsciiImage } from "@/components/common/AsciiImage";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { loadPosts } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
-import type { Post } from "@/types/posts"; // Add this line to import the Post type
+import type { Post } from "@/types/posts"; 
 import { SocialBar } from "@/components/common/SocialBar";
 import { PortfolioPreview } from "@/components/portfolio/PortfolioPreview";
 import { ReactElement } from "react";
@@ -31,21 +32,16 @@ const HeroSection = () => (
       fontSize="2px"
     />
     <Text
-      fontSize={{ base: "lg", md: "2xl" }}
+      fontSize={{ base: "lg", md: "xl" }}
       color="fg.muted"
       maxW={"md"}
       fontFamily="Topoline"
       fontWeight="100"
     >
-      The digital garden of a full-stack deep learning engineer, trying to find
+      The digital garden of a full-stack machine learning engineer, trying to find
       his way in the startup world.
     </Text>
     <SocialBar />
-    <Stack direction={{ base: "column", sm: "row" }} gap={4}>
-      <QuoteBlock colorScheme="teal" dark={true}>
-        Keeping one foot in order so I can dance with the chaos.
-      </QuoteBlock>
-    </Stack>
   </Stack>
 );
 
@@ -56,8 +52,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
   });
 
   return (
-    <Box as="section" py={8}>
-      <Stack gap={6}>
+      <Stack gap={6} align="left">
         <Heading size="md" fontFamily="Topoline" fontWeight="100">
           Digital Garden
         </Heading>
@@ -73,13 +68,17 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
                   <Text fontSize="xl" fontWeight="medium">
                     {post.title}
                   </Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {new Date(post.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </Text>
+                  <HStack fontSize="xs" color="gray.700" gap={2}>
+                    <Text>
+                      {new Date(post.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </Text>
+                    <Text>·</Text>
+                    <Text>{post.readTime} min read</Text>
+                  </HStack>
                   {post.categories?.length > 0 && (
                     <Stack direction="row" gap={2}>
                       {post.categories.map((category) => (
@@ -107,10 +106,9 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
           alignSelf="center"
           fontWeight="400"
         >
-          <NextLink href="/posts">View all posts</NextLink>
+          <NextLink href="/posts">Explore Garden</NextLink>
         </Button>
       </Stack>
-    </Box>
   );
 };
 

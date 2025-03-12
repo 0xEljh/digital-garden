@@ -5,23 +5,10 @@ export type PostMetaData = {
   slug: string;
   categories: string[];
   date: string;
-  relatedPosts: PostMetaData[];
+  relatedPosts: string[];
+  readTime: number; // estimated read time in minutes
 };
 
 export interface Post extends PostMetaData {
   content: MDXRemoteSerializeResult;
 }
-
-// export interface FrontmatterPost {
-//   [key: string]: any;
-//   title: string
-//   date: string
-//   excerpt: string
-//   tags: string[]
-// }
-
-// export interface Post {
-//   slug: string
-//   content: MDXRemoteSerializeResult
-//   data: FrontmatterPost
-// }

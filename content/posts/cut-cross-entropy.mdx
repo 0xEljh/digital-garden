@@ -1,47 +1,97 @@
 ---
-title: "At a glance: Cut Cross-Entropy"
+title: "Overview: Apple's smol Cut Cross-Entropy"
 date: "2025-02-17"
-excerpt: "A quick and dirty run down of apple's cut cross entropy implemetation"
+excerpt: "A quick and dirty run-down of apple's memory efficient cut cross entropy implementation"
 categories: ["deep learning", "math"]
+relatedPosts: ["cross-entropy"]
 ---
 
 
-**Source code**: [https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce.py](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce.py)
+**Source code**: [GitHub - Apple ML Cut Cross Entropy](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce.py)
 
-### Pre-text from Cross Entropy for negative log likelihood:
-  $$\mathcal{L} = - \log \frac{e^{z_{y_i}}}{\sum_{k} e^{z_k}} = - z_{y_i} + \log \sum_{k} e^{z_k}$$
-  i.e., it can be broken down into two terms: the negative dot product and log sum exponent.
-  The general goal of the whole "cut cross entropy" approach is to avoid direct computation of $z_k$ naively.
-  The naive approach would be to compute $C^T E = z_k$, which is potentially very large due to vocab sizes (the paper says this can account for about 40% of all GPU memory requirements)
-  If this looks foreign, check out [this derivation of cross-entropy loss first](/posts/cross-entropy)
+## Context
+Cross Entropy is a commonly used loss function in deep learning, particularly in training Large Language Models (LLMs). However, its computation can be memory-intensive, as vocab sizes in LLMs can be enormous. As noted in [Apple's CCE paper](https://arxiv.org/abs/2411.09009), cross-entropy loss can account for **40–90% of total GPU memory usage**.
+By reducing the memory footprint of cross-entropy, we can significantly decrease the hardware requirements for training LLMs!
 
-## Breakdown of forward
-  - Because this is operating on the loss layer, the inputs are going to be embeddings (mini-batch x dim), classifier/candidate/class embeddings (dim x vocab), a bias (vocab x 1), and other CCE params.
-  - Check if returning `logit_avg`: if we'll be doing a backward pass and filtering the vocab terms later, we compute this statistic to identify "outlier logits".
-  - The forward kernels:
-    - `cce_lse_forward_kernel`: kernel-based computation of $\log \sum_{k} e^{z_k}$ -> yields the log sum exponent (LSE) and `logit_avg`.
-    - `indexed_dot_forward_kernel`: $\text{neg\_dot} = - e \cdot c_{y_i}$ where $e$ is the embedding and $c_y$ is the correct class(es); the negative dot product between embeddings and the correct class logits.
-    - Adding these together yields the cross entropy loss or negative log likelihood (using the dot product makes this the more general form of cross entropy loss rather than negative log likelihood, since $c(y)$ can be the target probability distribution across multiple classes).
-  - Reduction: taking mean or sum of negative log likelihood.
-  - Save tensors for the backward step: `ctx.save_for_backward(e, c, bias, lse, params.targets, params.valids, logit_avg)`, i.e., the inputs, targets, and some stats.
+A quick recap of cross-entropy:
 
-## Breakdown of backward
-  - Retrieve the tensors that were saved for the backward step.
-  - Sort vocab terms based on `logit_avg` for potential filtering (the "cut").
-  - Obtain a scale factor for gradients based on the reduction method that was used to compute the final loss.
-  - `cce_backward_kernel` does the rest of the gradient computation and is where the magic happens:
-    1. $\frac{\partial \mathcal{L}}{\partial e}$ (Gradient w.r.t. query embeddings)
-    2. $\frac{\partial \mathcal{L}}{\partial c}$ (Gradient w.r.t. candidate embeddings)
-    3. $\frac{\partial \mathcal{L}}{\partial b}$ (Gradient w.r.t. bias, if present)
+$$\mathcal{L} = - \log \frac{e^{z_{y_i}}}{\sum_{k} e^{z_k}} = - z_{y_i} + \log \sum_{k} e^{z_k}$$
 
- ### Softmax gradient computation
-  $$
-  \frac{\partial \mathcal{L}}{\partial z_i} = p(y_i) - \mathbb{1}_{i=y}
-  $$
-  where:
-  $$p(y_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
+(If this looks unfamiliar, check out [this derivation of cross-entropy loss](/posts/cross-entropy).)
 
- ### Key operation changes in the calculation kernel
+The loss function can be broken into **two terms**:
+1. The **negative dot product**: $$- z_{y_i}$$
+2. The **log sum exponent (LSE)**: $$\log \sum_{k} e^{z_k}$$
+
+The general goal of the whole "cut cross entropy" approach is to avoid direct computation of the logits ($z_k = C^T E$) naively, as $C^T$, the linear classifier, projects the embeddings $E$ onto an extremely large vocabulary space, which means working with very large logits (which we still have to compute further terms of, like _softmax_).
+
+The cut cross entropy method partitions the logits into smaller, ranked, and filtered chunks. This “cutting” process can achieve memory savings of over **1000 times compared to traditional cross entropy implementations**.
+
+
+## Forward Pass Breakdown
+
+The inputs to the CCE loss layer include:
+- **Embeddings** $(\text{batch size} \times \text{dim})$
+- **Classifier embeddings** $(\text{dim} \times \text{vocab})$
+- **Bias** $(\text{vocab} \times 1)$
+- other CCE parameters
+
+### Key Steps
+
+1. **Compute `logit_avg` (optional)**  
+   - If filtering logits later, `logit_avg` is used to detect outlier logits.
+
+2. **Forward kernels:**
+   - **`cce_lse_forward_kernel`** a triton kernel that computes the **log-sum-exp (LSE)**:  
+     $\log \sum_{k} e^{z_k}$
+     Also outputs `logit_avg`.
+   - **`indexed_dot_forward_kernel`** a triton kernel calculates the **negative dot product**:  
+     $\text{neg\_dot} = - e \cdot c_{y_i}$
+     where $e$ is the embedding and $c_{y_i}$ is the correct class embeddings; the negative dot product between embeddings and the correct class logits.
+   - Summing these terms yields **cross-entropy loss** (negative log-likelihood). Using the dot product makes this the more general form of cross entropy loss rather than negative log likelihood, since $c(y)$ can be the target probability distribution across multiple classes.
+
+3. **Reduction (optional)**:  
+   - Loss is aggregated using mean or sum.
+
+4. **Saving tensors for the backward pass:**  
+   - `ctx.save_for_backward(e, c, bias, lse, params.targets, params.valids, logit_avg)`, i.e., the inputs, targets, and some stats.
+
+### The kernel magic
+
+Between the two kernels, I think the `cce_lse_forward_kernel` is definitely more interesting, so let's break down its [triton implementation](https://github.com/apple/ml-cross-entropy/blob/24fbe4b5dab9a6c250a014573613c1890190536c/cut_cross_entropy/cce_lse_forward.py#L12) further.
+
+```python
+accum = tl.zeros((BLOCK_B, BLOCK_V), dtype=tl.float32)
+for d in range(0, tl.cdiv(D, BLOCK_D)):
+    e = tl.load(e_ptrs, mask=e_mask, other=0.0)
+    c = tl.load(c_ptrs, mask=c_mask, other=0.0)
+    accum = tl.dot(e, c, accum, input_precision=DOT_PRECISION)
+    e_ptrs += BLOCK_D * stride_ed  # Move to next tile
+    c_ptrs += BLOCK_D * stride_cd
+```
+
+... (Work in progress)
+
+
+## Backward Pass Breakdown
+
+1. Retrieve the tensors that were saved for the backward step.
+2. Sort vocab terms based on `logit_avg` for potential filtering (the "cut").
+3. Obtain a scale factor for gradients based on the reduction method that was used to compute the final loss.
+4. **`cce_backward_kernel` computes the gradients** and is where the magic happens:
+  - $\frac{\partial \mathcal{L}}{\partial e}$ (Gradient w.r.t. query embeddings)
+  - $\frac{\partial \mathcal{L}}{\partial c}$ (Gradient w.r.t. candidate embeddings)
+  - $\frac{\partial \mathcal{L}}{\partial b}$ (Gradient w.r.t. bias, if present)
+
+### Softmax gradient computation
+
+$$
+\frac{\partial \mathcal{L}}{\partial z_i} = p(y_i) - \mathbb{1}_{i=y}
+$$
+where:
+$$p(y_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
+
+### Key operations in the backward kernel
   - **Filtering**, which also prevents underflows:
     $$p(y_i) = \max\left(\frac{e^{z_i}}{\sum_j e^{z_j}}, \text{filter\_eps}\right)$$
   - **Soft-capping**, to limit large logits:
