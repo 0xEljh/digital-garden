@@ -140,6 +140,7 @@ export const PortfolioPreview = ({
                         <IconComponent
                           highlightColor="yellow.400"
                           isHighlighted={false}
+                          scrambleAnimationDuration={2.5}
                         />
                       </Center>
                     </Box>

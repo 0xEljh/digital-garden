@@ -9,6 +9,7 @@ export interface AsciiIconProps extends BoxProps {
     fontSize?: string;
     highlightColor?: string;
     isHighlighted?: boolean;
+    scrambleAnimationDuration?: number;
 }
 
 // Helper function to calculate fontSize based on width

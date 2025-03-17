@@ -10,13 +10,41 @@ import {
 import { Link } from "@/components/ui/link";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo, useMemo } from "react";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
 
 interface PortfolioCardProps {
   entry: PortfolioEntry;
   isHighlighted?: boolean;
 }
+
+// Memoized icon component that only re-renders when props change
+const MemoizedIcon = memo(({ 
+  IconComponent, 
+  width, 
+  isHighlighted,
+  shouldRender 
+}: { 
+  IconComponent: React.ComponentType<any>, 
+  width: number,
+  isHighlighted: boolean,
+  shouldRender: boolean
+}) => {
+  // If we shouldn't render the component, return null or a placeholder
+  if (!shouldRender) {
+    return <Box width={width} height={width} />;
+  }
+
+  return (
+    <IconComponent
+      width={width}
+      highlightColor="yellow.400"
+      isHighlighted={isHighlighted}
+    />
+  );
+});
+
+MemoizedIcon.displayName = 'MemoizedIcon';
 
 export const PortfolioCard = ({
   entry,
@@ -27,9 +55,20 @@ export const PortfolioCard = ({
   const isMobile = useBreakpointValue({ base: true, md: false });
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.8 });
+  
+  // Track if component has ever been in view
+  const [hasBeenInView, setHasBeenInView] = useState(false);
+  
+  // Determine if we should render the ASCII icon
+  // Only render it the first time it comes into view
+  const shouldRenderIcon = useMemo(() => {
+    if (isInView && !hasBeenInView) {
+      setHasBeenInView(true);
+    }
+    return hasBeenInView;
+  }, [isInView, hasBeenInView]);
 
   useEffect(() => {
-    console.log("ishoveredmobile", isInView && isMobile, isHovered)
     if (isInView && isMobile) setIsHovered(true);
     if (!isInView && isMobile) setIsHovered(false);
   }, [isMobile, isInView]);
@@ -66,10 +105,11 @@ export const PortfolioCard = ({
           zIndex={0}
         >
           <Center>
-            <IconComponent
+            <MemoizedIcon
+              IconComponent={IconComponent}
               width={220}
-              highlightColor="yellow.400"
               isHighlighted={isHighlighted || isHovered}
+              shouldRender={shouldRenderIcon}
             />
           </Center>
         </Box>
