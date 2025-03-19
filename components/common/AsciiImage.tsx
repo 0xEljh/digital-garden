@@ -353,7 +353,7 @@ export const ScrambledAsciiImage = ({
         setIsAnimating(true);
         progressValue.set(0);
         
-        // @ts-ignore Type '1' has no properties in common with type 'ObjectTarget<MotionValue<number>>' 
+        // @ts-expect-error Type '1' has no properties in common with type 'ObjectTarget<MotionValue<number>>' 
         animationRef.current = animate(progressValue, 1, {
           duration: scrambleAnimationDuration,
           easing: smoothEasing,
@@ -508,7 +508,7 @@ export const DynamicFlickeringAsciiImage = dynamic(
 );
 
 export const DynamicAsciiImage = dynamic(
-  () => import("./AsciiImage").then((mod) => mod.ScrambledAsciiImage),
+  () => import("./AsciiImage").then((mod) => mod.AsciiImage),
   {
     ssr: false,
     loading: () => null,
