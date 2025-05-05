@@ -14,6 +14,8 @@ import type { Post, PostMetaData } from "@/types/posts";
 import { PostCardGrid } from "@/components/garden/postCardGrid";
 import { StyledProse } from "@/components/common/StyledProse";
 import "katex/dist/katex.min.css";
+import { useEffect } from "react";
+import posthog from 'posthog-js';
 
 interface PostPageProps {
   post: Post;
@@ -71,6 +73,14 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
 };
 
 export default function PostPage({ post, relatedPosts }: PostPageProps) {
+  useEffect(() => {
+    posthog.capture('view_post', {
+      post_title: post.title,
+      post_slug: post.slug,
+      categories: post.categories,
+    });
+  }, [post]);
+
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.lg">

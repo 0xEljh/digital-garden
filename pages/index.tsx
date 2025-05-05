@@ -21,7 +21,8 @@ import type { PortfolioEntry } from "@/types/portfolio";
 import type { Post } from "@/types/posts"; 
 import { SocialBar } from "@/components/common/SocialBar";
 import { PortfolioPreview } from "@/components/portfolio/PortfolioPreview";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
+import posthog from 'posthog-js';
 
 const HeroSection = () => (
   <Stack p={4} alignItems="center">
@@ -63,6 +64,14 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
                 _hover={linkHoverStyle}
                 transition="all 0.2s"
                 href={`/posts/${post.slug}`}
+                onClick={() => {
+                  posthog.capture('post_click', {
+                    post_title: post.title,
+                    post_slug: post.slug,
+                    categories: post.categories,
+                    location: '/'
+                  });
+                }}
               >
                 <Stack gap={2}>
                   <Text fontSize="xl" fontWeight="medium">
@@ -105,6 +114,11 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
           size="md"
           alignSelf="center"
           fontWeight="400"
+          onClick={() => {
+            posthog.capture('explore_garden_click', {
+              location: '/'
+            });
+          }}
         >
           <NextLink href="/posts">Explore Garden</NextLink>
         </Button>
@@ -132,6 +146,10 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 };
 
 export default function Home({ latestEntries, latestPosts }: HomeProps) {
+  useEffect(() => {
+    posthog.capture('view_homepage');
+  }, []);
+
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.xl">

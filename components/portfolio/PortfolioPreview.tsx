@@ -2,10 +2,12 @@ import { AnimatePresence, motion } from "motion/react";
 import { Box, Heading, Stack, Button, Flex, HStack, Text, Center } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from 'next/router';
 import { PortfolioCard } from "./PortfolioCard";
 import type { PortfolioEntry } from "@/types/portfolio";
 import { FaDownload } from "react-icons/fa6";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
+import posthog from 'posthog-js';
 
 const MotionBox = motion.create(Box);
 const MotionFlex = motion.create(Flex);
@@ -16,6 +18,7 @@ export const PortfolioPreview = ({
   entries: PortfolioEntry[];
 }) => {
   const [expandedPanel, setExpandedPanel] = useState<string | null>(entries.length > 0 ? entries[0].slug : null);
+  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
 
   // Auto-collapse panels when not hovered
@@ -31,6 +34,12 @@ export const PortfolioPreview = ({
   const handleMouseEnter = (slug: string) => {
     setExpandedPanel(slug);
     setIsHovered(true);
+    
+    posthog.capture('portfolio_preview_expand', {
+      portfolio_item: entries.find(entry => entry.slug === slug)?.title,
+      portfolio_slug: slug,
+      location: router.asPath
+    });
   };
 
   return (
@@ -164,7 +173,15 @@ export const PortfolioPreview = ({
                         borderRadius="lg"
                         transition="colors 0.3s"
                       >
-                        <Link href={`/portfolio/${entry.slug}`}>
+                        <Link href={`/portfolio/${entry.slug}`}
+                          onClick={() => {
+                            posthog.capture('view_project_click', {
+                              portfolio_item: entry.title,
+                              portfolio_slug: entry.slug,
+                              location: router.asPath
+                            });
+                          }}
+                        >
                           View Project
                         </Link>
                       </Button>
@@ -185,7 +202,13 @@ export const PortfolioPreview = ({
           alignSelf="center"
           asChild
         >
-          <Link href="/api/download-resume">
+          <Link href="/api/download-resume"
+            onClick={() => {
+              posthog.capture('download_resume_click', {
+                location: router.asPath
+              });
+            }}
+          >
             <FaDownload />
             My Resume
           </Link>
@@ -197,7 +220,13 @@ export const PortfolioPreview = ({
           size="md"
           alignSelf="center"
         >
-          <Link href="/portfolio">Full Portfolio</Link>
+          <Link href="/portfolio"
+            onClick={() => {
+              posthog.capture('full_portfolio_click', {
+                location: router.asPath
+              });
+            }}
+          >Full Portfolio</Link>
         </Button>
       </Stack>
     </Stack>

@@ -12,6 +12,7 @@ import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
 import { useEffect, useRef, useState, memo, useMemo } from "react";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
+import posthog from 'posthog-js';
 
 interface PortfolioCardProps {
   entry: PortfolioEntry;
@@ -84,8 +85,13 @@ export const PortfolioCard = ({
       _hover={{ textDecor: "none" }}
       className="group"
       href={"/portfolio/" + entry.slug}
-      // onMouseEnter={() => setIsHovered(true)}
-      // onMouseLeave={() => setIsHovered(false)}
+      onClick={() => {
+        posthog.capture('portfolio_card_click', {
+          portfolio_item: entry.title,
+          portfolio_slug: entry.slug,
+          categories: entry.categories
+        });
+      }}
     >
       <Box
         position="relative"

@@ -13,12 +13,18 @@ import NextLink from "next/link";
 import type { GetStaticProps } from "next";
 import type { Post } from "@/types/posts";
 import { loadPosts } from "@/lib/utils/posts";
+import { useEffect } from "react";
+import posthog from 'posthog-js';
 
 interface PageProps {
   posts: Post[];
 }
 
 export default function PostsIndexPage({ posts }: PageProps) {
+  useEffect(() => {
+    posthog.capture('view_blog_index');
+  }, []);
+
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.lg">
@@ -40,7 +46,18 @@ export default function PostsIndexPage({ posts }: PageProps) {
               >
                 <Stack gap={3}>
                   <Heading size="lg" fontFamily="Tickerbit">
-                    <LinkOverlay as={NextLink} href={`/posts/${post.slug}`}>
+                    <LinkOverlay 
+                      as={NextLink} 
+                      href={`/posts/${post.slug}`}
+                      onClick={() => {
+                        posthog.capture('post_click', {
+                          post_title: post.title,
+                          post_slug: post.slug,
+                          categories: post.categories,
+                          location: 'posts/'
+                        });
+                      }}
+                    >
                       {post.title}
                     </LinkOverlay>
                   </Heading>
