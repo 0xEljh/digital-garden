@@ -5,6 +5,8 @@ excerpt: "Derivation of cross-entropy loss from first principles: information th
 categories: ["deep learning", "math"]
 relatedPosts: ["cut-cross-entropy"]
 ---
+import { Callout } from "@/components/common/PostBlocks";
+
 
 ## Derivation
 Let's revisit first principles of entropy: "modelling surprise" in information theory:
@@ -16,9 +18,11 @@ Hence, we have the model
 	$$
 	where $$I(y)$$ is large when $$p(y)$$ is small for the information content of
 	an event, $$y$$
-- Small note on sign: since $$p(y) \in [0, 1]$$, the negative sign makes
+<Callout title="Small note on sign">
+	Since $$p(y) \in [0, 1]$$, the negative sign makes
 	$$I(y)$$ positive
-- To then derive Shannon's entropy from this, we compute the expected
+</Callout>
+To then derive Shannon's entropy from this, we compute the expected
 information from $$y$$, which represents the average information we would get
 from observing the random event $$y$$.
 $$ 

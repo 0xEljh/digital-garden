@@ -13,16 +13,16 @@ import {
 import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
-import { QuoteBlock } from "@/components/common/QuoteBlock";
-import { DynamicFlickeringAsciiImage } from "@/components/common/AsciiImage";
+import { QuoteBlock } from "@/components/common/quote-block";
+import { DynamicFlickeringAsciiImage } from "@/components/common/ascii-image";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { loadPosts } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
-import type { Post } from "@/types/posts"; 
-import { SocialBar } from "@/components/common/SocialBar";
-import { PortfolioPreview } from "@/components/portfolio/PortfolioPreview";
+import type { Post } from "@/types/posts";
+import { SocialBar } from "@/components/common/social-bar";
+import { PortfolioPreview } from "@/components/portfolio/portfolio-preview";
 import { ReactElement, useEffect } from "react";
-import posthog from 'posthog-js';
+import posthog from "posthog-js";
 
 const HeroSection = () => (
   <Stack p={4} alignItems="center">
@@ -39,90 +39,90 @@ const HeroSection = () => (
       fontFamily="Topoline"
       fontWeight="100"
     >
-      The digital garden of a full-stack machine learning engineer, trying to find
-      his way in the startup world.
+      The digital garden of a full-stack machine learning engineer, trying to
+      find his way in the startup world.
     </Text>
     <SocialBar />
   </Stack>
 );
 
 const DigitalGarden = ({ posts }: { posts: Post[] }) => {
-  const linkHoverStyle = useBreakpointValue({
-    base: { textDecoration: "none" },
-    md: { textDecoration: "none", transform: "scale(1.02) translateX(-20px)" },
-  });
-
   return (
-      <Stack gap={6} align="left">
-        <Heading size="md" fontFamily="Topoline" fontWeight="100">
-          Digital Garden
-        </Heading>
-        <Stack gap={8}>
-          {posts.map((post) => (
-            <Box key={post.slug}>
-              <Link
-                _hover={linkHoverStyle}
-                transition="all 0.2s"
-                href={`/posts/${post.slug}`}
-                onClick={() => {
-                  posthog.capture('post_click', {
-                    post_title: post.title,
-                    post_slug: post.slug,
-                    categories: post.categories,
-                    location: '/'
-                  });
-                }}
-              >
-                <Stack gap={2}>
-                  <Text fontSize="xl" fontWeight="medium">
-                    {post.title}
+    <Stack gap={6} align="left">
+      <Heading size="md" fontFamily="Topoline" fontWeight="100">
+        Digital Garden
+      </Heading>
+      <Stack gap={8}>
+        {posts.map((post) => (
+          <Box
+            key={post.slug}
+            asChild
+            _hover={{
+              transform: "scale(1.02) translateX(-20px)",
+            }}
+            transition="all 0.2s"
+          >
+            <Link
+              href={`/posts/${post.slug}`}
+              onClick={() => {
+                posthog.capture("post_click", {
+                  post_title: post.title,
+                  post_slug: post.slug,
+                  categories: post.categories,
+                  location: "/",
+                });
+              }}
+            >
+              <Stack gap={2}>
+                <Text fontSize="xl" fontWeight="medium">
+                  {post.title}
+                </Text>
+                <HStack fontSize="xs" color="gray.700" gap={2}>
+                  <Text>
+                    {new Date(post.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
                   </Text>
-                  <HStack fontSize="xs" color="gray.700" gap={2}>
-                    <Text>
-                      {new Date(post.date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </Text>
-                    <Text>·</Text>
-                    <Text>{post.readTime} min read</Text>
-                  </HStack>
-                  {post.categories?.length > 0 && (
-                    <Stack direction="row" gap={2}>
-                      {post.categories.map((category) => (
-                        <Tag.Root
-                          key={category}
-                          variant="subtle"
-                          colorScheme="teal"
-                          color="cyan.600"
-                        >
-                          {category}
-                        </Tag.Root>
-                      ))}
-                    </Stack>
-                  )}
-                </Stack>
-              </Link>
-            </Box>
-          ))}
-        </Stack>
-        <Button
-          asChild
-          colorScheme="teal"
-          variant="outline"
-          size="md"
-          alignSelf="center"
-          fontWeight="400"
-          onClick={() => {
-            posthog.capture('explore_garden_click', {
-              location: '/'
-            });
-          }}
-        >
-          <NextLink href="/posts">Explore Garden</NextLink>
-        </Button>
+                  <Text>·</Text>
+                  <Text>{post.readTime} min read</Text>
+                </HStack>
+                {post.categories?.length > 0 && (
+                  <Stack direction="row" gap={2}>
+                    {post.categories.map((category) => (
+                      <Tag.Root
+                        key={category}
+                        variant="subtle"
+                        colorScheme="teal"
+                        color="cyan.600"
+                      >
+                        {category}
+                      </Tag.Root>
+                    ))}
+                  </Stack>
+                )}
+              </Stack>
+            </Link>
+          </Box>
+        ))}
       </Stack>
+      <Button
+        asChild
+        colorScheme="teal"
+        variant="outline"
+        size="md"
+        alignSelf="center"
+        fontWeight="400"
+        onClick={() => {
+          posthog.capture("explore_garden_click", {
+            location: "/",
+          });
+        }}
+      >
+        <NextLink href="/posts">Explore Garden</NextLink>
+      </Button>
+    </Stack>
   );
 };
 
@@ -147,7 +147,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 
 export default function Home({ latestEntries, latestPosts }: HomeProps) {
   useEffect(() => {
-    posthog.capture('view_homepage');
+    posthog.capture("view_homepage");
   }, []);
 
   return (

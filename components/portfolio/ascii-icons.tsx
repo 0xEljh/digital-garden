@@ -1,4 +1,4 @@
-import { DynamicAsciiImage, DynamicScrambledAsciiImage } from "@/components/common/AsciiImage"
+import { DynamicAsciiImage, DynamicScrambledAsciiImage } from "@/components/common/ascii-image"
 import { BoxProps } from "@chakra-ui/react"
 import { useMemo } from "react"
 

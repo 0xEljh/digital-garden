@@ -500,7 +500,7 @@ const ScrambledRow = ({
 
 export const DynamicFlickeringAsciiImage = dynamic(
   () =>
-    import("./AsciiImage").then((mod) => mod.FlickeringAsciiImage),
+    import("./ascii-image").then((mod) => mod.FlickeringAsciiImage),
   {
     ssr: false, // Disable server-side rendering
     loading: () => null, // Optional loading component
@@ -508,7 +508,7 @@ export const DynamicFlickeringAsciiImage = dynamic(
 );
 
 export const DynamicAsciiImage = dynamic(
-  () => import("./AsciiImage").then((mod) => mod.AsciiImage),
+  () => import("./ascii-image").then((mod) => mod.AsciiImage),
   {
     ssr: false,
     loading: () => null,
@@ -516,7 +516,7 @@ export const DynamicAsciiImage = dynamic(
 );
 
 export const DynamicScrambledAsciiImage = dynamic(
-  () => import("./AsciiImage").then((mod) => mod.ScrambledAsciiImage),
+  () => import("./ascii-image").then((mod) => mod.ScrambledAsciiImage),
   {
     ssr: false,
     loading: () => null,

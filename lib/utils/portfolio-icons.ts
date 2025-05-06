@@ -16,7 +16,7 @@ import {
   AirdropIcon,
   BacksimIcon
   
-} from "@/components/portfolio/AsciiIcons";
+} from "@/components/portfolio/ascii-icons";
 
 const iconComponents = {
   CryptoChartIcon,

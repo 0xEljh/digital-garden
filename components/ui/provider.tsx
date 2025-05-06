@@ -36,7 +36,7 @@ const system = createSystem(defaultConfig, {
 
 export const Provider = (props: PropsWithChildren) => {
   useEffect(() => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
       api_host: '/ingest',
       ui_host: 'https://us.posthog.com',
       loaded: (posthog) => {

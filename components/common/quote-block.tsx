@@ -1,7 +1,7 @@
 import { ImQuotesLeft, ImQuotesRight } from "react-icons/im";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { TransitIn } from "@/components/animations/TransitIn";
+import { TransitIn } from "@/components/animations/transit-in";
 
 interface QuoteBlockProps {
   colorScheme: string;

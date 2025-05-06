@@ -3,7 +3,7 @@ import { Box, Heading, Stack, Button, Flex, HStack, Text, Center } from "@chakra
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from 'next/router';
-import { PortfolioCard } from "./PortfolioCard";
+import { PortfolioCard } from "./portfolio-card";
 import type { PortfolioEntry } from "@/types/portfolio";
 import { FaDownload } from "react-icons/fa6";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";

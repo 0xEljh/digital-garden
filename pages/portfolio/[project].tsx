@@ -23,7 +23,7 @@ import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { PortfolioEntry } from "@/types/portfolio";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
 import { VscBrowser, VscGithub } from "react-icons/vsc";
-import { StyledProse } from "@/components/common/StyledProse";
+import { StyledProse } from "@/components/common/styled-prose";
 
 interface ProjectPageProps {
   entry: PortfolioEntry;

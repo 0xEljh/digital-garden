@@ -11,8 +11,8 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
 import { loadPosts } from "@/lib/utils/posts";
 import type { Post, PostMetaData } from "@/types/posts";
-import { PostCardGrid } from "@/components/garden/postCardGrid";
-import { StyledProse } from "@/components/common/StyledProse";
+import { PostCardGrid } from "@/components/garden/post-card-grid";
+import { StyledProse } from "@/components/common/styled-prose";
 import "katex/dist/katex.min.css";
 import { useEffect } from "react";
 import posthog from 'posthog-js';
@@ -83,7 +83,7 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
 
   return (
     <Box py={{ base: 8, md: 12 }}>
-      <Container maxW="container.lg">
+      <Container maxW="container.lg" px={{ base: 4, md: 12, lg: 24 }}>
         <Stack gap={8}>
           <Stack gap={4}>
             <Heading size="2xl" fontFamily="Topoline">
