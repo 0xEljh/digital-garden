@@ -1,132 +1,238 @@
 ---
 title: "Derivation: Cross-Entropy"
-date: "2025-02-17"
+date: "2025-05-13"
 excerpt: "Derivation of cross-entropy loss from first principles: information theory, entropy, and modelling probability distributions"
 categories: ["deep learning", "math"]
 relatedPosts: ["cut-cross-entropy"]
 ---
+
 import { Callout } from "@/components/common/PostBlocks";
 
+Cross-entropy is is widely used in deep learning. It is what neural networks minimise when learning to model an underlying data distribution, especially in classification tasks like language modelling, where the models predict the probability of a token.
+Understanding this loss and deriving it will require us to walk through a few ideas from information theory: entropy, divergence, and modelling probability distributions.
 
-## Derivation
-Let's revisit first principles of entropy: "modelling surprise" in information theory:
-An outcome is "more surprising" when it has a lower probability of occurring.
-The information conveyed by a low probability event is higher!
-Hence, we have the model
-	$$ 
-		I(y) = -\log p(y) 
-	$$
-	where $$I(y)$$ is large when $$p(y)$$ is small for the information content of
-	an event, $$y$$
-<Callout title="Small note on sign">
-	Since $$p(y) \in [0, 1]$$, the negative sign makes
-	$$I(y)$$ positive
+This article lays out that path, starting from first principles. It lays out the groundwork for understanding the next article on [Apple's recent optimization cross entropy](https://arxiv.org/abs/2411.09009).
+If you are already familiar with cross-entropy loss, you can skip this derivation and jump straight to [article breaking down how Apple did it](/posts/cut-cross-entropy).
+
+## Derivation: Entropy
+
+In information theory, **entropy** is a measurement of "uncertainty"—or perhaps more intuitively, _surprise_.
+We can derive Shannon's entropy by thinking of how we might "model surprise" as a function.
+
+<Callout title="Modelling Surprise" type="info">
+  The smaller the probability of an event, the more information it conveys when
+  it occurs.
 </Callout>
-To then derive Shannon's entropy from this, we compute the expected
-information from $$y$$, which represents the average information we would get
-from observing the random event $$y$$.
-$$ 
+
+A more intuitive way of understanding this is that an outcome is "more surprising" when it was "less likely" to occur. It wasn't expected.
+Put another way, the information conveyed by an event we didn't expect is higher!
+We can put this in math terms:
+
+$$
+I(y) = -\log p(y)
+$$
+
+where $$I(y)$$, the information conveyed by an event $$y$$, is large when $$p(y)$$ is small.
+
+<Callout title="Small note on sign" type="auxillary">
+  Since $$p(y) \in [0, 1]$$, the negative sign ensures that $$I(y)$$ is positive
+</Callout>
+
+From here, entropy emerges as the expected information content over a distribution:
+
+<Callout title="Defining Entropy" type="info">
+  Entropy is the "average surprise" across all possible outcomes.
+</Callout>
+
+So deriving Shannon's entropy ($$H(Y)$$) involves computing the expected
+information from $$y$$. Each event, carries $$I(y)$$ information, and the
+probability of each event is $$p(y)$$. So by weighing each event by it's
+probability, we get the expected information content:
+
+$$
 	H(Y) = \mathbb{E}[I(Y)] = \sum_{y} p(y) I(y)
 $$
+
 $$
 	H(Y) = - \sum_{y} p(y) \log p(y)
 $$
-- With Shannon's entropy out of the way, we now explore cross-entropy, which
-is best understood as the a measure of alignment between two different
-probability distributions.
-- Let's use the Kullback-Leibler (KL) divergence to understand
-cross-entropy. The KL-divergence is the measure of "extra information"
-between the distributions $$p(y)$$ and $$q(y)$$
-- KL-divergence can be framed as a problem: suppose you need to use $$q(y)$$
-as a base to model $$p(y)$$, how much extra information would you need?
+
+## Derivation: Cross-Entropy
+
+In machine learning and data science, we are often trying to approximate a true distribution with a model.
+Hence, the problem now becomes: how well does our model's distrbution approximate the true distribution?
+
+Cross-entropy is hence best understood as a measure of alignment between two different probability distributions. One produced by the trained model, and one of the data it is trying to learn from.
+
+To answer our new question, we use **Kullback-Leibler (KL) divergence**, which quantifies the "extra information" between two distributions.
+Another way of thinking about it is the "information cost" of using one distribution to model another (how much extra information you would need to throw in to fill in the gap).
+
+<Callout title="KL Divergence" type="auxillary">
+  How inefficient is it to encode data from $$p$$ using a code optimized for
+  $$q$$?
+</Callout>
+
+KL-divergence can hence be framed as a problem: suppose you need to use $$q(y)$$ as a base to model $$p(y)$$, how much extra information would you need?
+Intuitively, if $$q(y)$$ is a poor appproximation of $$p(y)$$, then a lot of "extra explaining" would be needed the KL divergence would be high.
+Likewise, if $$q(y)$$ is a good appproximation of $$p(y)$$, then "no modifications are required", and the KL divergence would be low.
+
+<br />
+
+Mathematically:
+
 $$
 	D_{KL}(p \parallel q) = \sum_{y} p(y) \log \frac{p(y)}{q(y)}
 $$
-Put another way, this is actually:
+
+Expressed in terms of expectations ($$p(y)$$ is the true distribution, we're using it's probability distribution
+to compute the expectation):
+
 $$
-	\mathbb{E}[\log(p) - \log(q)]
+	D_{KL}(p \parallel q) = \mathbb{E}[\log(p) - \log(q)]
 $$
-And since $$p(y)$$ is the true distribution, we're using it's probability
-distribution to compute the expectation.
-Now let's go back to cross entropy, which is very similar to
-KL-divergence. Cross entropy is:
+
+<br />
+
+KL-divergence hence tells us how far apart two distributions are. It is the expected difference in information between the two distributions. To anchor this back on cross-entropy, we can express KL-divergence in terms of entropy:
+
+$$
+	D_{KL}(p \parallel q) = H(p, q) - H(p)
+$$
+
+Where $$H(p, q)$$ is the cross-entropy, and $$H(p)$$ is the true entropy.
+
 $$
 	H(p, q) = H(p) + D_{KL}(p \parallel q)
 $$
+
 Thus, cross-entropy consists of two parts:
-1. **The true entropy** $$H(p)$$, which is the best we can achieve.
+
+1. **The true entropy** $$H(p)$$, which is the best that can be achieved (i.e. $$p = q$$)
 2. **The KL divergence**, which measures how much extra cost is incurred
-	by using $$q$$ instead of $$p$$.
+   by using $$q$$ instead of $$p$$.
+
+Put another way, **cross-entropy** equals the true entropy plus the divergence.
+
+<Callout title="Summary" type="info">
+  Cross-entropy is the total cost of using $$q$$ to represent $$p$$.
+  <br />
+  KL-divergence is the _excess_ cost of it.
+</Callout>
+
+<br />
+
 To get it's final form, we expand the KL divergence term:
+
 $$
-	H(p, q) = H(p) + \sum_{y} p(y) \log p(y) - \sum_{y} p(y) \log q(y)
-	$$
+H(p, q) = H(p) + \sum_{y} p(y) \log p(y) - \sum_{y} p(y) \log q(y)
+$$
+
 Notice that
-	$$
-	H(p) = -\sum_{y} p(y) \log p(y)
-	$$
+
+$$
+H(p) = -\sum_{y} p(y) \log p(y)
+$$
+
 Hence we are left with just the final term:
-	$$
-	H(p, q) =- \sum_{y} p(y) \log q(y)
-	$$
-Negative log likelihood:
-- In the case of classification, where there is only one correct class/label
-(one hot labels), then $$p(y) = 1 \iff y_i = y_j$$
-- Hence, we end up with:
+
 $$
-H(p, q) =- \sum_{y} \log q(y)
+H(p, q) =- \sum_{y} p(y) \log q(y)
 $$
+
+## Classification and the One-Hot Case
+
+In the case of classification where we deal with one-hot labels, the true class has probability 1 and all others are 0. This simplifies the cross-entropy expression further.
+
+Only the log-probability of the correct class matters:
+
+$$
+  H(p, q) =- \log q(y_{true})
+$$
+
 as all other terms of $$p(y)$$ are either 1 or 0 and hence disappear.
+This is the negative log-likelihood: the log loss associated with the correct label. It's minimal when the model assigns high probability to the right answer.
 This looks familiar, but not quite the form we encounter in deep learning.
-- In deep learning, the we get an output of logits from the neural network
-(shape: classes x batch size). The logits are mapped with a SoftMax function
-to become a valid probability distribution.
-- SoftMax:
+
+## Using logits in deep learning
+
+Neural networks output logits—raw, unnormalized scores for each class. To interpret these as probabilities, we apply the softmax function:
+
 $$
-q(y_j \mid x) = \frac{e^{z_j}}{\sum_{k} e^{z_k}} 
+q(y_j \mid x) = \frac{e^{z_j}}{\sum_{k} e^{z_k}}
 $$
-Where $$z_j$$ is the **raw-pre-activation value** for class $$j$$ (notice
-the shape of the logit)
-- Substituting the values into the negative log likelihood version of this
-loss function for simplicity:
+
+Where $$z_j$$ is the **raw-pre-activation value** for class $$j$$.
+
+If we plug this into the negative log-likelihood, we get:
+
 $$
 \mathcal{L} = - \log \frac{e^{z_{y_i}}}{\sum_{k} e^{z_k}} = - z_{y_i} +
 \log \sum_{k} e^{z_k}
 $$
 
+This is what’s minimized during training: penalizing low scores for the true class, and encouraging the model to assign it higher probability.
+
+<br />
+
 ---
-<br/>
 
-## Calculating gradients:
+<br />
 
-1. Gradient w.r.t. $$e$$ (Query Embeddings)
+## Calculating gradients
+
+During model training, we compute gradients of the loss with respect to its input parameters—specifically, embeddings and biases.
+This section is put in more math terms, and is only necessary for understanding the mechanics of the backpropagation step.
+
+### Gradient w.r.t. $$e$$ (Query Embeddings)
+
 The loss function is:
+
 $$
 \mathcal{L} = - e \cdot c_{y_i} + \log \sum_{j} e^{z_j}
 $$
+
 Differentiating w.r.t. $$c$$ (Candidate Embeddings):
+
 $$
 \frac{\partial \mathcal{L}}{\partial e} = - c_{y_i} + \sum_{j}
 \frac{e^{z_j}}{\sum_k e^{z_k}} c_j
 $$
+
 This means:
+
 - We subtract the correct class embedding $$c_{y_i}$$.
 - We add a weighted sum of all class embeddings $$c_j$$, weighted by the
-	softmax probabilities.
+  softmax probabilities.
+
+<br />
+
 Thus, computing $$\frac{\partial \mathcal{L}}{\partial e}$$ involves:
-- Selecting **correct class embedding**.
-- Computing **softmax over all logits**.
-- Computing the **weighted sum** of embeddings.
-2. Gradient w.r.t. $$c$$ (Candidate Embeddings)
+
+- Selecting the correct class embedding.
+- Computing softmax over all logits.
+- Computing the weighted sum of embeddings.
+
+### Gradient w.r.t. $$c$$ (Candidate Embeddings)
+
 By symmetry:
+
 $$
 \frac{\partial \mathcal{L}}{\partial c_{y_i}} = - e + \sum_{j} p(y_j) e
 $$
+
 Again:
+
 - We subtract the query embedding $$e$$ for the correct class.
 - We add a softmax-weighted sum of embeddings.
-3. Gradient w.r.t. $$b$$ (Bias)
+
+### Gradient w.r.t. $$b$$ (Bias)
+
 $$
 \frac{\partial \mathcal{L}}{\partial b_j} = p(y_j) - \mathbb{1}_{j=y_i}
 $$
 
+---
+
+If you've been following along, you'll find that cross-entropy emerges quite naturally from first principles: from measuring information content, to comparing distributions, to finally minimizing the loss in a prediction model.
+
+The loss function's structure reflects the task: to assign high scores to a correct label(s), and to do so with a distrbution that resembles the data we are asking it to model.

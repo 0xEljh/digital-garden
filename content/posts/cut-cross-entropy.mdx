@@ -1,98 +1,166 @@
 ---
-title: "Overview: Apple's smol Cut Cross-Entropy"
-date: "2025-02-17"
-excerpt: "A quick and dirty run-down of apple's memory efficient cut cross entropy implementation"
-categories: ["deep learning", "math"]
+title: "Saving VRAM with Cut Cross Entropy by Apple"
+date: "2025-05-16"
+excerpt: "A quick and dirty run-down of apple's memory-efficient cut cross entropy implementation"
+categories: ["deep learning", "math", "triton"]
 relatedPosts: ["cross-entropy"]
 ---
 
+import { Callout } from "@/components/common/PostBlocks";
 
-**Source code**: [GitHub - Apple ML Cut Cross Entropy](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce.py)
+This is the source code that's referenced throughout this article. It might be helpful to have this open in another tab: [GitHub - Apple ML Cut Cross Entropy](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce.py)
 
-## Context
-Cross Entropy is a commonly used loss function in deep learning, particularly in training Large Language Models (LLMs). However, its computation can be memory-intensive, as vocab sizes in LLMs can be enormous. As noted in [Apple's CCE paper](https://arxiv.org/abs/2411.09009), cross-entropy loss can account for **40–90% of total GPU memory usage**.
+## Memory-Efficient Cross-Entropy is a Game Changer
+
+Cross Entropy is a ubiquitous loss function in deep learning, including the training of LLMs (next token prediction is a classification task). However, computing the cross entropy loss can be memory-intensive, as vocab sizes in LLMs can be enormous. As noted in [Apple's CCE paper](https://arxiv.org/abs/2411.09009), cross-entropy loss can account for **40–90% of total GPU memory usage**.
 By reducing the memory footprint of cross-entropy, we can significantly decrease the hardware requirements for training LLMs!
 
-A quick recap of cross-entropy:
+## Quick Recap: Cross Entropy
 
-$$\mathcal{L} = - \log \frac{e^{z_{y_i}}}{\sum_{k} e^{z_k}} = - z_{y_i} + \log \sum_{k} e^{z_k}$$
+If you are unfamiliar with the math, check out [derivation of cross-entropy loss](/posts/cross-entropy).
+But here is the structure in brief:
 
-(If this looks unfamiliar, check out [this derivation of cross-entropy loss](/posts/cross-entropy).)
+$$
+\mathcal{L} = - \log \frac{e^{z_{y_i}}}{\sum_{k} e^{z_k}} = - z_{y_i} + \log \sum_{k} e^{z_k}
+$$
 
-The loss function can be broken into **two terms**:
+Cross-entropy can be broken into **two terms**:
+
 1. The **negative dot product**: $$- z_{y_i}$$
 2. The **log sum exponent (LSE)**: $$\log \sum_{k} e^{z_k}$$
 
-The general goal of the whole "cut cross entropy" approach is to avoid direct computation of the logits ($z_k = C^T E$) naively, as $C^T$, the linear classifier, projects the embeddings $E$ onto an extremely large vocabulary space, which means working with very large logits (which we still have to compute further terms of, like _softmax_).
+The general goal of the whole "cut cross entropy" approach is to avoid direct computation of the logits ($z_k = C^T E$) naively, as $C^T$, the linear classifier, projects the embeddings $E$ onto an extremely large vocabulary space, which means working with very large logits (which we still have to compute further terms of, like `softmax`).
 
-The cut cross entropy method partitions the logits into smaller, ranked, and filtered chunks. This “cutting” process can achieve memory savings of over **1000 times compared to traditional cross entropy implementations**.
+## Overview of Cut Cross Entropy
 
+Cut Cross Entropy saves memory by doing two things:
 
-## Forward Pass Breakdown
+1. Chunking the logits into smaller, ranked chunks (which already reduces peak memory usage)
+2. Filtering away entire chunks of logits that are near zero (this is the "cutting" process which which saves even more memory and computation)
 
-The inputs to the CCE loss layer include:
-- **Embeddings** $(\text{batch size} \times \text{dim})$
-- **Classifier embeddings** $(\text{dim} \times \text{vocab})$
-- **Bias** $(\text{vocab} \times 1)$
-- other CCE parameters
+<Callout title="" type="auxillary">
+  The core innovation is not a new loss function, but a restructured
+  computation.
+</Callout>
 
-### Key Steps
+The “cutting” process can achieve memory savings of over **1000 times compared to traditional cross entropy implementations**.
 
-1. **Compute `logit_avg` (optional)**  
-   - If filtering logits later, `logit_avg` is used to detect outlier logits.
+---
 
-2. **Forward kernels:**
-   - **`cce_lse_forward_kernel`** a triton kernel that computes the **log-sum-exp (LSE)**:  
-     $\log \sum_{k} e^{z_k}$
-     Also outputs `logit_avg`.
-   - **`indexed_dot_forward_kernel`** a triton kernel calculates the **negative dot product**:  
-     $\text{neg\_dot} = - e \cdot c_{y_i}$
-     where $e$ is the embedding and $c_{y_i}$ is the correct class embeddings; the negative dot product between embeddings and the correct class logits.
-   - Summing these terms yields **cross-entropy loss** (negative log-likelihood). Using the dot product makes this the more general form of cross entropy loss rather than negative log likelihood, since $c(y)$ can be the target probability distribution across multiple classes.
+## Breakdown: Forward Pass
 
-3. **Reduction (optional)**:  
-   - Loss is aggregated using mean or sum.
+Inputs:
 
-4. **Saving tensors for the backward pass:**  
-   - `ctx.save_for_backward(e, c, bias, lse, params.targets, params.valids, logit_avg)`, i.e., the inputs, targets, and some stats.
+- Query Embeddings $(\text{batch size} \times \text{dim})$
+- Classifier embeddings $(\text{dim} \times \text{vocab})$
+- Bias vector $(\text{vocab} \times 1)$
+- Filtering parameters
 
-### The kernel magic
+Notably, the logits have not been computed yet.
 
-Between the two kernels, I think the `cce_lse_forward_kernel` is definitely more interesting, so let's break down its [triton implementation](https://github.com/apple/ml-cross-entropy/blob/24fbe4b5dab9a6c250a014573613c1890190536c/cut_cross_entropy/cce_lse_forward.py#L12) further.
+<br />
+
+Key operations:
+
+1. Compute logit statistics
+   - Compute the mean values across logits (`logit_avg`). This is later used for filtering.
+2. Main kernels:
+   - `cce_lse_forward_kernel`: A triton kernel that computes the log-sum-exp over selected logits, returning both the LSE (and `logit_avg`).
+   - `indexed_dot_forward_kernel`: A triton kernel that computes the negative dot product with the correct class embedding.
+3. Aggregate loss
+   - The two terms are summed to compute the final loss.
+   - Supports standard reductions (mean, sum).
+4. Save tensors for backward pass
+   - Includes embeddings, targets, logits, and stats necessary for gradient computation.
+
+### Forward Kernel
+
+Between the kernels, the `cce_lse_forward_kernel` is more interesting, so [lets down its triton implementation](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce_lse_forward.py#L138).
+
+<br />
+
+Skipping over the offset and pointer intitialisation, we hit the first math operation:
 
 ```python
 accum = tl.zeros((BLOCK_B, BLOCK_V), dtype=tl.float32)
 for d in range(0, tl.cdiv(D, BLOCK_D)):
-    e = tl.load(e_ptrs, mask=e_mask, other=0.0)
-    c = tl.load(c_ptrs, mask=c_mask, other=0.0)
-    accum = tl.dot(e, c, accum, input_precision=DOT_PRECISION)
-    e_ptrs += BLOCK_D * stride_ed  # Move to next tile
-    c_ptrs += BLOCK_D * stride_cd
+   e_mask = offs_b[:, None] < BMax
+   if not EVEN_D:
+      e_mask = e_mask & (offs_d[None, :] < (D - d * BLOCK_D))
+
+   e = tl.load(e_ptrs, mask=e_mask, other=0.0)
+
+   c_mask = offs_v[None, :] < V
+   if not EVEN_D:
+      c_mask = c_mask & (offs_d[:, None] < (D - d * BLOCK_D))
+
+   c = tl.load(c_ptrs, mask=c_mask, other=0.0)
+
+   accum = tl.dot(e, c, accum, input_precision=DOT_PRECISION)
+
+   e_ptrs += BLOCK_D * stride_ed
+   c_ptrs += BLOCK_D * stride_cd
 ```
 
-... (Work in progress)
+Here we are computing `accum`: the dot product of the query and class embeddings (represented generally by `e` and `c`). This is done in chunks of `BLOCK_D`.
+By chunking this computation of $$C^T E$$ and doing it accumulatively, we avoid loading the entire intermediate sum into memory. That's a footprint saving of $$O(D)$$.
 
+> Our kernel retrieves the value $$x_i$$, the $$x_i$$-th column from C, and the $$i$$-th column from E, and stores them
+> in on-chip shared memory (SRAM). It then performs a dot product between $$C_{x_i}$$ and $$E_{i}$$ and writes
+> the result into global memory. The kernel uses only on-chip SRAM throughout and does not allocate
+> any GPU memory. For efficiency, we perform all operations blockwise to make the best use of GPU
+> cache structure
 
-## Backward Pass Breakdown
+After that, comes computation of the log sum exponent (LSE).
 
-1. Retrieve the tensors that were saved for the backward step.
-2. Sort vocab terms based on `logit_avg` for potential filtering (the "cut").
-3. Obtain a scale factor for gradients based on the reduction method that was used to compute the final loss.
-4. **`cce_backward_kernel` computes the gradients** and is where the magic happens:
-  - $\frac{\partial \mathcal{L}}{\partial e}$ (Gradient w.r.t. query embeddings)
-  - $\frac{\partial \mathcal{L}}{\partial c}$ (Gradient w.r.t. candidate embeddings)
-  - $\frac{\partial \mathcal{L}}{\partial b}$ (Gradient w.r.t. bias, if present)
+```python
+this_mx = tl.max(logits, axis=1)
+e = tl.exp(logits - this_mx[:, None])
+this_lse = this_mx + tl.log(tl.sum(e, axis=1))
 
-### Softmax gradient computation
+# ...
 
-$$
-\frac{\partial \mathcal{L}}{\partial z_i} = p(y_i) - \mathbb{1}_{i=y}
-$$
-where:
-$$p(y_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
+this_locks = Locks + (pid_b // tl.cdiv(B, BLOCK_B * num_locks))
+while tl.atomic_cas(this_locks, 0, 1) == 1:
+   pass
 
-### Key operations in the backward kernel
-  - **Filtering**, which also prevents underflows:
-    $$p(y_i) = \max\left(\frac{e^{z_i}}{\sum_j e^{z_j}}, \text{filter\_eps}\right)$$
-  - **Soft-capping**, to limit large logits:
-    $$e^{z_i} \to e^{\min(z_i, \text{softcap})}$$
+lse = tl.load(lse_ptrs, mask=o_mask, other=0.0, eviction_policy="evict_last")
+lse = tl_logaddexp(lse, this_lse)
+tl.store(lse_ptrs, lse, mask=o_mask, eviction_policy="evict_last")
+
+tl.debug_barrier()
+tl.atomic_xchg(this_locks, 0)
+```
+
+There are 3 main steps here:
+
+1. Compute the "partial LSE": the local LSE for each batch, using the `(BLOCK_B, BLOCK_V)` chunk of logits
+2. Use a spin lock to atomically update the global LSE
+   - `tl.atomic_cas` is used to implement a spin lock.
+   - The lock index, as defined by `(pid_b // tl.cdiv(B, BLOCK_B * num_locks))`, causes multiple `pid_b` blocks to share the same lock. Not shown in all this code is that `pid_v` blocks that correspond to the same `pid_b` (same block, but different vocabulary slices) will share the same `pid_b` lock.
+   - Yeah, this might require a writing out or starring at the code to catch.
+   - tl;dr: we are only allowing one block/"vocabulary chunk" to update the global LSE at a time.
+3. Store the global LSE back to global memory
+   - `lse = tl.load(lse_ptrs...)` loads the current global value of `LSE`. This is intialized as `-inf` (because $$e^{-\infty} = 0$$).
+   - `lse = tl_logaddexp(lse, this_lse)` is the core aggregation step. By repeatedly computing $$\log(\exp(\text{lse}) + \exp(\text{this\_lse}))$$, different blocks/vocabulary chunks will combine their partial LSEs into a global LSE.
+   - `tl.store(lse_ptrs, lse, mask=o_mask, eviction_policy="evict_last")` stores the updated global LSE back to global memory.
+   - `tl.atomic_xchg(this_locks, 0)` releases the lock, allowing other threads to update the global LSE.
+
+## Breakdown: Backward Pass
+
+The backward pass mirrors the forward structure, but with added complexity for gradient scaling and filtering.
+
+<br />
+
+Key operations:
+
+1. Retrieve saved tensors: embeddings, targets, valid entries, logit averages.
+2. Filter logits using `logit_avg`—this is where the “cut” logic applies.
+3. Compute scaling based on reduction method (mean or sum).
+4. Use `cce_backward_kernel` to compute gradients:
+
+   - With respect to query embeddings (`∂L/∂e`)
+   - With respect to class embeddings (`∂L/∂c`)
+   - With respect to bias, if present (`∂L/∂b`)
+
+(Work in progress...)

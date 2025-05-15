@@ -29,15 +29,6 @@ const Fonts = () => (
              url('/fonts/Topoline-VariableVF.ttf') format('truetype');
         font-weight: 0 100;
       }
-      
-      @font-face {
-        font-family: 'YE Display';
-        font-style: normal;
-        font-weight: 400;
-        src: url('/fonts/YE-Display.woff2') format('woff2'),
-             url('/fonts/YE-Display.woff') format('woff'),
-             url('/fonts/YE-Display.otf') format('opentype');
-      }
     `}
   />
 );

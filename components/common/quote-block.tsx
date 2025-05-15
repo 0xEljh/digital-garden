@@ -39,11 +39,7 @@ export const QuoteBlock = (props: QuoteBlockProps) => {
             <ImQuotesLeft />
           </Box>
           <TransitIn>
-            <Text
-              fontSize="lg"
-              color={dark ? "white" : "black"}
-              fontFamily={"YE Display"}
-            >
+            <Text fontSize="lg" color={dark ? "white" : "black"}>
               {children}
             </Text>
           </TransitIn>

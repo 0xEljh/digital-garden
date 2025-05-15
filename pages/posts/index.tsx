@@ -14,7 +14,7 @@ import type { GetStaticProps } from "next";
 import type { Post } from "@/types/posts";
 import { loadPosts } from "@/lib/utils/posts";
 import { useEffect } from "react";
-import posthog from 'posthog-js';
+import posthog from "posthog-js";
 
 interface PageProps {
   posts: Post[];
@@ -22,7 +22,7 @@ interface PageProps {
 
 export default function PostsIndexPage({ posts }: PageProps) {
   useEffect(() => {
-    posthog.capture('view_blog_index');
+    posthog.capture("view_blog_index");
   }, []);
 
   return (
@@ -46,15 +46,15 @@ export default function PostsIndexPage({ posts }: PageProps) {
               >
                 <Stack gap={3}>
                   <Heading size="lg" fontFamily="Tickerbit">
-                    <LinkOverlay 
-                      as={NextLink} 
+                    <LinkOverlay
+                      as={NextLink}
                       href={`/posts/${post.slug}`}
                       onClick={() => {
-                        posthog.capture('post_click', {
+                        posthog.capture("post_click", {
                           post_title: post.title,
                           post_slug: post.slug,
                           categories: post.categories,
-                          location: 'posts/'
+                          location: "posts/",
                         });
                       }}
                     >
@@ -63,7 +63,13 @@ export default function PostsIndexPage({ posts }: PageProps) {
                   </Heading>
                   <HStack gap={4} flexWrap="wrap">
                     {post.categories.map((category) => (
-                      <Tag.Root key={category} size="md">
+                      <Tag.Root
+                        key={category}
+                        size="md"
+                        fontFamily="Topoline"
+                        colorScheme="teal"
+                        color="cyan.600"
+                      >
                         {category}
                       </Tag.Root>
                     ))}

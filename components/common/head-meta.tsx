@@ -8,6 +8,7 @@ const DEFAULT_KEYWORDS = [
   "digital garden",
   "deep learning",
   "full-stack engineer",
+  "machine learning engineer",
   "startup",
   "blog",
 ];
@@ -30,7 +31,7 @@ const HeadMeta= ({
   const router = useRouter();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
   const canonicalUrl = url ?? `${siteUrl}${router.asPath}`;
-  const ogImageUrl = image ? `${siteUrl}${image}` : undefined;
+  const ogImageUrl = image ? `${siteUrl}/images/${image}` : undefined;
 
   return (
     <Head>

@@ -16,45 +16,64 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
     h2: (p: any) => <AnimatedHeading level={2} {...p} />,
     h3: (p: any) => <AnimatedHeading level={3} {...p} />,
     pre: CodeBlock,
-    code: (p: any) => <code style={{ fontFamily: "monospace" }} {...p} />,
     Callout,
     a: (p: any) => <Link _hover={{ textDecoration: "italic" }} {...p} />,
   };
 
   return (
     <Container
-      // maxW="65ch"
       mx="auto"
-      // px={{ base: 4, md: 12, lg: 24 }}
       css={{
         /* headings */
         "& h1": {
-          fontFamily: "Aeion Mono",
+          fontFamily: "Tickerbit",
           fontSize: "clamp(2rem, 6vw, 2.75rem)",
           marginTop: "3rem",
           marginBottom: "1rem",
+          color: "gray.50",
         },
         "& h2": {
-          fontFamily: "Aeion Mono",
+          fontFamily: "Tickerbit",
           fontSize: "clamp(1.5rem, 4.5vw, 2.25rem)",
           marginTop: "2.5rem",
           marginBottom: "1rem",
+          color: "gray.50",
         },
         "& h3": {
-          fontFamily: "Aeion Mono",
+          fontFamily: "Tickerbit",
           fontSize: "clamp(1.25rem, 3.5vw, 1.625rem)",
           marginTop: "2rem",
           marginBottom: "0.75rem",
+          color: "gray.50",
         },
         /* body text */
         "& p, & li": {
-          fontFamily: "var(--chakra-fonts-body)",
           fontSize: "clamp(1rem, 2.5vw, 1.125rem)",
           lineHeight: 1.75,
+          // fontWeight: "50",
         },
         "& ul, & ol": {
-          paddingInlineStart: "1.25rem",
+          paddingInlineStart: "2rem",
           marginY: "1rem",
+        },
+        /* list styling */
+        "& ul": {
+          listStyleType: "disc",
+          "& ul": {
+            listStyleType: "circle",
+            "& ul": {
+              listStyleType: "square",
+            },
+          },
+        },
+        "& ol": {
+          listStyleType: "decimal",
+          "& ol": {
+            listStyleType: "lower-alpha",
+            "& ol": {
+              listStyleType: "lower-roman",
+            },
+          },
         },
         "& blockquote": {
           borderLeft: "4px solid",
@@ -64,13 +83,6 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
           fontStyle: "italic",
           marginY: "1.5rem",
         },
-        /* inline code */
-        "& :not(pre) > code": {
-          background: "gray.100",
-          padding: "0.2em 0.4em",
-          borderRadius: "4px",
-          fontSize: "0.875em",
-        },
         /* KaTeX block fix */
         ".katex-display": {
           overflowX: "auto",
@@ -78,6 +90,9 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
         },
       }}
       {...props}
+      color="gray.300"
+      fontFamily="Inter"
+      fontWeight="400"
     >
       <MDXProvider components={components}>{children}</MDXProvider>
     </Container>

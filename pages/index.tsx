@@ -74,7 +74,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
               }}
             >
               <Stack gap={2}>
-                <Text fontSize="xl" fontWeight="medium">
+                <Text fontSize="xl" fontWeight="medium" fontFamily="Tickerbit">
                   {post.title}
                 </Text>
                 <HStack fontSize="xs" color="gray.700" gap={2}>
@@ -96,6 +96,8 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
                         variant="subtle"
                         colorScheme="teal"
                         color="cyan.600"
+                        fontFamily="Topoline"
+                        size="md"
                       >
                         {category}
                       </Tag.Root>

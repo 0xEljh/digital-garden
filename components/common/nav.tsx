@@ -38,7 +38,13 @@ export const NavbarLinks = (props: StackProps) => {
 
 export function NavBar() {
   return (
-    <Center position="sticky" zIndex="docked" top="6" left="4" right="4">
+    <Center
+      position="sticky"
+      zIndex="docked"
+      top={{ base: "0", md: "4" }}
+      left="4"
+      right="4"
+    >
       <Container
         css={`
           background-color: transparent;
