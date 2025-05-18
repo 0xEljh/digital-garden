@@ -144,9 +144,9 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
           <Heading size="2xl" fontFamily="Tickerbit">
             {entry.title}
           </Heading>
-          <Text fontSize="xl" color="gray.500">
+          {/* <Text fontSize="xl" color="gray.500">
             {entry.shortDescription}
-          </Text>
+          </Text> */}
           <StyledProse>
             <MDXRemote {...content} />
           </StyledProse>

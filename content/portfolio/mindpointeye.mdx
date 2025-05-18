@@ -10,5 +10,13 @@ date: "2021-05-10"
 techStack: ["rknn", "pytorch"]
 ---
 
+At this startup focused on efficient, edge-deployed AI models (it was founded by the inventor of Extreme Learning Machines (ELMs)), I advanced from a junior engineer to leading two teams by intitiating a few key projects across our object detection pipeline.
 
-Startup founded by the inventor of ELMs, specializing in low-power, edge-deployed AI models. I advanced from junior engineer to team lead by spearheading key improvements to our object detection pipeline. I developed in-house tools, including semi-supervised data labelling systems, hyperparameter search automation, and optimizer improvements. Through scrapped data integration, augmentation techniques, and algorithmic enhancements, I improved our best model’s mAP for most applications from 0.70 to 0.85. These efforts also laid the foundation for productizing our object detection solutions.
+My primary work centered around optimizing the performance of lightweight object detection models, which I did through a series of improvements: SimCLR-inspired data augmentations, loss-dependent learning rate scheduling, and a custom SGD implementation to facilitate hyperparameter tuning.
+These, along with improvements to our datasets, increased our model performance on YOLOX tiny from 0.5 to 0.85 mAP across multiple datasets. I also worked on deploying these models in a quantized RKNN format (for inference on Rockchip NPUs).
+
+The most impactful contribution I made was probably to the dataset curation process. In order to quantify the biasness of our datasets, I developed a latent space analysis and clustering, proving that the dataset had too many near-duplicates and allowing their pruning to be automated. 
+Then, to make up for this loss of data and beef up our datasets, I created a semi-supervised pipeline for dataset annotation, also replacing the manual labelling exercises (which I dreaded) with a self-training system that iteratively labeled and trained a large vision model using scraped data.
+Combined, these tools allowed us to rapidly curate datasets that were 3-5x larger than our original ones (and with greater diversity too!). For this, I was given two different teams to scale these tools up.
+
+These contributions didn't just improve our R&D metrics, but also laid the groundwork for productizing our object detection solutions.
