@@ -1,5 +1,5 @@
 import { ButtonGroup, IconButton, useToken, HStack, Button, Icon } from "@chakra-ui/react";
-import { FaXTwitter, FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa6";
+import { FaXTwitter, FaGithub, FaLinkedin, FaEnvelope, FaThreads, FaTelegram } from "react-icons/fa6";
 import { motion } from "motion/react";
 import { Box } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
@@ -50,11 +50,20 @@ const socials = [
     icon: <FaLinkedin />,
   },
   {
+    href: "https://threads.net/@0xEljh",
+    ariaLabel: "Threads",
+    icon: <FaThreads />,
+  },
+  {
     href: "mailto:elijah@0xeljh.com",
     ariaLabel: "Email",
     icon: <FaEnvelope />,
   },
-
+  {
+    href: "https://telegram.me/elijahngsy",
+    ariaLabel: "Telegram",
+    icon: <FaTelegram />,
+  },
   {
     href: "https://twitter.com/0xEljh",
     ariaLabel: "Twitter",

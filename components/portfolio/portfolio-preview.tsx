@@ -1,15 +1,13 @@
 import { AnimatePresence, motion } from "motion/react";
-import { Box, Heading, Stack, Button, Flex, HStack, Text, Center } from "@chakra-ui/react";
+import { Box, Heading, Stack, Button, Flex, Text, Center } from "@chakra-ui/react";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
-import { PortfolioCard } from "./portfolio-card";
 import type { PortfolioEntry } from "@/types/portfolio";
-import { FaDownload } from "react-icons/fa6";
+import { LuDownload } from "react-icons/lu";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
 import posthog from 'posthog-js';
 
-const MotionBox = motion.create(Box);
 const MotionFlex = motion.create(Flex);
 
 export const PortfolioPreview = ({
@@ -209,8 +207,8 @@ export const PortfolioPreview = ({
               });
             }}
           >
-            <FaDownload />
-            My Resume
+            <LuDownload />
+            Resume
           </Link>
         </Button>
         <Button

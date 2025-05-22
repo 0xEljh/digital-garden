@@ -10,7 +10,7 @@ import {
 import { Link } from "@/components/ui/link";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
-import { useEffect, useRef, useState, memo, useMemo } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
 import posthog from 'posthog-js';
 
@@ -19,11 +19,13 @@ interface PortfolioCardProps {
   isHighlighted?: boolean;
 }
 
+// note: isHighlighted doesn't do anything for now
+
 // Memoized icon component that only re-renders when props change
 const MemoizedIcon = memo(({ 
   IconComponent, 
   width, 
-  isHighlighted,
+  // isHighlighted,
   shouldRender 
 }: { 
   IconComponent: React.ComponentType<any>, 
@@ -33,14 +35,14 @@ const MemoizedIcon = memo(({
 }) => {
   // If we shouldn't render the component, return null or a placeholder
   if (!shouldRender) {
-    return <Box width={width} height={width} />;
+    return <Box width={width}/>
   }
 
   return (
     <IconComponent
       width={width}
       highlightColor="yellow.400"
-      isHighlighted={isHighlighted}
+      isHighlighted={false}
     />
   );
 });
@@ -62,21 +64,19 @@ export const PortfolioCard = ({
   
   // Determine if we should render the ASCII icon
   // Only render it the first time it comes into view
-  const shouldRenderIcon = useMemo(() => {
+  useEffect(() => {
     if (isInView && !hasBeenInView) {
       setHasBeenInView(true);
     }
-    return hasBeenInView;
   }, [isInView, hasBeenInView]);
 
   useEffect(() => {
-    if (isInView && isMobile) setIsHovered(true);
-    if (!isInView && isMobile) setIsHovered(false);
+    if (isMobile) {
+      setIsHovered(isInView);
+    } else {
+      setIsHovered(false);
+    }
   }, [isMobile, isInView]);
-
-  useEffect(() => {
-    if (!isMobile) setIsHovered(false);
-  }, [isMobile]);
 
   return (
     <Link
@@ -114,8 +114,8 @@ export const PortfolioCard = ({
             <MemoizedIcon
               IconComponent={IconComponent}
               width={220}
-              isHighlighted={isHighlighted || isHovered}
-              shouldRender={shouldRenderIcon}
+              isHighlighted={true}
+              shouldRender={hasBeenInView}
             />
           </Center>
         </Box>

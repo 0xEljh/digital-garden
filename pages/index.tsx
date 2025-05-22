@@ -39,8 +39,7 @@ const HeroSection = () => (
       fontFamily="Topoline"
       fontWeight="100"
     >
-      The digital garden of a full-stack machine learning engineer, trying to
-      find his way in the startup world.
+      The digital garden of a full-stack machine learning engineer. Academia was the plan, startups happened instead. Career debugging in progress. 
     </Text>
     <SocialBar />
   </Stack>

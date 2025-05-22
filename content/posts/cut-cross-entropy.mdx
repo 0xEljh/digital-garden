@@ -35,12 +35,11 @@ The general goal of the whole "cut cross entropy" approach is to avoid direct co
 
 Cut Cross Entropy saves memory by doing two things:
 
-1. Chunking the logits into smaller, ranked chunks (which already reduces peak memory usage)
-2. Filtering away entire chunks of logits that are near zero (this is the "cutting" process which which saves even more memory and computation)
+1. Chunking the logits into smaller, sorted chunks (which already reduces peak memory usage)
+2. "Filtering" (although I think this is better described as "skipping" or "early stopping") chunks of near-zero logits in the gradient computation step (this is the "cutting" which which saves even more memory and computation)
 
 <Callout title="" type="auxillary">
-  The core innovation is not a new loss function, but a restructured
-  computation.
+  The core innovation is not a new loss function, but a restructured computation: by chunking the logits and then selectively skipping over unnecessary chunks.
 </Callout>
 
 The “cutting” process can achieve memory savings of over **1000 times compared to traditional cross entropy implementations**.
@@ -81,7 +80,7 @@ Between the kernels, the `cce_lse_forward_kernel` is more interesting, so [lets 
 
 Skipping over the offset and pointer intitialisation, we hit the first math operation:
 
-```python
+```triton
 accum = tl.zeros((BLOCK_B, BLOCK_V), dtype=tl.float32)
 for d in range(0, tl.cdiv(D, BLOCK_D)):
    e_mask = offs_b[:, None] < BMax
@@ -111,9 +110,9 @@ By chunking this computation of $$C^T E$$ and doing it accumulatively, we avoid 
 > any GPU memory. For efficiency, we perform all operations blockwise to make the best use of GPU
 > cache structure
 
-After that, comes computation of the log sum exponent (LSE).
+After that, comes computation of the linear-log-sum-exponent (LSE).
 
-```python
+```triton
 this_mx = tl.max(logits, axis=1)
 e = tl.exp(logits - this_mx[:, None])
 this_lse = this_mx + tl.log(tl.sum(e, axis=1))
@@ -146,21 +145,155 @@ There are 3 main steps here:
    - `tl.store(lse_ptrs, lse, mask=o_mask, eviction_policy="evict_last")` stores the updated global LSE back to global memory.
    - `tl.atomic_xchg(this_locks, 0)` releases the lock, allowing other threads to update the global LSE.
 
+In short: to ensure synchronicity, we use a spin lock so that only one vocabulary chunk can update the global LSE at a time. Each block computes a partial LSE, which is then merged into the global one. This is an aggregation step to get our final result, the $$\text{LSE}$$ term.
+
 ## Breakdown: Backward Pass
 
 The backward pass mirrors the forward structure, but with added complexity for gradient scaling and filtering.
+This backward pass needs to compute at least two gradient terms:
+
+- the gradient with respect to query embeddings, $$\nabla E^T$$
+- the gradient with respect to class embeddings, $$\nabla C^T$$
+- if present, the gradient with respect to bias, $$\partial b$$. We're gonna ignore this.
 
 <br />
 
-Key operations:
+Here is how the paper describes the backward pass (don't worry, you can skip this: it's just to help add some color and we'll be breaking things down anyway):
+
+
+> Formally, the gradient is defined as $$ \nabla E^T = (S \cdot \nabla \text{LSE}) C \quad \text{and} \quad \nabla C^T = (S \cdot \nabla \text{LSE})^T E $$ where $$ S = \text{softmax}(C^T E) $$ and $$ \cdot $$ refers to the row-by-row elementwise multiplication of the softmax $$ S $$ and the gradient $$ \nabla \text{LSE} $$: $$ \hat{S} = S \cdot \nabla \text{LSE} $$.
+> <br />
+> Computationally, the backward pass is a double matrix multiplication $$ C^T E $$ and $$ \hat{S} C $$ or $$ \hat{S}^T E $$ with intermediate matrices $$ S $$ and $$ \hat{S} $$ that do not fit into GPU memory and undergo a non-linear operation. We take a similar approach to the forward pass, recomputing the matrix $$ C^T E $$ implicitly in the GPU's shared memory. For the backward pass, we do not need to compute the normalization constant of the softmax, since $$ S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE}) $$. This allows us to reuse the global synchronization of the forward pass, and compute $$ S $$ efficiently in parallel.
+> <br />
+> We implement the second matrix multiplication in the main memory of the GPU, as a canonical blockwise implementation would require storing or synchronizing $$ S $$. Algorithm 3 and Fig. 2c summarize the computation and access patterns. A naive implementation of this algorithm requires zero additional memory but is slow due to repeated global memory load and store operations. We use two techniques to improve the memory access pattern: gradient filtering and vocabulary sorting.
+
+<br />
+
+Overall, this is what the backward pass needs to do:
 
 1. Retrieve saved tensors: embeddings, targets, valid entries, logit averages.
-2. Filter logits using `logit_avg`—this is where the “cut” logic applies.
-3. Compute scaling based on reduction method (mean or sum).
-4. Use `cce_backward_kernel` to compute gradients:
+2. Recompute the logits ($$C^T E$$) in chunks (like in the forward pass).
+3. Compute $$S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE})$$, the Softmax probabilities.
+4. Compute the gradient signal for the log-sum-exponent, $$\hat{S} = (S - Y) \cdot \nabla \text{LSE}$$, using its upstream gradient $$\nabla \text{LSE}$$ (or `d_out` in the code) and the targets $$Y$$. 
 
-   - With respect to query embeddings (`∂L/∂e`)
-   - With respect to class embeddings (`∂L/∂c`)
-   - With respect to bias, if present (`∂L/∂b`)
+```triton
+# Compute S
+d_accum = tl.exp(accum - lse[:, None])
+d_accum = tl.where(offs_v[None, :] < V, d_accum, 0.0)
 
-(Work in progress...)
+# Compute S - Y
+if HAS_TARGETS:
+   if HAS_SHIFT:
+      target_offs_b = offs_b + shift
+   else:
+      target_offs_b = offs_b
+
+   targets = tl.load(Targets + target_offs_b, mask=target_offs_b < BMax, other=V + 1)
+   is_target = targets[:, None] == offs_v[None, :]
+   d_accum += tl.where(is_target, -1.0, 0.0) # <-- subtracting Y from S
+else:
+   is_target = None
+
+# gradient filtering! Explained later
+should_skip = False
+if (FILTER_E_GRAD and COMPUTE_DE) and (FILTER_C_GRAD and COMPUTE_DC):
+   if _block_is_filtered(tl.abs(d_accum), filter_eps):
+      return
+elif (FILTER_E_GRAD and COMPUTE_DE) or (FILTER_C_GRAD and COMPUTE_DC):
+   should_skip = _block_is_filtered(tl.abs(d_accum), filter_eps)
+
+if HAS_SOFTCAP:
+   d_accum = tl_softcapping_grad(d_accum, accum, softcap)
+
+if ITEM_DO:
+   d_out = tl.load(dOut)
+else:
+   if HAS_SHIFT:
+      d_out_offs_b = offs_b + shift
+   else:
+      d_out_offs_b = offs_b
+
+   d_out = tl.load(dOut + d_out_offs_b, mask=d_out_offs_b < BMax, other=0.0)[:, None]
+
+d_out = grad_scale * d_out
+
+# The final sum we're looking for: S_hat = (S - Y) * upstream_grad
+d_accum = d_accum * d_out
+
+```
+
+5. Compute $$\nabla E^T = \hat{S} C$$, the gradient of the query embeddings.
+6. Compute $$\nabla C^T = \hat{S}^T E$$, the gradient of the class embeddings.
+
+If you can recall chain-rule, you can see why $$\hat{S}$$ makes up the gradient of both the query and class embeddings. It is the key intermediate product in this series of steps.
+
+<br />
+
+If this looks like a wall of mathy text, the main point is that we need to go through steps 1-4, to create the intermediate term we'll be using in steps 5-6.
+Steps 5-6 are matrix multiplications, which are expensive operations that we'd like to avoid if we can, and that brings us to the main optimization in the backward pass: **gradient filtering**.
+
+<br />
+
+---
+
+<br />
+
+Before we dive into the gradient filtering, it helps to recall that $$\hat{S}$$ in the triton kernel is really $$\hat{S}_{\text{block}}$$, the gradient signal for a single block/vocabulary chunk.
+The same applies for $$S \to S_{\text{block}}$$ and the other terms.
+
+<br />
+
+Then let's zoom in on the gradient filtering segment of the code:
+
+```triton
+should_skip = False
+if (FILTER_E_GRAD and COMPUTE_DE) and (FILTER_C_GRAD and COMPUTE_DC):
+   if _block_is_filtered(tl.abs(d_accum), filter_eps):
+      return
+elif (FILTER_E_GRAD and COMPUTE_DE) or (FILTER_C_GRAD and COMPUTE_DC):
+   should_skip = _block_is_filtered(tl.abs(d_accum), filter_eps)
+
+# ... 
+
+if COMPUTE_DE:
+   if FILTER_E_GRAD:
+      should_skip_e = should_skip
+   # ...
+
+if COMPUTE_DC:
+   if FILTER_C_GRAD:
+      should_skip_c = should_skip
+   # ...
+
+# elsewhere:
+
+@triton.jit
+def _block_is_filtered(check_val: tl.tensor, filter_eps: tl.tensor) -> tl.tensor:
+    return tl.reduce(check_val < filter_eps, None, tl_and_reduce_fn)
+
+```
+
+`_block_is_filtered` checks if all values within `d_accum` (which is $$\hat{S}_{\text{block}}$$) are below our "near-zero" threshold. If so, we terminate the kernel early, or skip over some of the remaining matrix multiplications involved in calculating the gradient outputs $$\nabla E^T$$ and $$\nabla C^T$$.
+
+<br />
+
+As a whole, the gradient filtering process is as follows:
+
+1. Vocab sorting: sorting the vocab terms by their average logit to increase the number of "zero" gradient blocks we'll encounter in the gradient filtering step. This is a heuristic to help reduce the number of partially filled non-zero blocks whose gradients we need to compute; we want all "significant" blocks to be as dense and contiguous as possible. This happened before passing the inputs to the kernel.
+2. Gradient filtering: whenever $$\hat{S}$$ is too small, we can skip the expensive matrix multiplications in steps 5 and 6 and zero out the contributions from these blocks.
+
+## Takeaways: Usage + Design
+
+Cut cross entropy is likely going to become the go-to implementation of cross-entropy going forward. The memory savings it presents are too good to pass up.
+
+As for its design, this approach to chunking, avoiding global memory loads, and perhaps even the zeroing-out and doing an "early stop" to expensive computations are methods that can be applied to other related problems such as kernel optimization.
+
+I'll definitely be writing more about kernel optimization and other similar breakdowns by the way, so if you found this interesting, you might want to follow me on any of my socials.
+
+<br />
+
+---
+
+<br />
+
+_btw, I happen to also be looking for a job as a machine learning engineer now, so if you happen to know of any opportunities, please let me know! You can find my portfolio/resume [here](/portfolio)._

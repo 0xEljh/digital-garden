@@ -1,22 +1,27 @@
 import {
   Box,
+  Button,
   Container,
   Heading,
   Stack,
+  Flex,
   Text,
   Tag,
   HStack,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
 import { loadPosts } from "@/lib/utils/posts";
 import type { Post, PostMetaData } from "@/types/posts";
 import { PostCardGrid } from "@/components/garden/post-card-grid";
 import { StyledProse } from "@/components/common/styled-prose";
+import { SocialBar } from "@/components/common/social-bar";
 import "katex/dist/katex.min.css";
 import { useEffect } from "react";
 import posthog from "posthog-js";
 import Head from "next/head";
+import { LuArrowRight } from "react-icons/lu";
 
 interface PostPageProps {
   post: Post;
@@ -139,12 +144,34 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
               <MDXRemote {...post.content} />
             </StyledProse>
 
+            <SocialBar />
+
             {relatedPosts && relatedPosts.length > 0 && (
               <Stack gap={{ base: 4, md: 6 }} py={{ base: 8, md: 12 }}>
-                <Heading size="2xl" fontFamily="Topoline">
-                  Related Posts
-                </Heading>
+                <Flex direction="row" justify="space-between">
+                  <Heading size="2xl" fontFamily="Topoline">
+                    Related Posts
+                  </Heading>
+                  <Button
+                    display={{ base: "none", md: "flex" }}
+                    variant="ghost"
+                    asChild
+                  >
+                    <NextLink href="/posts">
+                      Revisit Garden <LuArrowRight />
+                    </NextLink>
+                  </Button>
+                </Flex>
                 <PostCardGrid posts={relatedPosts} />
+                <Button
+                  display={{ base: "flex", md: "none" }}
+                  variant="ghost"
+                  asChild
+                >
+                  <NextLink href="/posts">
+                    Revisit Garden <LuArrowRight />
+                  </NextLink>
+                </Button>
               </Stack>
             )}
           </Stack>

@@ -22,7 +22,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
   const defaultTitle = "Elijah's Digital Garden";
   const defaultDescription =
-    "Digital garden of a full-stack deep learning engineer, trying to find his way in the startup world.";
+    "A perpetual work-in-progress: a digital garden of a full-stack machine learning engineer.";
   const defaultKeywords = [
     "digital garden",
     "deep learning",
