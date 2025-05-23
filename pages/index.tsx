@@ -39,7 +39,8 @@ const HeroSection = () => (
       fontFamily="Topoline"
       fontWeight="100"
     >
-      The digital garden of a full-stack machine learning engineer. Academia was the plan, startups happened instead. Career debugging in progress. 
+      The digital garden of a full-stack machine learning engineer. Academia was
+      the plan, startups happened instead. Career debugging in progress.
     </Text>
     <SocialBar />
   </Stack>
@@ -73,7 +74,12 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
               }}
             >
               <Stack gap={2}>
-                <Text fontSize="xl" fontWeight="medium" fontFamily="Tickerbit">
+                <Text
+                  fontSize="xl"
+                  fontWeight="medium"
+                  fontFamily="Tickerbit"
+                  color="fg"
+                >
                   {post.title}
                 </Text>
                 <HStack fontSize="xs" color="gray.700" gap={2}>

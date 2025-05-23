@@ -20,25 +20,9 @@ type AppPropsWithLayout = AppProps & {
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
-  const defaultTitle = "Elijah's Digital Garden";
-  const defaultDescription =
-    "A perpetual work-in-progress: a digital garden of a full-stack machine learning engineer.";
-  const defaultKeywords = [
-    "digital garden",
-    "deep learning",
-    "full-stack engineer",
-    "startup",
-    "blog"
-  ];
+
   // Merge page-specific SEO if provided
-  const pageSeo = (pageProps as any).seo || {};
-  const seo = {
-    title: pageSeo.title ?? defaultTitle,
-    description: pageSeo.description ?? defaultDescription,
-    keywords: pageSeo.keywords ?? defaultKeywords,
-    image: pageSeo.image,
-    url: pageSeo.url
-  };
+  const pageHeadMeta = (pageProps as any).headMeta || {};
 
   const getLayout =
     Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
@@ -46,7 +30,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <Provider>
       <Fonts />
-      <HeadMeta {...seo} />
+      <HeadMeta {...pageHeadMeta} />
       <PageTransition key={router.asPath}>
         {getLayout(<Component {...pageProps} />)}
       </PageTransition>

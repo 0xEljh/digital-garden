@@ -1,7 +1,7 @@
 ---
-title: "Saving VRAM with Cut Cross Entropy by Apple"
-date: "2025-05-16"
-excerpt: "A quick and dirty run-down of apple's memory-efficient cut cross entropy implementation"
+title: "Saving VRAM with Apple's Cut Cross Entropy"
+date: "2025-05-21"
+excerpt: "A comprehensive breakdown of apple's memory-efficient cut cross entropy implementation"
 categories: ["deep learning", "math", "triton"]
 relatedPosts: ["cross-entropy"]
 ---
@@ -39,7 +39,9 @@ Cut Cross Entropy saves memory by doing two things:
 2. "Filtering" (although I think this is better described as "skipping" or "early stopping") chunks of near-zero logits in the gradient computation step (this is the "cutting" which which saves even more memory and computation)
 
 <Callout title="" type="auxillary">
-  The core innovation is not a new loss function, but a restructured computation: by chunking the logits and then selectively skipping over unnecessary chunks.
+  The core innovation is not a new loss function, but a restructured
+  computation: by chunking the logits and then selectively skipping over
+  unnecessary chunks.
 </Callout>
 
 The “cutting” process can achieve memory savings of over **1000 times compared to traditional cross entropy implementations**.
@@ -160,12 +162,25 @@ This backward pass needs to compute at least two gradient terms:
 
 Here is how the paper describes the backward pass (don't worry, you can skip this: it's just to help add some color and we'll be breaking things down anyway):
 
-
 > Formally, the gradient is defined as $$ \nabla E^T = (S \cdot \nabla \text{LSE}) C \quad \text{and} \quad \nabla C^T = (S \cdot \nabla \text{LSE})^T E $$ where $$ S = \text{softmax}(C^T E) $$ and $$ \cdot $$ refers to the row-by-row elementwise multiplication of the softmax $$ S $$ and the gradient $$ \nabla \text{LSE} $$: $$ \hat{S} = S \cdot \nabla \text{LSE} $$.
+>
 > <br />
-> Computationally, the backward pass is a double matrix multiplication $$ C^T E $$ and $$ \hat{S} C $$ or $$ \hat{S}^T E $$ with intermediate matrices $$ S $$ and $$ \hat{S} $$ that do not fit into GPU memory and undergo a non-linear operation. We take a similar approach to the forward pass, recomputing the matrix $$ C^T E $$ implicitly in the GPU's shared memory. For the backward pass, we do not need to compute the normalization constant of the softmax, since $$ S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE}) $$. This allows us to reuse the global synchronization of the forward pass, and compute $$ S $$ efficiently in parallel.
+> Computationally, the backward pass is a double matrix multiplication $$ C^T E $$
+> and $$ \hat{S} C $$ or $$ \hat{S}^T E $$ with intermediate matrices $$ S $$
+> and $$ \hat{S} $$ that do not fit into GPU memory and undergo a non-linear operation.
+> We take a similar approach to the forward pass, recomputing the matrix $$ C^T E$$ 
+> implicitly in the GPU's shared memory. For the backward pass, we do not need
+> to compute the normalization constant of the softmax, since 
+> $$ S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE}) $$.
+> This allows us to reuse the global synchronization
+> of the forward pass, and compute $$ S $$ efficiently in parallel.
 > <br />
-> We implement the second matrix multiplication in the main memory of the GPU, as a canonical blockwise implementation would require storing or synchronizing $$ S $$. Algorithm 3 and Fig. 2c summarize the computation and access patterns. A naive implementation of this algorithm requires zero additional memory but is slow due to repeated global memory load and store operations. We use two techniques to improve the memory access pattern: gradient filtering and vocabulary sorting.
+> We implement the second matrix multiplication in the main memory of the GPU, as
+> a canonical blockwise implementation would require storing or synchronizing $$ S $$. 
+> Algorithm 3 and Fig. 2c summarize the computation and access patterns. A
+> naive implementation of this algorithm requires zero additional memory but is slow
+> due to repeated global memory load and store operations. We use two techniques
+> to improve the memory access pattern: gradient filtering and vocabulary sorting.
 
 <br />
 
@@ -174,7 +189,7 @@ Overall, this is what the backward pass needs to do:
 1. Retrieve saved tensors: embeddings, targets, valid entries, logit averages.
 2. Recompute the logits ($$C^T E$$) in chunks (like in the forward pass).
 3. Compute $$S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE})$$, the Softmax probabilities.
-4. Compute the gradient signal for the log-sum-exponent, $$\hat{S} = (S - Y) \cdot \nabla \text{LSE}$$, using its upstream gradient $$\nabla \text{LSE}$$ (or `d_out` in the code) and the targets $$Y$$. 
+4. Compute the gradient signal for the log-sum-exponent, $$\hat{S} = (S - Y) \cdot \nabla \text{LSE}$$, using its upstream gradient $$\nabla \text{LSE}$$ (or `d_out` in the code) and the targets $$Y$$.
 
 ```triton
 # Compute S
@@ -253,7 +268,7 @@ if (FILTER_E_GRAD and COMPUTE_DE) and (FILTER_C_GRAD and COMPUTE_DC):
 elif (FILTER_E_GRAD and COMPUTE_DE) or (FILTER_C_GRAD and COMPUTE_DC):
    should_skip = _block_is_filtered(tl.abs(d_accum), filter_eps)
 
-# ... 
+# ...
 
 if COMPUTE_DE:
    if FILTER_E_GRAD:

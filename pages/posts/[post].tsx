@@ -22,10 +22,12 @@ import { useEffect } from "react";
 import posthog from "posthog-js";
 import Head from "next/head";
 import { LuArrowRight } from "react-icons/lu";
+import type { HeadMetaProps } from "@/types/head-meta";
 
 interface PostPageProps {
   post: Post;
   relatedPosts: PostMetaData[];
+  headMeta?: HeadMetaProps;
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -58,6 +60,7 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
     .map((p) => ({
       title: p.title,
       slug: p.slug,
+      excerpt: p.excerpt,
       categories: p.categories,
       date: p.date,
       relatedPosts: [],
@@ -74,6 +77,10 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
     props: {
       post,
       relatedPosts: relatedPostsData,
+      headMeta: {
+        title: post.title,
+        description: post.excerpt,
+      },
     },
   };
 };

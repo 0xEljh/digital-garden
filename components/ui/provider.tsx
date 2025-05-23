@@ -1,65 +1,61 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { Router } from 'next/router'
-import posthog from 'posthog-js'
-import { PostHogProvider } from 'posthog-js/react'
-import {
-  ChakraProvider,
-  createSystem,
-  defaultConfig
-} from '@chakra-ui/react'
-import type { PropsWithChildren } from 'react'
-import { ColorModeProvider } from './color-mode'
+import { useEffect } from "react";
+import { Router } from "next/router";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
+import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
+import type { PropsWithChildren } from "react";
+import { ColorModeProvider, DarkMode } from "./color-mode";
 
 const system = createSystem(defaultConfig, {
   globalCss: {
     body: {
-      colorPalette: 'cyan',
+      colorPalette: "cyan",
     },
   },
   theme: {
     tokens: {
       fonts: {
-        body: { value: 'Aeion Mono' },
+        body: { value: "Aeion Mono" },
       },
     },
     semanticTokens: {
       radii: {
-        l1: { value: '0.125rem' },
-        l2: { value: '0.25rem' },
-        l3: { value: '0.375rem' },
+        l1: { value: "0.125rem" },
+        l2: { value: "0.25rem" },
+        l3: { value: "0.375rem" },
       },
     },
   },
-})
+});
 
 export const Provider = (props: PropsWithChildren) => {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: '/ingest',
-      ui_host: 'https://us.posthog.com',
+      api_host: "/ingest",
+      ui_host: "https://us.posthog.com",
       loaded: (posthog) => {
-        if (process.env.NODE_ENV === 'development') posthog.debug()
+        if (process.env.NODE_ENV === "development") posthog.debug();
       },
-      debug: process.env.NODE_ENV === 'development',
-    })
+      debug: process.env.NODE_ENV === "development",
+    });
 
-    const handleRouteChange = () => posthog.capture('$pageview')
-    Router.events.on('routeChangeComplete', handleRouteChange)
+    const handleRouteChange = () => posthog.capture("$pageview");
+    Router.events.on("routeChangeComplete", handleRouteChange);
 
     return () => {
-      Router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [])
+      Router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, []);
 
   return (
     <PostHogProvider client={posthog}>
       <ChakraProvider value={system}>
         <ColorModeProvider>
-          {props.children}
+          <DarkMode>{props.children}</DarkMode>
         </ColorModeProvider>
       </ChakraProvider>
     </PostHogProvider>
-  )
-}
+  );
+};

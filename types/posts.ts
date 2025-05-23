@@ -3,6 +3,7 @@ import { MDXRemoteSerializeResult } from "next-mdx-remote";
 export type PostMetaData = {
   title: string;
   slug: string;
+  excerpt: string;
   categories: string[];
   date: string;
   relatedPosts: string[];

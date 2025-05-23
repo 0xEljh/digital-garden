@@ -37,7 +37,11 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.xl">
         <Stack gap={8}>
-          <Flex direction={{base: "column", md: "row"}} justify="space-between" align={{base: "flex-start", md: "center"}}>
+          <Flex
+            direction={{ base: "column", md: "row" }}
+            justify="space-between"
+            align={{ base: "flex-start", md: "center" }}
+          >
             <Heading size="3xl" fontFamily="Topoline">
               Portfolio
             </Heading>
@@ -45,9 +49,9 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
               colorScheme="teal"
               variant="ghost"
               size="sm"
-              alignSelf={{base: "flex-start", md: "center"}}
-              ml={{base: 1, md: 0}}
-              mt={{base: 4, md: 0}}
+              alignSelf={{ base: "flex-start", md: "center" }}
+              ml={{ base: 1, md: 0 }}
+              mt={{ base: 4, md: 0 }}
               asChild
             >
               <NextLink
