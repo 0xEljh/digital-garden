@@ -6,6 +6,7 @@ import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import type { PropsWithChildren } from "react";
+import { ThemeProvider } from "next-themes";
 import { ColorModeProvider, DarkMode } from "./color-mode";
 
 const system = createSystem(defaultConfig, {
@@ -51,11 +52,13 @@ export const Provider = (props: PropsWithChildren) => {
 
   return (
     <PostHogProvider client={posthog}>
-      <ChakraProvider value={system}>
-        <ColorModeProvider>
-          <DarkMode>{props.children}</DarkMode>
-        </ColorModeProvider>
-      </ChakraProvider>
+      <ThemeProvider attribute="class" forcedTheme="dark" enableSystem={false}>
+        <ChakraProvider value={system}>
+          <ColorModeProvider>
+            <DarkMode>{props.children}</DarkMode>
+          </ColorModeProvider>
+        </ChakraProvider>
+      </ThemeProvider>
     </PostHogProvider>
   );
 };
