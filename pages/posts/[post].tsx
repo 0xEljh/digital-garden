@@ -6,7 +6,6 @@ import {
   Stack,
   Flex,
   Text,
-  Tag,
   HStack,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
@@ -23,6 +22,7 @@ import posthog from "posthog-js";
 import Head from "next/head";
 import { LuArrowRight } from "react-icons/lu";
 import type { HeadMetaProps } from "@/types/head-meta";
+import { CategoryTags } from "@/components/garden/category-tag";
 
 interface PostPageProps {
   post: Post;
@@ -125,19 +125,7 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
               <Heading size="2xl" fontFamily="Tickerbit">
                 {post.title}
               </Heading>
-              <HStack gap={4} flexWrap="wrap">
-                {post.categories.map((category) => (
-                  <Tag.Root
-                    fontFamily="Topoline"
-                    key={category}
-                    size="md"
-                    colorScheme="teal"
-                    color="cyan.600"
-                  >
-                    {category}
-                  </Tag.Root>
-                ))}
-              </HStack>
+              <CategoryTags categories={post.categories} />
               <Text color="gray.600">
                 {new Date(post.date).toLocaleDateString("en-US", {
                   year: "numeric",

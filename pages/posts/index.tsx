@@ -4,7 +4,6 @@ import {
   Heading,
   Stack,
   Text,
-  Tag,
   HStack,
   LinkBox,
   LinkOverlay,
@@ -15,6 +14,7 @@ import type { Post } from "@/types/posts";
 import { loadPosts } from "@/lib/utils/posts";
 import { useEffect } from "react";
 import posthog from "posthog-js";
+import { CategoryTags } from "@/components/garden/category-tag";
 
 interface PageProps {
   posts: Post[];
@@ -61,19 +61,7 @@ export default function PostsIndexPage({ posts }: PageProps) {
                       {post.title}
                     </LinkOverlay>
                   </Heading>
-                  <HStack gap={4} flexWrap="wrap">
-                    {post.categories.map((category) => (
-                      <Tag.Root
-                        key={category}
-                        size="md"
-                        fontFamily="Topoline"
-                        colorScheme="teal"
-                        color="cyan.600"
-                      >
-                        {category}
-                      </Tag.Root>
-                    ))}
-                  </HStack>
+                  <CategoryTags categories={post.categories} />
                   <Text color="gray.500">
                     {new Date(post.date).toLocaleDateString("en-US", {
                       year: "numeric",

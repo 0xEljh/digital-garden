@@ -3,8 +3,7 @@ import { Image, Box, type BoxProps, Container } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
 import { MDXProvider } from "@mdx-js/react";
 import { AnimatedHeading } from "@/components/animations/animated-heading";
-import { CodeBlock } from "@/components/garden/post-blocks";
-import { Callout } from "@/components/garden/post-blocks";
+import { CodeBlock, CaptionedImage, CaptionedVideo, Callout } from "@/components/garden/post-blocks";
 
 interface StyledProseProps extends BoxProps {
   children: React.ReactNode;
@@ -17,6 +16,8 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
     h3: (p: any) => <AnimatedHeading level={3} {...p} />,
     pre: CodeBlock,
     Callout,
+    CaptionedImage,
+    CaptionedVideo,
     a: (p: any) => <Link _hover={{ textDecoration: "italic" }} {...p} />,
   };
 

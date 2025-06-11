@@ -1,7 +1,8 @@
-import { Card, Heading, SimpleGrid, Stack, Text, Tag } from "@chakra-ui/react";
+import { Card, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import { PostMetaData } from "@/types/posts";
 import { Link } from "@/components/ui/link";
 import posthog from "posthog-js";
+import { CategoryTags } from "./category-tag";
 
 interface PostCardGridProps {
   posts: PostMetaData[];
@@ -47,21 +48,7 @@ export const PostCardGrid = ({ posts }: PostCardGridProps) => {
             </Card.Body>
             <Card.Footer>
               <Stack direction="row" gap={4}>
-                {post.categories?.length > 0 && (
-                  <Stack direction="row" gap={2}>
-                    {post.categories.map((category) => (
-                      <Tag.Root
-                        key={category}
-                        variant="subtle"
-                        colorScheme="teal"
-                        color="cyan.600"
-                        // fontFamily="Topoline"
-                      >
-                        {category}
-                      </Tag.Root>
-                    ))}
-                  </Stack>
-                )}
+                <CategoryTags categories={post.categories} />
               </Stack>
             </Card.Footer>
           </Card.Root>

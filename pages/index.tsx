@@ -6,7 +6,6 @@ import {
   Box,
   useBreakpointValue,
   Grid,
-  Tag,
   Heading,
   HStack,
 } from "@chakra-ui/react";
@@ -23,6 +22,7 @@ import { SocialBar } from "@/components/common/social-bar";
 import { PortfolioPreview } from "@/components/portfolio/portfolio-preview";
 import { ReactElement, useEffect } from "react";
 import posthog from "posthog-js";
+import { CategoryTags } from "@/components/garden/category-tag";
 
 const HeroSection = () => (
   <Stack p={4} alignItems="center">
@@ -93,22 +93,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
                   <Text>·</Text>
                   <Text>{post.readTime} min read</Text>
                 </HStack>
-                {post.categories?.length > 0 && (
-                  <Stack direction="row" gap={2}>
-                    {post.categories.map((category) => (
-                      <Tag.Root
-                        key={category}
-                        variant="subtle"
-                        colorScheme="teal"
-                        color="cyan.600"
-                        fontFamily="Topoline"
-                        size="md"
-                      >
-                        {category}
-                      </Tag.Root>
-                    ))}
-                  </Stack>
-                )}
+                <CategoryTags categories={post.categories} />
               </Stack>
             </Link>
           </Box>
