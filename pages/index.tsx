@@ -4,7 +4,6 @@ import {
   Stack,
   Text,
   Box,
-  useBreakpointValue,
   Grid,
   Heading,
   HStack,
@@ -12,7 +11,6 @@ import {
 import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
-import { QuoteBlock } from "@/components/common/quote-block";
 import { DynamicFlickeringAsciiImage } from "@/components/common/ascii-image";
 import { loadPortfolioEntries } from "@/lib/utils/portfolio";
 import { loadPosts } from "@/lib/utils/posts";

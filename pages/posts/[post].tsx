@@ -6,7 +6,6 @@ import {
   Stack,
   Flex,
   Text,
-  HStack,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";

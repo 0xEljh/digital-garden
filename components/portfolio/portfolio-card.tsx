@@ -11,7 +11,7 @@ import { Link } from "@/components/ui/link";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
 import { useEffect, useRef, useState, memo } from "react";
-import { getIconComponent } from "@/lib/utils/portfolio-icons";
+import { getIconComponent, type AsciiIconProps } from "@/lib/utils/portfolio-icons";
 import posthog from 'posthog-js';
 
 interface PortfolioCardProps {
@@ -22,20 +22,20 @@ interface PortfolioCardProps {
 // note: isHighlighted doesn't do anything for now
 
 // Memoized icon component that only re-renders when props change
-const MemoizedIcon = memo(({ 
-  IconComponent, 
-  width, 
+const MemoizedIcon = memo(({
+  IconComponent,
+  width,
   // isHighlighted,
-  shouldRender 
-}: { 
-  IconComponent: React.ComponentType<any>, 
-  width: number,
-  isHighlighted: boolean,
-  shouldRender: boolean
+  shouldRender
+}: {
+  IconComponent: React.ComponentType<AsciiIconProps> | undefined;
+  width: number;
+  isHighlighted: boolean;
+  shouldRender: boolean;
 }) => {
-  // If we shouldn't render the component, return null or a placeholder
-  if (!shouldRender) {
-    return <Box width={width}/>
+  // If we shouldn't render the component or IconComponent is undefined, return placeholder
+  if (!shouldRender || !IconComponent) {
+    return <Box width={width} />
   }
 
   return (
@@ -58,10 +58,10 @@ export const PortfolioCard = ({
   const isMobile = useBreakpointValue({ base: true, md: false });
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.8 });
-  
+
   // Track if component has ever been in view
   const [hasBeenInView, setHasBeenInView] = useState(false);
-  
+
   // Determine if we should render the ASCII icon
   // Only render it the first time it comes into view
   useEffect(() => {
@@ -155,8 +155,8 @@ export const PortfolioCard = ({
         </Flex>
         <Text
           position="absolute"
-          top={{base: 8, md: 2}}
-          left={{base: 6, md: 2}}
+          top={{ base: 8, md: 2 }}
+          left={{ base: 6, md: 2 }}
           fontSize="sm"
           color="fg.muted"
           opacity={isHovered ? 1 : 0}

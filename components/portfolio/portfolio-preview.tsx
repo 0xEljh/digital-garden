@@ -32,7 +32,7 @@ export const PortfolioPreview = ({
   const handleMouseEnter = (slug: string) => {
     setExpandedPanel(slug);
     setIsHovered(true);
-    
+
     posthog.capture('portfolio_preview_expand', {
       portfolio_item: entries.find(entry => entry.slug === slug)?.title,
       portfolio_slug: slug,
@@ -45,20 +45,20 @@ export const PortfolioPreview = ({
       <Heading size="md" fontFamily="Topoline" fontWeight="100" w="full" textAlign="left">
         Recent projects/work
       </Heading>
-      
+
       <Stack direction="row"
-        gap={2} 
-        overflow="auto" 
+        gap={2}
+        overflow="auto"
         w="full"
         onMouseLeave={() => setIsHovered(false)}
       >
         {entries.map((entry) => {
           const IconComponent = getIconComponent(entry.icon);
-          
+
           return (
             <MotionFlex
               key={entry.slug}
-              h={{base: "350px", md: "480px"}}
+              h={{ base: "350px", md: "480px" }}
               borderRadius="xl"
               position="relative"
               backdropFilter="blur(8px)"
@@ -109,7 +109,7 @@ export const PortfolioPreview = ({
                 >
                   <Text
                     as={motion.div}
-                    fontSize={{base: "sm", md: "md"}}
+                    fontSize={{ base: "sm", md: "md" }}
                     color="fg.muted"
                     style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                     textWrap="pretty"
@@ -144,11 +144,13 @@ export const PortfolioPreview = ({
                       zIndex={0}
                     >
                       <Center h="100%">
-                        <IconComponent
-                          highlightColor="yellow.400"
-                          isHighlighted={false}
-                          noAnimation={true}
-                        />
+                        {IconComponent && (
+                          <IconComponent
+                            highlightColor="yellow.400"
+                            isHighlighted={false}
+                            noAnimation={true}
+                          />
+                        )}
                       </Center>
                     </Box>
                     <Stack mb={3}>

@@ -1,41 +1,24 @@
-import { ComponentType } from "react";
-
-import {
+// Re-export everything from the centralized ASCII icon factory
+export {
+  getIconComponent,
+  getIconComponentOrThrow,
+  createAsciiIcon,
+  type AsciiIconProps,
+  type AsciiIconConfig,
+  type AsciiIconName,
+  ICON_NAMES,
+  // Individual icon exports
   LightSabreIcon,
   PostQuantumEncryptionIcon,
   DreamboothIcon,
   CryptoChartIcon,
+  CandlestickChartIcon,
   UnderTheRockIcon,
   ETHTokyo23Icon,
-  MaritimeSatelliteIcon,
   EdgeAIIcon,
-  CandlestickChartIcon,
-  DegenLogoIcon,
-  AsciiIconProps,
-  BattleBotIcon,
-  AirdropIcon,
-  BacksimIcon
-  
-} from "@/components/portfolio/ascii-icons";
-
-const iconComponents = {
-  CryptoChartIcon,
-  LightSabreIcon,
-  PostQuantumEncryptionIcon,
-  DreamboothIcon,
-  UnderTheRockIcon,
-  ETHTokyo23Icon,
   MaritimeSatelliteIcon,
-  EdgeAIIcon,
-  CandlestickChartIcon,
   DegenLogoIcon,
   BattleBotIcon,
   AirdropIcon,
-  BacksimIcon
-};
-
-export const getIconComponent = (
-  iconName: string
-): ComponentType<AsciiIconProps> => {
-  return iconComponents[iconName as keyof typeof iconComponents];
-};
+  BacksimIcon,
+} from "@/lib/ascii-icon-factory";

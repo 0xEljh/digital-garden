@@ -19,7 +19,7 @@ import { motion } from "motion/react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
-import { loadPortfolioEntries } from "@/lib/utils/portfolio";
+import { loadPortfolioEntries, loadPortfolioEntry } from "@/lib/utils/portfolio";
 import { PortfolioEntry } from "@/types/portfolio";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
 import { VscBrowser, VscGithub } from "react-icons/vsc";
@@ -44,8 +44,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<ProjectPageProps> = async ({
   params,
 }) => {
-  const entries = await loadPortfolioEntries();
-  const entry = entries.find((e) => e.slug === params?.project);
+  const entry = await loadPortfolioEntry(params?.project as string);
 
   if (!entry) {
     return {
@@ -99,12 +98,14 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
       h="95vh"
     >
       <Center position="absolute" top={0} left={0} w="full" h="full" zIndex={0}>
-        <IconComponent
-          width={iconWidth}
-          highlightColor={"yellow.500"}
-          isHighlighted={true}
-          scrambleAnimationDuration={8}
-        />
+        {IconComponent && (
+          <IconComponent
+            width={iconWidth}
+            highlightColor={"yellow.500"}
+            isHighlighted={true}
+            scrambleAnimationDuration={8}
+          />
+        )}
       </Center>
 
       {/* Content: Occupy lower left quadrant */}

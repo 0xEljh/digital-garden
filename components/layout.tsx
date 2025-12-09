@@ -1,10 +1,10 @@
 import { NavBar } from "@/components/common/nav";
 import { Stack } from "@chakra-ui/react";
 
-interface LayoutPorps {
+interface LayoutProps {
   children: React.ReactNode;
 }
-export function DefaultLayout({ children }: LayoutPorps) {
+export function DefaultLayout({ children }: LayoutProps) {
 
   return (
     <Stack gap={0}>

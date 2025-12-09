@@ -4,7 +4,6 @@ import {
   Heading,
   Stack,
   Text,
-  HStack,
   LinkBox,
   LinkOverlay,
 } from "@chakra-ui/react";
@@ -80,18 +79,12 @@ export default function PostsIndexPage({ posts }: PageProps) {
 }
 
 export const getStaticProps: GetStaticProps<PageProps> = async () => {
+  // Posts are already sorted by date descending from the loader
   const posts = await loadPosts();
-
-  // Sort posts by date, most recent first
-  const sortedPosts = posts.sort((a, b) => {
-    const dateA = new Date(a.date).getTime();
-    const dateB = new Date(b.date).getTime();
-    return dateB - dateA;
-  });
 
   return {
     props: {
-      posts: sortedPosts,
+      posts,
     },
   };
 };
