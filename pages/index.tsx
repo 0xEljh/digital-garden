@@ -34,11 +34,10 @@ const HeroSection = () => (
       fontSize={{ base: "lg", md: "xl" }}
       color="fg.muted"
       maxW={"md"}
-      fontFamily="Topoline"
+      fontFamily="Tickerbit"
       fontWeight="100"
     >
-      The digital garden of a full-stack machine learning engineer. Academia was
-      the plan, startups happened instead. Career debugging in progress.
+      The digital garden of a full-stack (btw) machine learning engineer.
     </Text>
     <SocialBar />
   </Stack>

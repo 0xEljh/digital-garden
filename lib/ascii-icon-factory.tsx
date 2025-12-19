@@ -85,6 +85,9 @@ const ICON_CONFIGS = {
     BacksimIcon: {
         imagePath: "/images/backsim.jpg",
     },
+    TeatheGatheringLogoIcon: {
+        imagePath: "images/teathegathering.jpg"
+    }
 } as const satisfies Record<string, AsciiIconConfig>;
 
 /**

@@ -10,6 +10,8 @@ date: "2025-01-05"
 techStack: ["Pandas"]
 ---
 
-Inspired by the extensibility and clean abstractions in Pytorch-lightning, this is a developer-centric backtester (most others tend to be for traders-turned-developers) that is event driven and aims to allow trading strategies to be backtested as-is relative to its forward tested counterpart.
-It is highly extensible through callback hooks and supports (expects even) models for pricing/slippage, margin management, etc.
-v1 completion postponed to July 2025.
+Most backtesting frameworks are built for traders who learned to code. This is for developers who learned to trade.
+
+Backsim is an event-driven backtesting framework that adopts PyTorch-lightning's philosophy of simple-to-use-easy-to-break abstractions, callback hooks (everywhere), and an attempt to maintain an identical backtest and production environment.
+
+The framework supports (and perhaps even expects) models for slippage, partial fills, margin calls, etc.

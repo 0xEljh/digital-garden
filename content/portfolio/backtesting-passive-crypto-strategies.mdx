@@ -9,7 +9,12 @@ date: "2023-05-10"
 techStack: ["bt", "Pandas"]
 ---
 
-My client wanted to test the thesis of a crypto index fund that would adequately capture the skewness of crypto returns, heavily inspired by Bassembinder.
-I gathered crypto data for over 2,000+ eligible tokens spanning a decade, including many of which that would eventually go to zero (and did lots of data cleaning). 
-Using a generous liquidity filter (greater than 1 million market cap), we experimented with and benchmarked various portfolio strategies, taking into reasonable account slippage, buy limits, and liquidity issues by modelling them in these backtests.
-We hence overall found that buying every token at equal weight (without rebalancing) had the best overall performance (compared at various time scales, entries, etc.), short of picking the winners (BTC and ETH) directly.
+Can asymmetric returns be captured without picking winners? Should you attempt to pick winners at all?
+
+Inspired by Bassembinder's research on stock return skewness, this project tests whether a crypto index fund could successful capture fat-tail upsides.
+
+This started with building a comprehensive dataset of 2000+ tokens, spanning a decade from the launch of Bitcoin, and included a significant majority of tokens that would go to zero.
+
+Realistic execution was modelled using liquidity filters, slippage, and position limits. Tested equal-weight, market-cap-weight, and rebalancing strategies across multiple entry points and time horizons.
+
+The findings are surprising: equal-weight, no-rebalancing, buy-and-hold outperformed every other strategy that wasn't simply buying and holding BTC and ETH.
