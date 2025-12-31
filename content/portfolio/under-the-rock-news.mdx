@@ -7,7 +7,14 @@ link: "https://undertherocknews.com"
 icon: "UnderTheRockIcon"
 categories: ["Web Development", "Deep Learning"]
 date: "2023-06-15"
-techStack: ["Next.js", "HuggingFace"]
+techStack: ["Next.js", "HuggingFace", "OpenAI"]
 ---
 
-This project is an MVP LLM-based Mindful News Filter.  It helps users discover high-impact news in a focused and efficient manner.
+The news cycle is >90% noise, ragebait, and designed to take up your attention. Hence, this filter.
+
+This was also my first "GPT-wrapper" project.
+
+It ingests RSS feeds from various notable news sources: CNA (Channel News Asia), BBC, etc. and attempts to summarize, score, and "de-noise" them.
+
+Unfortunately, I've sunset this project for now because it was a $40/month API bill, while the better alternative was still to categorically not consume any news.
+I also didn't have a good solution for not encoding my own biases into the filtering process.

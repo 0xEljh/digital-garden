@@ -9,6 +9,11 @@ date: "2019-05-10"
 techStack: ["Python", "MATLAB"]
 ---
 
+Built a finite element solver for modeling Brillouin scattering in high-power laser fibers. Selected for showcase from a cohort of 40.
 
-At DSO, a defence research laboratory, I developed a Python-based finite element solver to model opto-acoustic interactions (Brillouin scattering) in high-powered laser fibres.
-This tool facilitated the design of fibres with reduced power loss from backscattering and was selected for showcase from a cohort of forty.
+At DSO, a defense research lab, we were researching the use of high-powered lasers (you can use your imagination to fill in the rest).
+At these power levels, backscattering due to opto-acoustic interactions make up a non-trivial amount of power loss, creating a "power ceiling".
+
+This solver was written by me from scratch (not a COMSOL wrapper) as the lack of (physics-based) abstractions helped me to work directly on the physics and geometric models.
+It was my first internship, so being able to successfully go from start-to-finish in building this model that could predict scattering thresholds accurately enough to be used to guide fiber design felt like a great accomplishment. (and getting selected only added to that)
+

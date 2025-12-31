@@ -7,8 +7,12 @@ link: "https://drawanyone.ai/"
 icon: "DreamboothIcon"
 categories: ["Deep Learning"]
 date: "2022-12-15"
-techStack: ["PyTorch"]
+techStack: ["PyTorch", "Hugging Face", "transformers"]
 ---
 
-Back when AI profile pictures were the hype, I helped drawanyone reduce the VRAM requirements for dreambooth: a few-shot finetuning method to update the model on what a "face" of our subject should look like, allowing us to then prompt images of it.
-Through a mix of quantization and improving the regularization step, I halved the VRAM requirements from 24GB to 12GB, meaning we could now use 3080s instead of 3090s for training. This represented a 35% cost reduction for my client and turned them profitable.
+Cut dreambooth VRAM requirements in half: 24GB -> 12GB. Turned my client's app profitable.
+
+Dreambooth, a few-shot approach to finetuning imagegen models, required 24GB at the time when taken off the shelf.
+For my client, this meant having to rent costly 3090 GPU instances on runpod.
+
+Through quantization and optimisations made to the regularisation step, I got training to fit within 12GB (3080s), which was a 35% cost reduction.

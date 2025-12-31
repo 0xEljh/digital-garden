@@ -43,7 +43,7 @@ export const PortfolioPreview = ({
   return (
     <Stack gap={6} w="full" align="center">
       <Heading size="md" fontFamily="Topoline" fontWeight="100" w="full" textAlign="left">
-        Recent projects/work
+        Recent works
       </Heading>
 
       <Stack direction="row"
@@ -182,7 +182,7 @@ export const PortfolioPreview = ({
                             });
                           }}
                         >
-                          View Project
+                          Details
                         </Link>
                       </Button>
                     </Box>
@@ -195,24 +195,24 @@ export const PortfolioPreview = ({
       </Stack>
 
       <Stack direction={{ base: "column-reverse", md: "row" }}>
-        <Button
-          colorScheme="teal"
-          variant="outline"
-          size="md"
-          alignSelf="center"
-          asChild
-        >
-          <Link href="/api/download-resume"
-            onClick={() => {
-              posthog.capture('download_resume_click', {
-                location: router.asPath
-              });
-            }}
-          >
-            <LuDownload />
-            Resume
-          </Link>
-        </Button>
+        {/* <Button */}
+        {/*   colorScheme="teal" */}
+        {/*   variant="outline" */}
+        {/*   size="md" */}
+        {/*   alignSelf="center" */}
+        {/*   asChild */}
+        {/* > */}
+        {/*   <Link href="/api/download-resume" */}
+        {/*     onClick={() => { */}
+        {/*       posthog.capture('download_resume_click', { */}
+        {/*         location: router.asPath */}
+        {/*       }); */}
+        {/*     }} */}
+        {/*   > */}
+        {/*     <LuDownload /> */}
+        {/*     Resume */}
+        {/*   </Link> */}
+        {/* </Button> */}
         <Button
           asChild
           colorScheme="teal"
@@ -226,7 +226,7 @@ export const PortfolioPreview = ({
                 location: router.asPath
               });
             }}
-          >Full Portfolio</Link>
+          >Body of work</Link>
         </Button>
       </Stack>
     </Stack>

@@ -55,7 +55,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
             key={post.slug}
             asChild
             _hover={{
-              transform: "scale(1.02) translateX(-20px)",
+              transform: "scale(1.01) translateX(-5px)",
             }}
             transition="all 0.2s"
           >
