@@ -18,7 +18,7 @@ const system = createSystem(defaultConfig, {
   theme: {
     tokens: {
       fonts: {
-        body: { value: "Aeion Mono" },
+        body: { value: "var(--font-body)" },
       },
     },
     semanticTokens: {

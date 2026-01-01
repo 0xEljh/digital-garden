@@ -159,7 +159,7 @@ export const PortfolioPreview = ({
                       </Heading>
                     </Stack>
 
-                    <Text color="gray.300" mb={5} fontSize="sm" lineHeight="relaxed">
+                    <Text color="gray.300" mb={5} fontSize="sm" lineHeight="relaxed" fontFamily={"Aeion Mono"}>
                       {entry.shortDescription}
                     </Text>
 

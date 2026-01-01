@@ -92,7 +92,7 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
       }}
       {...props}
       color="gray.300"
-      fontFamily="Inter"
+      fontFamily="body"
       fontWeight="400"
     >
       <MDXProvider components={components}>{children}</MDXProvider>

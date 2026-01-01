@@ -125,7 +125,7 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
                 {post.title}
               </Heading>
               <CategoryTags categories={post.categories} />
-              <Text color="gray.600">
+              <Text color="gray.600" fontFamily={"Aeion Mono"}>
                 {new Date(post.date).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
@@ -134,7 +134,7 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
                 · {post.readTime} min read
               </Text>
             </Stack>
-            <StyledProse fontWeight="30">
+            <StyledProse>
               <MDXRemote {...post.content} />
             </StyledProse>
 

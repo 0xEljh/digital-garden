@@ -1,8 +1,21 @@
 import { Global } from "@emotion/react";
+import { IBM_Plex_Serif } from "next/font/google";
+
+export const ibmPlexSerif = IBM_Plex_Serif({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-ibm-plex-serif",
+});
 
 const Fonts = () => (
   <Global
     styles={`
+      :root {
+        --font-body: ${ibmPlexSerif.style.fontFamily};
+      }
+
       @font-face {
         font-family: 'Aeion Mono';
         font-style: normal;
