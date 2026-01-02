@@ -24,12 +24,16 @@ import { CategoryTags } from "@/components/garden/category-tag";
 
 const HeroSection = () => (
   <Stack p={4} alignItems="center">
-    <DynamicFlickeringAsciiImage
-      imagePath="/emiya_kiritsugu.png"
-      width={300}
-      sampleFactor={12}
-      fontSize="2px"
-    />
+    <Link
+      href={`/dashboard`}
+    >
+      <DynamicFlickeringAsciiImage
+        imagePath="/emiya_kiritsugu.png"
+        width={300}
+        sampleFactor={12}
+        fontSize="2px"
+      />
+    </Link>
     <Text
       fontSize={{ base: "lg", md: "xl" }}
       color="fg.muted"

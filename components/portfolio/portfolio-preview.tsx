@@ -114,6 +114,7 @@ export const PortfolioPreview = ({
                     style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                     textWrap="pretty"
                     flex="none"
+                    fontFamily="Aeion Mono"
                   >
                     {entry.title}
                   </Text>

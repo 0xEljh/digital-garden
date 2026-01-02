@@ -13,7 +13,7 @@ import { MDXRemote } from "next-mdx-remote";
 import { loadPosts } from "@/lib/utils/posts";
 import type { Post, PostMetaData } from "@/types/posts";
 import { PostCardGrid } from "@/components/garden/post-card-grid";
-import { StyledProse } from "@/components/common/styled-prose";
+import { StyledProse, mdxComponents } from "@/components/common/styled-prose";
 import { SocialBar } from "@/components/common/social-bar";
 import "katex/dist/katex.min.css";
 import { useEffect } from "react";
@@ -135,7 +135,7 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
               </Text>
             </Stack>
             <StyledProse>
-              <MDXRemote {...post.content} />
+              <MDXRemote {...post.content} components={mdxComponents} />
             </StyledProse>
 
             <SocialBar />

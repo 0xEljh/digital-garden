@@ -23,7 +23,7 @@ import { loadPortfolioEntries, loadPortfolioEntry } from "@/lib/utils/portfolio"
 import { PortfolioEntry } from "@/types/portfolio";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
 import { VscBrowser, VscGithub } from "react-icons/vsc";
-import { StyledProse } from "@/components/common/styled-prose";
+import { StyledProse, mdxComponents } from "@/components/common/styled-prose";
 
 interface ProjectPageProps {
   entry: PortfolioEntry;
@@ -149,7 +149,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
             {entry.shortDescription}
           </Text> */}
           <StyledProse>
-            <MDXRemote {...content} />
+            <MDXRemote {...content} components={mdxComponents} />
           </StyledProse>
         </Stack>
       </GridItem>

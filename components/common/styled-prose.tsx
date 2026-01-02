@@ -1,7 +1,6 @@
 import React from "react";
 import { Image, Box, type BoxProps, Container } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
-import { MDXProvider } from "@mdx-js/react";
 import { AnimatedHeading } from "@/components/animations/animated-heading";
 import { CodeBlock, CaptionedImage, CaptionedVideo, Callout } from "@/components/garden/post-blocks";
 
@@ -9,17 +8,18 @@ interface StyledProseProps extends BoxProps {
   children: React.ReactNode;
 }
 
+export const mdxComponents = {
+  h1: (p: any) => <AnimatedHeading level={1} {...p} />,
+  h2: (p: any) => <AnimatedHeading level={2} {...p} />,
+  h3: (p: any) => <AnimatedHeading level={3} {...p} />,
+  pre: CodeBlock,
+  Callout,
+  CaptionedImage,
+  CaptionedVideo,
+  a: (p: any) => <Link _hover={{ textDecoration: "italic" }} {...p} />,
+};
+
 export function StyledProse({ children, ...props }: StyledProseProps) {
-  const components = {
-    h1: (p: any) => <AnimatedHeading level={1} {...p} />,
-    h2: (p: any) => <AnimatedHeading level={2} {...p} />,
-    h3: (p: any) => <AnimatedHeading level={3} {...p} />,
-    pre: CodeBlock,
-    Callout,
-    CaptionedImage,
-    CaptionedVideo,
-    a: (p: any) => <Link _hover={{ textDecoration: "italic" }} {...p} />,
-  };
 
   return (
     <Container
@@ -95,7 +95,7 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
       fontFamily="body"
       fontWeight="400"
     >
-      <MDXProvider components={components}>{children}</MDXProvider>
+      {children}
     </Container>
   );
 }

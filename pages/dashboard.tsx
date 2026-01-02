@@ -81,18 +81,18 @@ const DevPlanningRatioCard = ({
         <Card.Root size="sm">
             <Card.Header>
                 <Card.Title fontFamily="Tickerbit" fontSize="sm">
-                    Dev vs Planning Time
+                    Dev vs Design Time
                 </Card.Title>
             </Card.Header>
             <Card.Body>
                 <Stack gap={4}>
-                    <HStack justify="space-between" fontSize="sm">
+                    <HStack justify="space-between" fontSize="sm" fontFamily="Aeion Mono">
                         <Text color="cyan.300">
                             Dev: {formatHours(analytics.devTime.hours)} (
                             {analytics.devTime.percentage.toFixed(0)}%)
                         </Text>
                         <Text color="purple.300">
-                            Planning: {formatHours(analytics.planningTime.hours)} (
+                            Design: {formatHours(analytics.planningTime.hours)} (
                             {analytics.planningTime.percentage.toFixed(0)}%)
                         </Text>
                     </HStack>
@@ -112,7 +112,7 @@ const DevPlanningRatioCard = ({
                             />
                         </HStack>
                     </Box>
-                    <HStack justify="space-between" fontSize="xs" color="fg.muted">
+                    <HStack justify="space-between" fontSize="xs" color="fg.muted" fontFamily="Aeion Mono">
                         <Text>Total Active: {formatHours(analytics.totalActiveTime.hours)}</Text>
                         <Text>AI Chat: {formatHours(analytics.aiChatTime.hours)}</Text>
                     </HStack>
@@ -234,7 +234,7 @@ export default function Dashboard({ analyticsData }: DashboardProps) {
                         >
                             Time Accounting
                         </Heading>
-                        <Text color="fg.muted" fontSize="sm">
+                        <Text color="fg.muted" fontSize="sm" fontFamily="Aeion Mono">
                             Development activity tracked via ActivityWatch
                         </Text>
                     </Stack>
@@ -243,7 +243,7 @@ export default function Dashboard({ analyticsData }: DashboardProps) {
                         <NoDataMessage />
                     ) : (
                         <>
-                            <HStack justify="space-between" align="center">
+                            <HStack justify="space-between" align="center" fontFamily="Aeion Mono">
                                 <Text color="fg.muted" fontSize="sm">
                                     {analytics.daysIncluded} days of data
                                 </Text>
