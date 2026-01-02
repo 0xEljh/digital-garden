@@ -1,15 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
-import { Router } from "next/router";
-import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
-import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
+import {
+  ChakraProvider,
+  createSystem,
+  defaultConfig,
+  defineConfig,
+  defineRecipe,
+} from "@chakra-ui/react";
 import type { PropsWithChildren } from "react";
 import { ThemeProvider } from "next-themes";
 import { ColorModeProvider, DarkMode } from "./color-mode";
+import { AnalyticsProvider } from "@/components/common/analytics-provider";
 
-const system = createSystem(defaultConfig, {
+const buttonRecipe = defineRecipe({
+  base: {
+    fontFamily: "'Aeion Mono', monospace",
+  },
+});
+
+const customConfig = defineConfig({
   globalCss: {
     body: {
       colorPalette: "cyan",
@@ -28,30 +37,17 @@ const system = createSystem(defaultConfig, {
         l3: { value: "0.375rem" },
       },
     },
+    recipes: {
+      button: buttonRecipe,
+    },
   },
 });
 
+const system = createSystem(defaultConfig, customConfig);
+
 export const Provider = (props: PropsWithChildren) => {
-  useEffect(() => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: "/ingest",
-      ui_host: "https://us.posthog.com",
-      loaded: (posthog) => {
-        if (process.env.NODE_ENV === "development") posthog.debug();
-      },
-      debug: process.env.NODE_ENV === "development",
-    });
-
-    const handleRouteChange = () => posthog.capture("$pageview");
-    Router.events.on("routeChangeComplete", handleRouteChange);
-
-    return () => {
-      Router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, []);
-
   return (
-    <PostHogProvider client={posthog}>
+    <AnalyticsProvider>
       <ThemeProvider attribute="class" forcedTheme="dark" enableSystem={false}>
         <ChakraProvider value={system}>
           <ColorModeProvider>
@@ -59,6 +55,7 @@ export const Provider = (props: PropsWithChildren) => {
           </ColorModeProvider>
         </ChakraProvider>
       </ThemeProvider>
-    </PostHogProvider>
+    </AnalyticsProvider>
   );
 };
+

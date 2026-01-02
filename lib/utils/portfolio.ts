@@ -9,18 +9,24 @@ const PORTFOLIO_DIR = path.join(process.cwd(), "content/portfolio");
  * Parse a single portfolio MDX file and return the entry data
  */
 const parsePortfolioFile = async (
-  filename: string
+  filename: string,
+  includeContent: boolean = true
 ): Promise<PortfolioEntry> => {
   const filePath = path.join(PORTFOLIO_DIR, filename);
   const source = await fs.readFile(filePath, "utf8");
   const { content, data } = matter(source);
   const metadata = data as PortfolioEntryMetadata;
 
-  return {
+  const entry: PortfolioEntry = {
     ...metadata,
     slug: filename.replace(/\.mdx$/, ""),
-    longDescription: content,
   };
+
+  if (includeContent) {
+    entry.longDescription = content;
+  }
+
+  return entry;
 };
 
 /**
@@ -38,7 +44,25 @@ export const loadPortfolioEntries = async (): Promise<PortfolioEntry[]> => {
   const entryFiles = await fs.readdir(PORTFOLIO_DIR);
   const mdxFiles = entryFiles.filter((f) => f.endsWith(".mdx"));
 
-  const entries = await Promise.all(mdxFiles.map(parsePortfolioFile));
+  const entries = await Promise.all(
+    mdxFiles.map((f) => parsePortfolioFile(f, true))
+  );
+
+  return sortByDateDesc(entries);
+};
+
+/**
+ * Load all portfolio entries metadata (no content), sorted by date descending
+ */
+export const loadPortfolioEntriesMetadata = async (): Promise<
+  PortfolioEntry[]
+> => {
+  const entryFiles = await fs.readdir(PORTFOLIO_DIR);
+  const mdxFiles = entryFiles.filter((f) => f.endsWith(".mdx"));
+
+  const entries = await Promise.all(
+    mdxFiles.map((f) => parsePortfolioFile(f, false))
+  );
 
   return sortByDateDesc(entries);
 };
@@ -54,7 +78,7 @@ export const loadPortfolioEntry = async (
 
   try {
     await fs.access(filePath);
-    return parsePortfolioFile(filename);
+    return parsePortfolioFile(filename, true);
   } catch {
     return null;
   }

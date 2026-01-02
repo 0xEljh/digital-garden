@@ -11,10 +11,10 @@ import {
 import NextLink from "next/link";
 import { GetStaticProps } from "next";
 import { PortfolioCard } from "@/components/portfolio/portfolio-card";
-import { loadPortfolioEntries } from "@/lib/utils/portfolio";
+import { loadPortfolioEntriesMetadata } from "@/lib/utils/portfolio";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useRouter } from "next/router";
-import posthog from "posthog-js";
+import { useAnalytics } from "@/components/common/analytics-provider";
 import { LuDownload } from "react-icons/lu";
 
 interface PortfolioPageProps {
@@ -22,7 +22,7 @@ interface PortfolioPageProps {
 }
 
 export const getStaticProps: GetStaticProps<PortfolioPageProps> = async () => {
-  const entries = await loadPortfolioEntries();
+  const entries = await loadPortfolioEntriesMetadata();
 
   return {
     props: {
@@ -33,6 +33,8 @@ export const getStaticProps: GetStaticProps<PortfolioPageProps> = async () => {
 
 export default function PortfolioPage({ entries }: PortfolioPageProps) {
   const router = useRouter();
+  const posthog = useAnalytics();
+
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.xl">
@@ -57,7 +59,7 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
               <NextLink
                 href="/api/download-resume"
                 onClick={() => {
-                  posthog.capture("download_resume_click", {
+                  posthog?.capture("download_resume_click", {
                     location: router.asPath,
                   });
                 }}

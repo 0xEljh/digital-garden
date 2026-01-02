@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { Box, Heading, Stack, Button, Flex, Text, Center } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -6,9 +6,9 @@ import { useRouter } from 'next/router';
 import type { PortfolioEntry } from "@/types/portfolio";
 import { LuDownload } from "react-icons/lu";
 import { getIconComponent } from "@/lib/utils/portfolio-icons";
-import posthog from 'posthog-js';
+import { useAnalytics } from "@/components/common/analytics-provider";
 
-const MotionFlex = motion.create(Flex);
+const MotionFlex = m.create(Flex);
 
 export const PortfolioPreview = ({
   entries,
@@ -18,6 +18,7 @@ export const PortfolioPreview = ({
   const [expandedPanel, setExpandedPanel] = useState<string | null>(entries.length > 0 ? entries[0].slug : null);
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
+  const posthog = useAnalytics();
 
   // Auto-collapse panels when not hovered
   useEffect(() => {
@@ -33,7 +34,7 @@ export const PortfolioPreview = ({
     setExpandedPanel(slug);
     setIsHovered(true);
 
-    posthog.capture('portfolio_preview_expand', {
+    posthog?.capture('portfolio_preview_expand', {
       portfolio_item: entries.find(entry => entry.slug === slug)?.title,
       portfolio_slug: slug,
       location: router.asPath
@@ -108,7 +109,7 @@ export const PortfolioPreview = ({
                   h="full"
                 >
                   <Text
-                    as={motion.div}
+                    as={m.div}
                     fontSize={{ base: "sm", md: "md" }}
                     color="fg.muted"
                     style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
@@ -176,7 +177,7 @@ export const PortfolioPreview = ({
                       >
                         <Link href={`/portfolio/${entry.slug}`}
                           onClick={() => {
-                            posthog.capture('view_project_click', {
+                            posthog?.capture('view_project_click', {
                               portfolio_item: entry.title,
                               portfolio_slug: entry.slug,
                               location: router.asPath
@@ -223,7 +224,7 @@ export const PortfolioPreview = ({
         >
           <Link href="/portfolio"
             onClick={() => {
-              posthog.capture('full_portfolio_click', {
+              posthog?.capture('full_portfolio_click', {
                 location: router.asPath
               });
             }}

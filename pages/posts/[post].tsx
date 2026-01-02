@@ -17,7 +17,7 @@ import { StyledProse, mdxComponents } from "@/components/common/styled-prose";
 import { SocialBar } from "@/components/common/social-bar";
 import "katex/dist/katex.min.css";
 import { useEffect } from "react";
-import posthog from "posthog-js";
+import { useAnalytics } from "@/components/common/analytics-provider";
 import Head from "next/head";
 import { LuArrowRight } from "react-icons/lu";
 import type { HeadMetaProps } from "@/types/head-meta";
@@ -85,13 +85,15 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
 };
 
 export default function PostPage({ post, relatedPosts }: PostPageProps) {
+  const posthog = useAnalytics();
+
   useEffect(() => {
-    posthog.capture("view_post", {
+    posthog?.capture?.("view_post", {
       post_title: post.title,
       post_slug: post.slug,
       categories: post.categories,
     });
-  }, [post]);
+  }, [post, posthog]);
 
   // JSON-LD structured data for SEO
   const jsonLd = {

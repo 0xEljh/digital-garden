@@ -1,14 +1,14 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useMemo } from "react";
 
-export const MotionBox = motion.create(Box);
+export const MotionBox = m.create(Box);
 
 interface TransitInProps {
   children: React.ReactNode;
   props?: BoxProps;
 }
-  
+
 // Animation settings abstraction
 const useEntranceAnimation = () => {
   const animationSettings = useMemo(

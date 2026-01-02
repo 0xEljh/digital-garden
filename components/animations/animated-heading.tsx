@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import {
     Heading,
     type SystemStyleObject,
@@ -13,7 +13,7 @@ type AnimatedHeadingProps = {
 
 type HeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
-const MotionHeading = motion.create(Heading);
+const MotionHeading = m.create(Heading);
 
 export const AnimatedHeading: React.FC<AnimatedHeadingProps> = ({
     level,

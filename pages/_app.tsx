@@ -2,6 +2,7 @@ import type { AppProps } from "next/app";
 import Fonts from "@/styles/fonts";
 import { useRouter } from "next/router";
 import HeadMeta from "@/components/common/head-meta";
+import { LazyMotion, domAnimation } from "motion/react";
 
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
@@ -29,11 +30,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <Provider>
-      <Fonts />
-      <HeadMeta {...pageHeadMeta} />
-      <PageTransition key={router.asPath}>
-        {getLayout(<Component {...pageProps} />)}
-      </PageTransition>
+      <LazyMotion features={domAnimation}>
+        <Fonts />
+        <HeadMeta {...pageHeadMeta} />
+        <PageTransition key={router.asPath}>
+          {getLayout(<Component {...pageProps} />)}
+        </PageTransition>
+      </LazyMotion>
     </Provider>
   );
 }

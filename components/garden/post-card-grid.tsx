@@ -1,7 +1,7 @@
 import { Card, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import { PostMetaData } from "@/types/posts";
 import { Link } from "@/components/ui/link";
-import posthog from "posthog-js";
+import { useAnalytics } from "@/components/common/analytics-provider";
 import { CategoryTags } from "./category-tag";
 
 interface PostCardGridProps {
@@ -9,6 +9,7 @@ interface PostCardGridProps {
 }
 
 export const PostCardGrid = ({ posts }: PostCardGridProps) => {
+  const posthog = useAnalytics();
   return (
     <SimpleGrid
       columns={{ base: 1, md: 2, lg: 3 }}
@@ -19,7 +20,7 @@ export const PostCardGrid = ({ posts }: PostCardGridProps) => {
           href={`/posts/${post.slug}`}
           key={post.slug}
           onClick={() => {
-            posthog.capture("related_post_click", {
+            posthog?.capture("related_post_click", {
               post_title: post.title,
               post_slug: post.slug,
               categories: post.categories,

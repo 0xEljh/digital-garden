@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { Box, Text } from "@chakra-ui/react";
-import { motion, cubicBezier, steps, animate, MotionValue, useMotionValue, useTransform, motionValue } from "motion/react";
+import { m, cubicBezier, steps, animate, MotionValue, useMotionValue, useTransform, motionValue } from "motion/react";
 import { convertImageToAscii } from "../../lib/utils/asciiConverter";
 import dynamic from "next/dynamic";
 
@@ -120,7 +120,7 @@ const FlickerRow = ({ row }: { row: string }) => {
 
   if (flickerType === "opacity") {
     return (
-      <motion.div
+      <m.div
         animate={{ opacity: [1, 0.9, 1], x: [`${intensity * -0.5}px`, 0, `${intensity * 0.5}px`, 0] }}
         transition={{
           duration: 0.12 * intensity,
@@ -131,14 +131,14 @@ const FlickerRow = ({ row }: { row: string }) => {
         }}
       >
         {row}
-      </motion.div>
+      </m.div>
     );
   }
 
   const hashRow = "/".repeat(row.length);
   return (
     <div style={{ position: "relative", display: "block" }}>
-      <motion.span
+      <m.span
         style={{ position: "absolute", top: 0, left: 0 }}
         animate={{ opacity: [1, 0, 1, 0, 1] }}
         transition={{
@@ -149,8 +149,8 @@ const FlickerRow = ({ row }: { row: string }) => {
         }}
       >
         {row}
-      </motion.span>
-      <motion.span
+      </m.span>
+      <m.span
         style={{ position: "absolute", top: 0, left: 0 }}
         animate={{
           opacity: [0, 1, 0],
@@ -164,7 +164,7 @@ const FlickerRow = ({ row }: { row: string }) => {
         }}
       >
         {hashRow}
-      </motion.span>
+      </m.span>
       <span style={{ visibility: "hidden" }}>{row}</span>
     </div>
   );
@@ -328,14 +328,14 @@ export const ScrambledAsciiImage = ({
   const progressValue = motionValue(0);
   const animationRef = useRef<ReturnType<typeof animate> | null>(null);
   const rows = asciiArt.split("\n");
-  
+
   // Characters to use for scrambling - we'll use a mix of special chars and letters
   const scrambleChars = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   // Define a smooth easing curve with precise control points
   // Slow start, quick middle, gentle end
-  const smoothEasing = cubicBezier(.32,.12,.68,.93);
-  
+  const smoothEasing = cubicBezier(.32, .12, .68, .93);
+
   useEffect(() => {
     const image = new Image();
     image.src = imagePath;
@@ -348,11 +348,11 @@ export const ScrambledAsciiImage = ({
           sampleFactor,
         });
         setAsciiArt(ascii);
-        
+
         // Reset animation state
         setIsAnimating(true);
         progressValue.set(0);
-        
+
         // @ts-expect-error Type '1' has no properties in common with type 'ObjectTarget<MotionValue<number>>' 
         animationRef.current = animate(progressValue, 1, {
           duration: scrambleAnimationDuration,
@@ -367,7 +367,7 @@ export const ScrambledAsciiImage = ({
     image.onerror = (err) => {
       console.error("Error loading image", err);
     };
-    
+
     // Cleanup animation on unmount
     return () => {
       if (animationRef.current) {
@@ -387,9 +387,9 @@ export const ScrambledAsciiImage = ({
       fontSize={fontSize}
     >
       {rows.map((row, rowIndex) => (
-        <ScrambledRow 
-          key={rowIndex} 
-          row={row} 
+        <ScrambledRow
+          key={rowIndex}
+          row={row}
           isAnimating={isAnimating}
           progressValue={progressValue}
           scrambleChars={scrambleChars}
@@ -403,16 +403,16 @@ export const ScrambledAsciiImage = ({
 };
 
 // The ScrambledRow component handles the text scrambling animation for each row
-const ScrambledRow = ({ 
-  row, 
+const ScrambledRow = ({
+  row,
   isAnimating,
   progressValue,
   scrambleChars,
   rowIndex,
   totalRows,
   smoothEasing
-}: { 
-  row: string; 
+}: {
+  row: string;
   isAnimating: boolean;
   progressValue: MotionValue<number>;
   scrambleChars: string;
@@ -421,46 +421,46 @@ const ScrambledRow = ({
   smoothEasing: ReturnType<typeof cubicBezier>;
 }) => {
   const [displayText, setDisplayText] = useState("");
-  
+
   // Create a row-specific progress value that's derived from the main progress
   // but staggered based on the row position
   const staggerFactor = 0.4; // 40% of animation is staggered
   const rowPosition = totalRows > 1 ? rowIndex / (totalRows - 1) : 0;
-  
+
   // Transform the main progress into a row-specific progress
   const rowProgressValue = useTransform(progressValue, (value) => {
     // Calculate staggered progress
     let rowProgress = value - (rowPosition * staggerFactor);
-    
+
     // Scale to 0-1 range
     rowProgress = Math.max(0, Math.min(1, rowProgress / (1 - staggerFactor)));
-    
+
     // Apply easing to row progress for even smoother motion
     return smoothEasing(rowProgress);
   });
-  
+
   // Update display text whenever rowProgressValue changes
   useEffect(() => {
     const updateText = () => {
       if (!row) return "";
-      
+
       // Get the current progress value
       const rowProgress = rowProgressValue.get();
-      
+
       const newText = Array.from(row).map((char, i) => {
         // Character-specific randomization for organic feel
         const charRandomness = (Math.sin(i * 0.1) + 1) / 2; // Value between 0-1
-        
+
         // Combine row progress with character randomness
         const charProgress = rowProgress * (1.0 + 0.2 * charRandomness);
-        
+
         // Calculate reveal threshold with acceleration at the end
-        const revealThreshold = charProgress < 0.8 
-          ? charProgress 
+        const revealThreshold = charProgress < 0.8
+          ? charProgress
           : charProgress + ((charProgress - 0.8) * 4); // Accelerate final reveal
-          
+
         const shouldReveal = Math.random() < revealThreshold || charProgress >= 0.99;
-        
+
         if (shouldReveal) {
           return char;
         } else {
@@ -471,30 +471,30 @@ const ScrambledRow = ({
           return scrambleChars[scrambleIndex % scrambleChars.length];
         }
       }).join('');
-      
+
       setDisplayText(newText);
     };
-    
+
     // If animation is complete and progress is 1, just set the final text
     if (!isAnimating && progressValue.get() >= 0.99) {
       setDisplayText(row);
       return;
     }
-    
+
     // Set up a listener for the motion value
     const unsubscribe = rowProgressValue.on("change", () => {
       updateText();
     });
-    
+
     // Initial update
     updateText();
-    
+
     // Cleanup
     return () => {
       unsubscribe();
     };
   }, [row, isAnimating, rowProgressValue, scrambleChars, progressValue]);
-  
+
   return <div>{displayText}</div>;
 };
 

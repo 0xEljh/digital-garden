@@ -15,7 +15,7 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
@@ -62,7 +62,7 @@ export const getStaticProps: GetStaticProps<ProjectPageProps> = async ({
   };
 };
 
-const MotionBox = motion.create(Box);
+const MotionBox = m.create(Box);
 
 export default function ProjectPage({ entry, content }: ProjectPageProps) {
   const IconComponent = getIconComponent(entry.icon);

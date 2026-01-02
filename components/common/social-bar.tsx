@@ -1,10 +1,10 @@
 import { ButtonGroup, IconButton, useToken, HStack, Button, Icon } from "@chakra-ui/react";
 import { FaXTwitter, FaGithub, FaLinkedin, FaEnvelope, FaThreads, FaTelegram } from "react-icons/fa6";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Box } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
 
-export const MotionButton = motion.create(IconButton);
+export const MotionButton = m.create(IconButton);
 
 // AnimatedIconButton Component
 interface AnimatedIconButtonProps {

@@ -48,6 +48,7 @@ const parsePostFile = async (filename: string): Promise<Post> => {
       rehypePlugins: [rehypeKatex],
     },
   });
+
   const metadata = data as PostMetaData;
 
   // Use filename (without .mdx) as default slug if not defined
@@ -65,9 +66,37 @@ const parsePostFile = async (filename: string): Promise<Post> => {
 };
 
 /**
+ * Parse a single post MDX file and return only the metadata
+ */
+const parsePostMetadataFile = async (
+  filename: string
+): Promise<PostMetaData> => {
+  const filePath = path.join(POSTS_DIR, filename);
+  const source = await fs.readFile(filePath, "utf8");
+
+  const { content, data } = matter(source);
+
+  const raw = data as Partial<PostMetaData>;
+  const slug = raw.slug || filename.replace(/\.mdx$/, "");
+  const categories = raw.categories ?? [];
+  const relatedPosts = raw.relatedPosts ?? [];
+  const readTime = estimateReadTime(content, categories);
+
+  return {
+    title: raw.title ?? slug,
+    slug,
+    excerpt: raw.excerpt ?? "",
+    categories,
+    date: raw.date ?? "",
+    relatedPosts,
+    readTime,
+  };
+};
+
+/**
  * Sort posts by date descending (newest first)
  */
-const sortByDateDesc = (posts: Post[]): Post[] =>
+const sortByDateDesc = <T extends { date: string }>(posts: T[]): T[] =>
   posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 /**
@@ -78,6 +107,18 @@ export async function loadPosts(): Promise<Post[]> {
   const mdxFiles = postFiles.filter((file) => file.endsWith(".mdx"));
 
   const posts = await Promise.all(mdxFiles.map(parsePostFile));
+
+  return sortByDateDesc(posts);
+}
+
+/**
+ * Load all posts metadata (no content), sorted by date descending
+ */
+export async function loadPostsMetadata(): Promise<PostMetaData[]> {
+  const postFiles = await fs.readdir(POSTS_DIR);
+  const mdxFiles = postFiles.filter((file) => file.endsWith(".mdx"));
+
+  const posts = await Promise.all(mdxFiles.map(parsePostMetadataFile));
 
   return sortByDateDesc(posts);
 }

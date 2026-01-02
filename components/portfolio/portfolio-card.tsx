@@ -12,7 +12,7 @@ import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
 import { useEffect, useRef, useState, memo } from "react";
 import { getIconComponent, type AsciiIconProps } from "@/lib/utils/portfolio-icons";
-import posthog from 'posthog-js';
+import { useAnalytics } from "@/components/common/analytics-provider";
 
 interface PortfolioCardProps {
   entry: PortfolioEntry;
@@ -58,6 +58,7 @@ export const PortfolioCard = ({
   const isMobile = useBreakpointValue({ base: true, md: false });
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.8 });
+  const posthog = useAnalytics();
 
   // Track if component has ever been in view
   const [hasBeenInView, setHasBeenInView] = useState(false);
@@ -86,7 +87,7 @@ export const PortfolioCard = ({
       className="group"
       href={"/portfolio/" + entry.slug}
       onClick={() => {
-        posthog.capture('portfolio_card_click', {
+        posthog?.capture('portfolio_card_click', {
           portfolio_item: entry.title,
           portfolio_slug: entry.slug,
           categories: entry.categories

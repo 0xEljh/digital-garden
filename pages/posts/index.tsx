@@ -9,20 +9,22 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import type { GetStaticProps } from "next";
-import type { Post } from "@/types/posts";
-import { loadPosts } from "@/lib/utils/posts";
+import type { PostMetaData } from "@/types/posts";
+import { loadPostsMetadata } from "@/lib/utils/posts";
 import { useEffect } from "react";
-import posthog from "posthog-js";
+import { useAnalytics } from "@/components/common/analytics-provider";
 import { CategoryTags } from "@/components/garden/category-tag";
 
 interface PageProps {
-  posts: Post[];
+  posts: PostMetaData[];
 }
 
 export default function PostsIndexPage({ posts }: PageProps) {
+  const posthog = useAnalytics();
+
   useEffect(() => {
-    posthog.capture("view_blog_index");
-  }, []);
+    posthog?.capture("view_blog_index");
+  }, [posthog]);
 
   return (
     <Box py={{ base: 8, md: 12 }}>
@@ -49,7 +51,7 @@ export default function PostsIndexPage({ posts }: PageProps) {
                       as={NextLink}
                       href={`/posts/${post.slug}`}
                       onClick={() => {
-                        posthog.capture("post_click", {
+                        posthog?.capture("post_click", {
                           post_title: post.title,
                           post_slug: post.slug,
                           categories: post.categories,
@@ -80,7 +82,7 @@ export default function PostsIndexPage({ posts }: PageProps) {
 
 export const getStaticProps: GetStaticProps<PageProps> = async () => {
   // Posts are already sorted by date descending from the loader
-  const posts = await loadPosts();
+  const posts = await loadPostsMetadata();
 
   return {
     props: {

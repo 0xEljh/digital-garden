@@ -12,14 +12,14 @@ import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
 import { DynamicFlickeringAsciiImage } from "@/components/common/ascii-image";
-import { loadPortfolioEntries } from "@/lib/utils/portfolio";
-import { loadPosts } from "@/lib/utils/posts";
+import { loadPortfolioEntriesMetadata } from "@/lib/utils/portfolio";
+import { loadPostsMetadata } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
-import type { Post } from "@/types/posts";
+import type { PostMetaData } from "@/types/posts";
 import { SocialBar } from "@/components/common/social-bar";
 import { PortfolioPreview } from "@/components/portfolio/portfolio-preview";
 import { ReactElement, useEffect } from "react";
-import posthog from "posthog-js";
+import { useAnalytics } from "@/components/common/analytics-provider";
 import { CategoryTags } from "@/components/garden/category-tag";
 
 const HeroSection = () => (
@@ -47,7 +47,9 @@ const HeroSection = () => (
   </Stack>
 );
 
-const DigitalGarden = ({ posts }: { posts: Post[] }) => {
+const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
+  const posthog = useAnalytics();
+
   return (
     <Stack gap={6} align="left">
       <Heading size="md" fontFamily="Topoline" fontWeight="100">
@@ -66,7 +68,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
             <Link
               href={`/posts/${post.slug}`}
               onClick={() => {
-                posthog.capture("post_click", {
+                posthog?.capture("post_click", {
                   post_title: post.title,
                   post_slug: post.slug,
                   categories: post.categories,
@@ -108,7 +110,7 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
         alignSelf="center"
         fontWeight="400"
         onClick={() => {
-          posthog.capture("explore_garden_click", {
+          posthog?.capture("explore_garden_click", {
             location: "/",
           });
         }}
@@ -121,13 +123,13 @@ const DigitalGarden = ({ posts }: { posts: Post[] }) => {
 
 interface HomeProps {
   latestEntries: PortfolioEntry[];
-  latestPosts: Post[];
+  latestPosts: PostMetaData[];
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  const entries = await loadPortfolioEntries();
+  const entries = await loadPortfolioEntriesMetadata();
   const latestEntries = entries.slice(0, 3); // Show first 3 projects
-  const posts = await loadPosts();
+  const posts = await loadPostsMetadata();
   const latestPosts = posts.slice(0, 3);
 
   return {
@@ -139,9 +141,11 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 };
 
 export default function Home({ latestEntries, latestPosts }: HomeProps) {
+  const posthog = useAnalytics();
+
   useEffect(() => {
-    posthog.capture("view_homepage");
-  }, []);
+    posthog?.capture("view_homepage");
+  }, [posthog]);
 
   return (
     <Box py={{ base: 8, md: 12 }}>
