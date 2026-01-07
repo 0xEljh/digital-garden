@@ -8,6 +8,7 @@ import {
     SimpleGrid,
     Card,
     HStack,
+    Flex,
 } from "@chakra-ui/react";
 import { useState, useMemo } from "react";
 import { BarList } from "@/components/ui/blocks/charts/bar-list";
@@ -76,15 +77,13 @@ const DevPlanningRatioCard = ({
 }) => {
     const devWidth = analytics.devTime.percentage;
     const planningWidth = analytics.planningTime.percentage;
-    const focusedTime = analytics.devTime.hours + analytics.planningTime.hours;
-    const accountedTime = focusedTime + analytics.aiChatTime.hours;
-    const otherTime = Math.max(0, analytics.totalActiveTime.hours - accountedTime);
+    const activeTime = analytics.devTime.hours + analytics.planningTime.hours;
 
     return (
         <Card.Root size="sm">
             <Card.Header>
                 <Card.Title fontFamily="Tickerbit" fontSize="sm">
-                    Focused Time Breakdown
+                    Time spent on Dev vs Design
                 </Card.Title>
             </Card.Header>
             <Card.Body>
@@ -115,26 +114,19 @@ const DevPlanningRatioCard = ({
                             />
                         </HStack>
                     </Box>
-                    <Stack gap={1} fontSize="xs" color="fg.muted" fontFamily="Aeion Mono">
-                        <HStack justify="space-between">
-                            <Text>Focused (Dev + Design):</Text>
-                            <Text>{formatHours(focusedTime)}</Text>
-                        </HStack>
-                        <HStack justify="space-between">
-                            <Text>AI Chat:</Text>
-                            <Text>{formatHours(analytics.aiChatTime.hours)}</Text>
-                        </HStack>
-                        {otherTime > 0.1 && (
+                    <Box>
+                        <Stack fontSize="xs" color="fg.muted" fontFamily="Aeion Mono" align="flex-end">
                             <HStack justify="space-between">
-                                <Text>Other:</Text>
-                                <Text>{formatHours(otherTime)}</Text>
+                                <Text>AI Chat (design):</Text>
+                                <Text>{formatHours(analytics.aiChatTime.hours)}</Text>
                             </HStack>
-                        )}
-                        <HStack justify="space-between" pt={1} borderTopWidth="1px" borderColor="gray.700">
-                            <Text fontWeight="medium">Total Active:</Text>
-                            <Text fontWeight="medium">{formatHours(analytics.totalActiveTime.hours)}</Text>
-                        </HStack>
-                    </Stack>
+                            <HStack justify="space-between">
+                                <Text>Total time:</Text>
+                                <Text>{formatHours(activeTime)}</Text>
+                            </HStack>
+
+                        </Stack>
+                    </Box>
                 </Stack>
             </Card.Body>
         </Card.Root>
@@ -254,7 +246,7 @@ export default function Dashboard({ analyticsData }: DashboardProps) {
                             Time Accounting
                         </Heading>
                         <Text color="fg.muted" fontSize="sm" fontFamily="Aeion Mono">
-                            Breakdown of development, design, and AI-assisted work time
+                            Tracking the evolution of my workflows and AI use
                         </Text>
                     </Stack>
 

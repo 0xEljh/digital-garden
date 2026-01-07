@@ -16,12 +16,12 @@ export const aggregateDailyReports = (
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const cutoffDate = new Date(today);
-  cutoffDate.setDate(cutoffDate.getDate() - lookbackDays);
+  cutoffDate.setDate(cutoffDate.getDate() - (lookbackDays - 1));
 
   // Filter reports within the lookback window
   const filteredReports = dailyReports.filter((report) => {
     // Parse date string and normalize to local midnight for comparison
-    const dateParts = report.period.start_date.split('-').map(Number);
+    const dateParts = report.period.start_date.split("-").map(Number);
     const reportDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
     return reportDate >= cutoffDate && reportDate <= today;
   });
