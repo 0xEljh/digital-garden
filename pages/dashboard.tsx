@@ -76,12 +76,15 @@ const DevPlanningRatioCard = ({
 }) => {
     const devWidth = analytics.devTime.percentage;
     const planningWidth = analytics.planningTime.percentage;
+    const focusedTime = analytics.devTime.hours + analytics.planningTime.hours;
+    const accountedTime = focusedTime + analytics.aiChatTime.hours;
+    const otherTime = Math.max(0, analytics.totalActiveTime.hours - accountedTime);
 
     return (
         <Card.Root size="sm">
             <Card.Header>
                 <Card.Title fontFamily="Tickerbit" fontSize="sm">
-                    Dev vs Design Time
+                    Focused Time Breakdown
                 </Card.Title>
             </Card.Header>
             <Card.Body>
@@ -112,10 +115,26 @@ const DevPlanningRatioCard = ({
                             />
                         </HStack>
                     </Box>
-                    <HStack justify="space-between" fontSize="xs" color="fg.muted" fontFamily="Aeion Mono">
-                        <Text>Total Active: {formatHours(analytics.totalActiveTime.hours)}</Text>
-                        <Text>AI Chat: {formatHours(analytics.aiChatTime.hours)}</Text>
-                    </HStack>
+                    <Stack gap={1} fontSize="xs" color="fg.muted" fontFamily="Aeion Mono">
+                        <HStack justify="space-between">
+                            <Text>Focused (Dev + Design):</Text>
+                            <Text>{formatHours(focusedTime)}</Text>
+                        </HStack>
+                        <HStack justify="space-between">
+                            <Text>AI Chat:</Text>
+                            <Text>{formatHours(analytics.aiChatTime.hours)}</Text>
+                        </HStack>
+                        {otherTime > 0.1 && (
+                            <HStack justify="space-between">
+                                <Text>Other:</Text>
+                                <Text>{formatHours(otherTime)}</Text>
+                            </HStack>
+                        )}
+                        <HStack justify="space-between" pt={1} borderTopWidth="1px" borderColor="gray.700">
+                            <Text fontWeight="medium">Total Active:</Text>
+                            <Text fontWeight="medium">{formatHours(analytics.totalActiveTime.hours)}</Text>
+                        </HStack>
+                    </Stack>
                 </Stack>
             </Card.Body>
         </Card.Root>
@@ -235,7 +254,7 @@ export default function Dashboard({ analyticsData }: DashboardProps) {
                             Time Accounting
                         </Heading>
                         <Text color="fg.muted" fontSize="sm" fontFamily="Aeion Mono">
-                            Development activity tracked via ActivityWatch
+                            Breakdown of development, design, and AI-assisted work time
                         </Text>
                     </Stack>
 
