@@ -197,24 +197,24 @@ export const PortfolioPreview = ({
       </Stack>
 
       <Stack direction={{ base: "column-reverse", md: "row" }}>
-        {/* <Button */}
-        {/*   colorScheme="teal" */}
-        {/*   variant="outline" */}
-        {/*   size="md" */}
-        {/*   alignSelf="center" */}
-        {/*   asChild */}
-        {/* > */}
-        {/*   <Link href="/api/download-resume" */}
-        {/*     onClick={() => { */}
-        {/*       posthog.capture('download_resume_click', { */}
-        {/*         location: router.asPath */}
-        {/*       }); */}
-        {/*     }} */}
-        {/*   > */}
-        {/*     <LuDownload /> */}
-        {/*     Resume */}
-        {/*   </Link> */}
-        {/* </Button> */}
+        <Button
+          asChild
+          colorScheme="teal"
+          variant="outline"
+          size="md"
+          alignSelf="center"
+        >
+          <Link href="/resume"
+            onClick={() => {
+              posthog?.capture('download_resume_click', {
+                location: router.asPath
+              });
+            }}
+          >
+            <LuDownload /> Resume
+          </Link>
+        </Button>
+
         <Button
           asChild
           colorScheme="teal"
@@ -228,7 +228,7 @@ export const PortfolioPreview = ({
                 location: router.asPath
               });
             }}
-          >Body of work</Link>
+          >Body of Work</Link>
         </Button>
       </Stack>
     </Stack>

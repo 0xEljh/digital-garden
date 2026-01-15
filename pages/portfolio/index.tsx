@@ -57,7 +57,7 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
               asChild
             >
               <NextLink
-                href="/api/download-resume"
+                href="/resume"
                 onClick={() => {
                   posthog?.capture("download_resume_click", {
                     location: router.asPath,

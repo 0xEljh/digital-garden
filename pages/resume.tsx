@@ -94,10 +94,10 @@ const ResumePage: NextPageWithLayout = () => {
                 <ResumeSection title="Experience">
                     <ExperienceEntry
                         title="Technical Cofounder"
-                        company="IBVC Inc."
+                        company="IBVC Inc. (Legal/Real Estate Tech)"
                         date="2025–Present"
                         bullets={[
-                            "Built ingestion + normalization Prefect flows aggregating 50+ delinquency/auction sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads.",
+                            "Built ingestion + normalization Prefect flows aggregating 50+ delinquency/market sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads.",
                             "Shipped production LLM pipeline to extract structured data from unstructured legal PDFs, implementing schema validation, repair logic, and pipeline idempotence.",
                             "Built a context-aware query-variant generator and results filter for skip-tracing. Improved contact hit-rate by 20x while capping cost to <$1/lead",
                             // "Developed an autodialer app with AMD and text-to-speech voicemail drops"
@@ -105,7 +105,7 @@ const ResumePage: NextPageWithLayout = () => {
                     />
                     <ExperienceEntry
                         title="Early Software Engineer"
-                        company="Pacts (Pre-seed Startup)"
+                        company="Pacts (Web3 Anti-Sybil)"
                         date="2024"
                         bullets={[
                             "Owned Frontend Next.js app and Telegram bot for tracking on-chain activity and airdrop campaign management",
@@ -114,16 +114,15 @@ const ResumePage: NextPageWithLayout = () => {
                     />
                     <ExperienceEntry
                         title="Technical Cofounder"
-                        company="MarinaChain"
+                        company="MarinaChain (Web3 x Maritime Sustainability)"
                         date="2022"
                         bullets={[
-                            "Built physics-informed maritime CO2 emissions model using geospatial/satellite data and vessel specs",
-                            "Researched document understanding POC to parse vessel specification sheets"
+                            "Processed 1.3TB of raw telemetry data via Dusk to engineer features for a physics-informed maritime CO2 emissions model. Fused geospatial data with vessel specs to achieve explainable fuel and emissions estimates",
                         ]}
                     />
                     <ExperienceEntry
                         title="Machine Learning Engineer"
-                        company="MindPointEye"
+                        company="MindPointEye (Founded by inventor of ELMs)"
                         date="2021"
                         bullets={[
                             "Improved YOLOX-tiny model mAP from 0.60 to 0.85 through data augmentation (SimCLR), LR scheduling, HPO, and optimizer implementation tweaks*",
@@ -158,7 +157,7 @@ const ResumePage: NextPageWithLayout = () => {
                         title="ETH Tokyo 2023"
                         subtitle="Winner: Best Dashboard (3K USD prize)"
                         bullets={[
-                            "Doubled down on analysis over visuals: shipped a functional Jupyter Notebook with analytics for 1inch Fusion resolver on-chain activity, execution profits, and gas spend"
+                            "Doubled down on analysis over visuals: shipped a functional Jupyter Notebook with aggregated analytics for 1inch Fusion resolver on-chain activity, execution profits, and gas spend"
                         ]}
                     />
                     <ProjectEntry
