@@ -16,7 +16,7 @@ export const mdxComponents = {
   Callout,
   CaptionedImage,
   CaptionedVideo,
-  a: (p: any) => <Link _hover={{ textDecoration: "italic" }} {...p} />,
+  a: (p: any) => <Link _hover={{ textDecoration: "italic" }} target="_blank" rel="noopener noreferrer" {...p} />,
 };
 
 export function StyledProse({ children, ...props }: StyledProseProps) {

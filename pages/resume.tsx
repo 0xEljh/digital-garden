@@ -39,17 +39,17 @@ const ResumePage: NextPageWithLayout = () => {
                 maxW="8.5in"
                 bg="white"
                 color="gray.900"
-                p="0.5in"
+                p="0.45in"
                 mx="auto"
                 my={{ base: 0, md: 8 }}
                 boxShadow={{ base: "none", md: "lg" }}
                 className="resume-document"
                 fontFamily="'Georgia', 'Garamond', serif"
                 fontSize="11pt"
-                lineHeight="1.4"
+                lineHeight="1.3"
             >
                 {/* Header */}
-                <Box textAlign="center" mb="0.4in">
+                <Box textAlign="center" mb="0.2in">
                     <Heading
                         as="h1"
                         fontSize="20pt"
@@ -175,9 +175,9 @@ const ResumePage: NextPageWithLayout = () => {
                             "Reduced peak VRAM by 50% for Stable Diffusion fine-tuning through quantization and attention chunking. Turned client profitable by fitting training on 3080 instances."
                         ]}
                     />
-                    <Box mb="0.18in">
+                    <Box mb="0.12in">
                         <Text fontWeight="600" fontSize="11pt">Open Source</Text>
-                        <Box as="ul" ml="0.2in" mt="0.03in" fontSize="10.5pt">
+                        <Box as="ul" ml="0.15in" mt="0.03in" fontSize="10.5pt">
                             <Box as="li" mb="0.02in">Contributed a bug fix to PyTorch Lightning (lightning-bolts)</Box>
                             <Box as="li" mb="0.02in">*Classic SGD: Reverted PyTorch SGD to original Sutskever formula for separable LR/momentum behavior</Box>
                         </Box>
@@ -252,7 +252,7 @@ export default ResumePage;
 
 function ResumeSection({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <Box as="section" mb="0.25in">
+        <Box as="section" mb="0.18in">
             <Heading
                 as="h2"
                 fontSize="11pt"
@@ -262,7 +262,7 @@ function ResumeSection({ title, children }: { title: string; children: React.Rea
                 borderBottom="1px solid"
                 borderColor="gray.900"
                 pb="0.04in"
-                mb="0.12in"
+                mb="0.08in"
                 fontFamily="inherit"
                 color="gray.900"
             >
@@ -293,7 +293,7 @@ function ExperienceEntry({
     bullets: string[];
 }) {
     return (
-        <Box mb="0.18in">
+        <Box mb="0.12in">
             <Flex justify="space-between" align="baseline" mb="0.03in">
                 <Box>
                     <Text as="span" fontWeight="600" fontSize="11pt">{title}</Text>
@@ -301,7 +301,7 @@ function ExperienceEntry({
                 </Box>
                 <Text fontSize="10pt" color="gray.600" whiteSpace="nowrap">{date}</Text>
             </Flex>
-            <Box as="ul" ml="0.2in" mt="0.03in" fontSize="10.5pt">
+            <Box as="ul" ml="0.15in" mt="0.03in" fontSize="10.5pt">
                 {bullets.map((bullet, i) => (
                     <Box as="li" key={i} mb="0.02in">{bullet}</Box>
                 ))}
@@ -322,7 +322,7 @@ function ProjectEntry({
     bullets: string[];
 }) {
     return (
-        <Box mb="0.18in">
+        <Box mb="0.12in">
             <Flex justify="space-between" align="baseline" mb="0.03in">
                 <Box>
                     <Text as="span" fontWeight="600" fontSize="11pt">{title}</Text>
@@ -330,7 +330,7 @@ function ProjectEntry({
                 </Box>
                 {date && <Text fontSize="10pt" color="gray.600" whiteSpace="nowrap">{date}</Text>}
             </Flex>
-            <Box as="ul" ml="0.2in" mt="0.03in" fontSize="10.5pt">
+            <Box as="ul" ml="0.15in" mt="0.03in" fontSize="10.5pt">
                 {bullets.map((bullet, i) => (
                     <Box as="li" key={i} mb="0.02in">{bullet}</Box>
                 ))}
