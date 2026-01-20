@@ -11,7 +11,8 @@ import {
 import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
-import { DynamicFlickeringAsciiImage } from "@/components/common/ascii-image";
+import { HERO_ASCII } from "@/components/common/ascii-assets";
+import { HydratedFlickeringAsciiImage } from "@/components/common";
 import { loadPortfolioEntriesMetadata } from "@/lib/utils/portfolio";
 import { loadPostsMetadata } from "@/lib/utils/posts";
 import type { PortfolioEntry } from "@/types/portfolio";
@@ -22,30 +23,36 @@ import { ReactElement, useEffect } from "react";
 import { useAnalytics } from "@/components/common/analytics-provider";
 import { CategoryTags } from "@/components/garden/category-tag";
 
-const HeroSection = () => (
-  <Stack p={4} alignItems="center">
-    <Link
-      href={`/dashboard`}
-    >
-      <DynamicFlickeringAsciiImage
-        imagePath="/emiya_kiritsugu.png"
-        width={300}
-        sampleFactor={12}
-        fontSize="2px"
-      />
-    </Link>
-    <Text
-      fontSize={{ base: "lg", md: "xl" }}
-      color="fg.muted"
-      maxW={"md"}
-      fontFamily="Tickerbit"
-      fontWeight="100"
-    >
-      The digital garden of a full-stack (btw) machine learning engineer.
-    </Text>
-    <SocialBar />
-  </Stack>
-);
+const HeroSection = () => {
+  const precomputedAscii = HERO_ASCII.widths["300"];
+
+  return (
+    <Stack p={4} alignItems="center">
+      <Link href={`/dashboard`}>
+        <HydratedFlickeringAsciiImage
+          imagePath="/emiya_kiritsugu-small.png"
+          width={300}
+          sampleFactor={12}
+          fontSize="2px"
+          precomputedAscii={precomputedAscii}
+          scrambleOnHydrate
+          scrambleSpeedMs={14}
+          scrambleIterations={14}
+        />
+      </Link>
+      <Text
+        fontSize={{ base: "lg", md: "xl" }}
+        color="fg.muted"
+        maxW={"md"}
+        fontFamily="Tickerbit"
+        fontWeight="100"
+      >
+        The digital garden of a full-stack (btw) machine learning engineer.
+      </Text>
+      <SocialBar />
+    </Stack>
+  );
+};
 
 const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
   const posthog = useAnalytics();

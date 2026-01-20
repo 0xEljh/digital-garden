@@ -19,63 +19,78 @@ export const convertImageToAscii = async (
   const { width = 100, sampleFactor = 4, cellAspect = 0.4 } = options;
 
   // Calculate ASCII dimensions (in characters)
-  const asciiWidth = width;
-  const asciiHeight = Math.floor(
-    asciiWidth * (image.height / image.width) * cellAspect
+  const asciiWidth = Math.max(1, Math.floor(width));
+  const asciiHeight = Math.max(
+    1,
+    Math.floor(asciiWidth * (image.height / image.width) * cellAspect)
   );
 
-  // The offscreen canvas will be larger to allow for denser sampling.
-  const canvasWidth = asciiWidth * sampleFactor;
-  const canvasHeight = asciiHeight * sampleFactor;
+  // Historically sampleFactor meant "pixels sampled per ASCII cell".
+  // We now do averaging via canvas scaling (much faster than manual JS loops),
+  // but keep sampleFactor as an optional oversampling hint.
+  const oversample = Math.max(1, Math.min(12, Math.floor(sampleFactor)));
 
   const canvas = document.createElement("canvas");
-  canvas.width = canvasWidth;
-  canvas.height = canvasHeight;
-  const ctx = canvas.getContext("2d");
+  canvas.width = asciiWidth;
+  canvas.height = asciiHeight;
 
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) {
     throw new Error("Could not get canvas context");
   }
 
-  // Draw the image into the canvas at a higher resolution.
-  ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
-  const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-  const data = imageData.data;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
 
-  let ascii = "";
+  if (oversample > 1) {
+    const tmpCanvas = document.createElement("canvas");
+    tmpCanvas.width = asciiWidth * oversample;
+    tmpCanvas.height = asciiHeight * oversample;
 
-  // Process each ASCII cell
-  for (let j = 0; j < asciiHeight; j++) {
-    for (let i = 0; i < asciiWidth; i++) {
-      let totalBrightness = 0;
-      let totalAlpha = 0;
-      // Loop over each pixel in the current cell.
-      for (let y = 0; y < sampleFactor; y++) {
-        for (let x = 0; x < sampleFactor; x++) {
-          const pixelX = i * sampleFactor + x;
-          const pixelY = j * sampleFactor + y;
-          const offset = (pixelY * canvasWidth + pixelX) * 4;
-          const r = data[offset];
-          const g = data[offset + 1];
-          const b = data[offset + 2];
-          const a = data[offset + 3];
-          totalAlpha += a;
-          // Only add brightness if the pixel isn't fully transparent.
-          if (a !== 0) {
-            totalBrightness += 0.299 * r + 0.587 * g + 0.114 * b;
-          }
-        }
-      }
-      const totalPixels = sampleFactor * sampleFactor;
-      // If the entire cell is transparent, output a space.
-      if (totalAlpha === 0) {
-        ascii += " ";
-      } else {
-        const avgBrightness = totalBrightness / totalPixels;
-        ascii += mapBrightnessToChar(avgBrightness);
-      }
+    const tmpCtx = tmpCanvas.getContext("2d");
+    if (!tmpCtx) {
+      throw new Error("Could not get canvas context");
     }
-    ascii += "\n";
+
+    tmpCtx.imageSmoothingEnabled = true;
+    tmpCtx.imageSmoothingQuality = "high";
+
+    // Draw the image at a higher resolution first...
+    tmpCtx.drawImage(image, 0, 0, tmpCanvas.width, tmpCanvas.height);
+
+    // ...then downscale to the ASCII grid. This offloads averaging to the browser.
+    ctx.drawImage(tmpCanvas, 0, 0, asciiWidth, asciiHeight);
+  } else {
+    // Directly draw scaled to the ASCII grid.
+    ctx.drawImage(image, 0, 0, asciiWidth, asciiHeight);
   }
-  return ascii;
+
+  const data = ctx.getImageData(0, 0, asciiWidth, asciiHeight).data;
+
+  const rows: string[] = new Array(asciiHeight);
+
+  for (let y = 0; y < asciiHeight; y++) {
+    let row = "";
+    const rowOffset = y * asciiWidth * 4;
+
+    for (let x = 0; x < asciiWidth; x++) {
+      const offset = rowOffset + x * 4;
+      const r = data[offset];
+      const g = data[offset + 1];
+      const b = data[offset + 2];
+      const a = data[offset + 3];
+
+      if (a === 0) {
+        row += " ";
+        continue;
+      }
+
+      const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+      row += mapBrightnessToChar(brightness);
+    }
+
+    rows[y] = row;
+  }
+
+  return rows.join("\n");
 };

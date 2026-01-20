@@ -7,6 +7,8 @@ export {
   DynamicAsciiImage,
   DynamicScrambledAsciiImage,
 } from "./ascii-image";
+export { ScrambleText } from "./scramble-text";
+export { HydratedFlickeringAsciiImage } from "./hydrated-flickering-ascii-image";
 export { default as HeadMeta } from "./head-meta";
 export { NavBar, NavbarLinks } from "./nav";
 export { QuoteBlock } from "./quote-block";

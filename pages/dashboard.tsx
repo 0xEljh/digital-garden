@@ -254,12 +254,19 @@ export default function Dashboard({ analyticsData }: DashboardProps) {
                         <NoDataMessage />
                     ) : (
                         <>
-                            <HStack justify="space-between" align="center" fontFamily="Aeion Mono">
-                                <Text color="fg.muted" fontSize="sm">
-                                    {analytics.daysIncluded} days of data
-                                </Text>
+                            <Flex justify="space-between" align="center" fontFamily="Aeion Mono" wrap="wrap" gap={2}>
+                                <Stack gap={0}>
+                                    <Text color="fg.muted" fontSize="sm">
+                                        {analytics.daysIncluded} days of data
+                                    </Text>
+                                    {analyticsData.generated_at && (
+                                        <Text color="fg.muted" fontSize="xs">
+                                            Last updated: {new Date(analyticsData.generated_at).toLocaleDateString()}
+                                        </Text>
+                                    )}
+                                </Stack>
                                 <LookbackSelector selected={lookback} onChange={setLookback} />
-                            </HStack>
+                            </Flex>
 
                             <Stack gap={6}>
                                 <DevPlanningRatioCard analytics={analytics} />
@@ -292,8 +299,12 @@ export const getStaticProps: GetStaticProps<DashboardProps> = async () => {
         );
 
         if (analyticsFiles.length > 0) {
-            analyticsFiles.sort().reverse();
-            const latestFile = analyticsFiles[0];
+            // Sort dated files (YYMMDD_aw_analytics.json) first, then by date descending
+            const datedFiles = analyticsFiles
+                .filter((f: string) => f.match(/^\d{6}_aw_analytics\.json$/))
+                .sort()
+                .reverse();
+            const latestFile = datedFiles.length > 0 ? datedFiles[0] : analyticsFiles[0];
             const filePath = path.join(dataDir, latestFile);
             const content = await fs.readFile(filePath, "utf8");
             analyticsData = JSON.parse(content) as AnalyticsData;

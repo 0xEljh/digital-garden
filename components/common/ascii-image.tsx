@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { Box, Text } from "@chakra-ui/react";
-import { m, cubicBezier, steps, animate, MotionValue, useMotionValue, useTransform, motionValue } from "motion/react";
+import { Box } from "@chakra-ui/react";
+import { m, cubicBezier, steps, animate, MotionValue, useTransform, motionValue } from "motion/react";
 import { convertImageToAscii } from "../../lib/utils/asciiConverter";
 import dynamic from "next/dynamic";
 
@@ -11,6 +11,13 @@ interface AsciiImageProps {
   sampleFactor?: number;
   // Font size for rendering; effectively the size of each pixel
   fontSize?: string;
+  // If provided, this ASCII is used immediately as a placeholder.
+  // Useful for SSR'd/precomputed ASCII to avoid a blank hero.
+  precomputedAscii?: string;
+  // When true, skip image loading/conversion entirely.
+  skipConversion?: boolean;
+  // Called once when ASCII is ready to render.
+  onReady?: () => void;
 }
 
 export const AsciiImage = ({
@@ -63,11 +70,26 @@ export const FlickeringAsciiImage = ({
   width = 100,
   sampleFactor = 4,
   fontSize = "8px",
+  precomputedAscii,
+  skipConversion = false,
+  onReady,
 }: AsciiImageProps) => {
-  const [asciiArt, setAsciiArt] = useState<string>("");
+  const [asciiArt, setAsciiArt] = useState<string>(precomputedAscii || "");
   const rows = asciiArt.split("\n");
 
+  const readyNotifiedRef = useRef(false);
+
   useEffect(() => {
+    if (!asciiArt) return;
+    if (readyNotifiedRef.current) return;
+
+    readyNotifiedRef.current = true;
+    onReady?.();
+  }, [asciiArt, onReady]);
+
+  useEffect(() => {
+    if (skipConversion) return;
+
     const image = new Image();
     image.src = imagePath;
     image.crossOrigin = "Anonymous";
@@ -87,7 +109,7 @@ export const FlickeringAsciiImage = ({
     image.onerror = (err) => {
       console.error("Error loading image", err);
     };
-  }, [imagePath, width, sampleFactor]);
+  }, [imagePath, width, sampleFactor, skipConversion]);
 
   return (
     <Box
@@ -99,12 +121,9 @@ export const FlickeringAsciiImage = ({
       color="fg.muted"
       fontSize={fontSize}
     >
-      {rows.map((row, index) => {
-        return (
-          <FlickerRow key={index} row={row} />
-        )
-      }
-      )}
+      {rows.map((row, index) => (
+        <FlickerRow key={index} row={row} />
+      ))}
     </Box>
   );
 };
@@ -503,7 +522,7 @@ export const DynamicFlickeringAsciiImage = dynamic(
     import("./ascii-image").then((mod) => mod.FlickeringAsciiImage),
   {
     ssr: false, // Disable server-side rendering
-    loading: () => null, // Optional loading component
+    loading: () => null,
   }
 );
 
