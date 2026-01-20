@@ -165,6 +165,7 @@ export const PortfolioCard = ({
           _groupHover={{ opacity: 1 }}
           maxW="sm"
           textWrap="break-word"
+          fontFamily={"Aeion Mono"}
         >
           {entry.shortDescription}
         </Text>

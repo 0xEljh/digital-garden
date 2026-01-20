@@ -2,19 +2,33 @@
 title: "Under the Rock News"
 slug: "under-the-rock-news"
 size: 1
-shortDescription: "High Impact News filter using an LLM"
+shortDescription: "A GPT-4 powered news filter that surfaces only actionable, high impact articles"
 link: "https://undertherocknews.com"
 icon: "UnderTheRockIcon"
-categories: ["Web Development", "Deep Learning"]
+categories: ["Web Development"]
 date: "2023-06-15"
 techStack: ["Next.js", "HuggingFace", "OpenAI"]
 ---
 
-The news cycle is >90% noise, ragebait, and designed to take up your attention. Hence, this filter.
+This project was deeply inspired by Tim Ferriss' idea of information diets: we all consume too much news, and I wanted only "real news" to be able to reach me.
 
-This was also my first "GPT-wrapper" project.
+The news is >90% noise, ragebait, and engagement farming. Most headlines are just trying to make you feel something.
 
-It ingests RSS feeds from various notable news sources: CNA (Channel News Asia), BBC, etc. and attempts to summarize, score, and "de-noise" them.
+Under the Rock News ingests RSS feeds from sources like the BBC, CNA, MIT Tech Review and Bloomberg and runs each article through a scoring system.
 
-Unfortunately, I've sunset this project for now because it was a $40/month API bill, while the better alternative was still to categorically not consume any news.
-I also didn't have a good solution for not encoding my own biases into the filtering process.
+The metrics were:
+
+1. Actionablity: Can you make a decision or take any actions as a result of learning this?
+2. Long-term impact: Will this matter?
+3. Uniqueness: Is this just a retelling of something on-going?
+
+So yes, I tried to make it very Tim-coded.
+
+Articles are summarized with BART and scored by GPT-4, and only those that exceeded a threshold reached your personal news feed.
+
+...
+
+Unfortunately, I've sunset this (for now, perhaps) because the $40/month API cost wasn't justified when the better alternative turned out to be not consuming any news at all.
+I also couldn't work out a solution to the core problem of encoding my own biases into the filtering criteria, or structuring it in a better way, which means it had limited use in being shared.
+
+It was, however, my first time working with a UIUX designer directly. I learnt a lot! [And you should definitely check her out if you're reading this.](https://www.linkedin.com/in/yooshlee/)
