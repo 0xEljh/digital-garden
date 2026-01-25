@@ -1,0 +1,73 @@
+---
+title: "LR Scheduling and SGD"
+date: "2026-01-15"
+excerpt: ""
+categories: ["Deep Learning", "Math", "Pytorch"]
+relatedPosts: []
+---
+
+## Backstory: My first brush with internals
+
+It's 2021, I'm a fresh graduate working at MindPointEye, working on object detection models (YOLOX).
+
+At the time, semi-supervised methods were all the rage. Within the year, I also just discovered [distil.pub](https://distill.pub/) (which I miss dearly) and was absolutely possed by [this beautiful article called "Why Momentum really works"](https://distill.pub/2017/momentum/).
+
+As a result, the two biggest training optimisations I pursued were:
+
+1. data augmentation pipelines
+2. LR scheduling (reduction on plateau)
+
+And it worked, almost like magic. It felt crazy to make such an impact as a junior in a huge team of research engineers and scientists.
+
+So I took both of these to their natural conclusions:
+
+1. Train-time data augmentation became pre-training dataset analytics and curation. I trained an overfitted GAN to weed out dataset imbalances (by finding clusters in embedding space), and built a self-training framework that used larger models and scraped images to churn out more labels in a semi-supervised (human) workflow.
+2. I aggressively applied hyperparameter optimisation to squeeze out what I could from the LR scheduling.
+
+The latter wasn't working as well as I thought it should w.r.t learning rate and momentum, so I did some digging.
+And that's when I found that PyTorch's SGD implementation wasn't what I thought it was.
+
+## PyTorch SGD wasn't SGD
+
+As outlined in PyTorch docs:
+
+> The implementation of SGD with Momentum/Nesterov subtly differs from Sutskever et. al. and implementations in some other frameworks.
+
+To describe it as "subtle" is a little misleading to me. This was in fact the "bug" that I was trying to hunt down.
+
+The original implementation looks like this:
+
+$$
+v_{t+1} = \mu * v_t + lr * g_{t+1}
+$$
+
+$$
+p_{t+1} = p_t - v_{t+1}
+$$
+
+Where $p$, $g$, $v$, and $\mu$ denote the parameters, gradient, velocity, and momentum respectively.
+Note how the learning rate, $lr$, is applied to gradient term directly here.
+
+Whereas in the case of PyTorch's implementaion:
+
+$$
+v_{t+1} = \mu*{v_t} + g_{t+1}
+$$
+
+$$
+p_{t+1} = p_t - lr*v_{t+1}
+$$
+
+Here the learning rate, $lr$, is applied to the entire velocity term! Both gradient and the momentum terms are affected!
+
+This means that if we employ learning rate scheduling and gradually decrease learning rates, then momentum also gets decreased.
+
+## But why?
+
+If we interpret "learning rate" as scale factor for how much the parameters can change, then PyTorch's implementation makes sense.
+
+But if we're trying to recreate the monentum and learning rate mechanics like in the "Why Momentum Really Works" article, then it falls completely flat.
+
+When I was first trying to "debug" this, I considered if I needed a momentum scheduler or if my idea of a "large momentum" wasn't quite right.
+
+Turns out, this one-line change was all that's needed.
