@@ -75,18 +75,19 @@ const ResumePage: NextPageWithLayout = () => {
         {/* Summary */}
         <ResumeSection title="Summary">
           <Text fontSize="10.5pt">
-            Machine Learning / Systems Engineer with experience in training/inference optimisation, production data/LLM pipelines, and end-to-end products.
+            Machine Learning / Systems Engineer focused on training and inference optimisation.
+            Experienced with PyTorch internals, feature engineering, and production Vision/LLM systems.
+            Proven ability to translate research concepts into measurable performance gains and thrive in uncertain/fast-paced environments.
           </Text>
         </ResumeSection>
 
         {/* Skills */}
         <ResumeSection title="Skills">
           <VStack align="stretch" gap="0.05in">
-            <SkillRow label="MLPerf" skills="Pytorch internals, Triton, CUDA (reading), torch.compile, quantisation, HuggingFace ecosystem" />
-            <SkillRow label="ML & Deep Learning" skills="PyTorch, finetuning, LLM integration, RAG, wandb" />
-            <SkillRow label="Data Engineering" skills="Prefect, Pandas, SQL, ETL pipelines, Pydantic" />
-            <SkillRow label="Backend & Infrastructure" skills="FastAPI, PostgreSQL, Docker, Nix, asyncio, Cloudflare (cloud), GCP" />
-            <SkillRow label="Frontend" skills="TypeScript, Next.js, motion, Drizzle, TanStack Query" />
+            <SkillRow label="Training and Inference Optimisation" skills="PyTorch internals, Triton, torch.compile, quantisation, CUDA (reading), FSDP2, HuggingFace ecosystem (accelerate, transformers, etc.), Unsloth, bitsnbytes, tinygrad" />
+            <SkillRow label="Machine Learning" skills="PyTorch, finetuning, LLM/Vision pipelines, RAG, wandb, mlflow" />
+            <SkillRow label="Data & Pipelines" skills="Prefect, Pandas, SQL, Pydantic, OpenTelemetry" />
+            <SkillRow label="Infrastructure" skills="Docker, Nix, FastAPI, PostgreSQL, GCP, AWS/Cloudflare" />
           </VStack>
         </ResumeSection>
 
@@ -97,24 +98,22 @@ const ResumePage: NextPageWithLayout = () => {
             company="IBVC Inc. (Legal/Real Estate Tech)"
             date="2025–Present"
             bullets={[
-              "Built ingestion + normalization Prefect flows aggregating 50+ delinquency/market sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads.",
               "Shipped production LLM pipeline to extract structured data from unstructured legal PDFs, implementing schema validation, repair logic, and pipeline idempotence.",
               "Built a context-aware query-variant generator and results filter for skip-tracing. Improved contact hit-rate by 20x while capping cost to <$1/lead",
-              // "Developed an autodialer app with AMD and text-to-speech voicemail drops"
+              "Built Prefect flows aggregating 50+ heterogenous legal/market data sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads.",
             ]}
           />
           <ExperienceEntry
             title="Early Software Engineer"
-            company="Pacts (Web3 Anti-Sybil)"
+            company="Pacts (Crypto x Anti-Sybil)"
             date="2024"
             bullets={[
-              "Owned Frontend Next.js app and Telegram bot for tracking on-chain activity and airdrop campaign management",
-              "Implemented on-chain analytics and reward-simulation tooling to facilitate data-driven campaign design"
+              "Owned design and implementation of frontend apps + on-chain analytics for the airdrop-as-a-service platform."
             ]}
           />
           <ExperienceEntry
             title="Technical Cofounder"
-            company="MarinaChain (Web3 x Maritime Sustainability)"
+            company="MarinaChain (Crypto x Maritime Sustainability)"
             date="2022"
             bullets={[
               "Processed 1.3TB of raw telemetry data via Dusk to engineer features for a physics-informed maritime CO2 emissions model. Fused geospatial data with vessel specs to achieve explainable fuel and emissions estimates",
@@ -125,8 +124,8 @@ const ResumePage: NextPageWithLayout = () => {
             company="MindPointEye (Founded by inventor of ELMs)"
             date="2021"
             bullets={[
-              "Improved YOLOX-tiny model mAP from 0.60 to 0.85 through data augmentation (SimCLR), LR scheduling, HPO, and optimizer implementation tweaks*",
-              "Developed quantization + compilation pipeline for YOLOX ONNX graphs to RKNN (Rockchip NPU)",
+              "Improved YOLOX-tiny model mAP from 0.60 to 0.85 through data augmentation (SimCLR), LR scheduling, implementing a HPO pipeline, and optimizer implementation tweaks",
+              "Developed quantisation + compilation pipeline for YOLOX ONNX graphs to RKNN (Rockchip NPU)",
               "Initiated and led regional team on semi-supervised image labeling and dataset curation via latent space analysis (using fine-tuned GAN embeddings), saving hundreds of team hours per project"
             ]}
           />
@@ -140,15 +139,16 @@ const ResumePage: NextPageWithLayout = () => {
             subtitle="MLPerf Puzzles"
             bullets={[
               // "Solved Unsloth's MLPerf challenges",
-              "Wrote a custom Triton kernel for NF4 dequantization that's 25% faster than Unsloth's",
-              "Enabled QLoRA fine-tuning with FSDP2 and torch compile",
-              "Implemented a cut-cross-entropy-inspired memory efficient backprop that works in GRPO"
+              "Implemented custom Triton kernel for NF4 dequantisation, achieved 25% speedup over Unsloth baseline",
+              "Enabled QLoRA fine-tuning with FSDP2 and torch.compile with no graph breaks",
+              "Implemented a memory-efficient backprop (inspired by cut-cross-entropy) that is compatible with GRPO"
             ]}
           />
           <ProjectEntry
             title="vamptutor.com"
             subtitle="Vector-based card search for MTG"
             date="2025"
+            link="https://vamptutor.com"
             bullets={[
               "Built a natural-language search for Magic: The Gathering cards using a fine-tuned qwen-embedding model"
             ]}
@@ -161,24 +161,24 @@ const ResumePage: NextPageWithLayout = () => {
             ]}
           />
           <ProjectEntry
-            title="Liquid Crypto Index Fund"
-            subtitle="Empire Group"
-            date="2023"
-            bullets={[
-              "Curated a dataset of 2,000+ tokens from 2013–2023; developed backtests for systematic index fund strategies with simulated execution conditions (slippage; modelled from market data)"
-            ]}
-          />
-          <ProjectEntry
             title="Dreambooth Optimization"
             date="2023"
             bullets={[
               "Reduced peak VRAM by 50% for Stable Diffusion fine-tuning through quantization and attention chunking. Turned client profitable by fitting training on 3080 instances."
             ]}
           />
+          <ProjectEntry
+            title="Liquid Crypto Index Fund"
+            subtitle="Empire Group (HK fund)"
+            date="2023"
+            bullets={[
+              "Curated a dataset of 2,000+ tokens from 2013–2023; developed backtests for systematic index fund strategies with simulated execution conditions (slippage; modelled from market data)"
+            ]}
+          />
           <Box mb="0.12in">
             <Text fontWeight="600" fontSize="11pt">Open Source</Text>
             <Box as="ul" ml="0.15in" mt="0.03in" fontSize="10.5pt">
-              <Box as="li" mb="0.02in">Contributed a bug fixes to PyTorch Lightning and bt (backtrader)</Box>
+              <Box as="li" mb="0.02in">Contributed bug fixes to PyTorch Lightning and bt (backtrader)</Box>
               <Box as="li" mb="0.02in">*Classic SGD: Reverted PyTorch SGD to original Sutskever formula for separable LR/momentum behavior</Box>
             </Box>
           </Box>
@@ -199,11 +199,38 @@ const ResumePage: NextPageWithLayout = () => {
             Specializations: Computational Engineering, Biomedical Engineering
           </Text>
           <Text fontSize="10.5pt">
-            A- median | 5 postgraduate modules | FYP: Self-organizing Neural Networks
+            A- median grade | Completed 5 postgraduate modules
+          </Text>
+          <Text fontSize="10.5pt">
+            Final Year Project: Self-Organising Neural Networks
           </Text>
           <Text fontSize="10.5pt" mt="0.03in">
-            Interned at A*STAR (post-quantum crypto for deep learning) and DSO (opto-acoustic FEM solver)
+            Internships: A*STAR (post-quantum crypto for ML) and DSO National Laboratories (opto-acoustic FEM solver)
           </Text>
+        </ResumeSection>
+
+        {/* Technical Writing */}
+        <ResumeSection title="Writing">
+          <Box as="ul" ml="0.15in" fontSize="10.5pt">
+            <Box as="li" mb="0.02in">
+              <Link href="/posts/cut-cross-entropy" color="gray.900" textDecoration="none">
+                Saving VRAM with Apple's Cut Cross Entropy
+              </Link>
+              <Text as="span" color="gray.600"> — Triton kernel breakdown</Text>
+            </Box>
+            <Box as="li" mb="0.02in">
+              <Link href="/posts/cross-entropy" color="gray.900" textDecoration="none">
+                Derivation: Cross-Entropy
+              </Link>
+              <Text as="span" color="gray.600"> — First principles derivation</Text>
+            </Box>
+            <Box as="li" mb="0.02in">
+              <Link href="/posts/classic-sgd" color="gray.900" textDecoration="none">
+                LR Scheduling and SGD
+              </Link>
+              <Text as="span" color="gray.600"> — PyTorch SGD internals</Text>
+            </Box>
+          </Box>
         </ResumeSection>
       </Container>
 
@@ -315,17 +342,25 @@ function ProjectEntry({
   subtitle,
   date,
   bullets,
+  link,
 }: {
   title: string;
   subtitle?: string;
   date?: string;
   bullets: string[];
+  link?: string;
 }) {
   return (
     <Box mb="0.12in">
       <Flex justify="space-between" align="baseline" mb="0.03in">
         <Box>
-          <Text as="span" fontWeight="600" fontSize="11pt">{title}</Text>
+          {link ? (
+            <Link href={link} fontWeight="600" fontSize="11pt" color="gray.900" textDecoration="none">
+              {title}
+            </Link>
+          ) : (
+            <Text as="span" fontWeight="600" fontSize="11pt">{title}</Text>
+          )}
           {subtitle && <Text as="span" fontStyle="italic" color="gray.700"> — {subtitle}</Text>}
         </Box>
         {date && <Text fontSize="10pt" color="gray.600" whiteSpace="nowrap">{date}</Text>}
