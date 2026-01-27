@@ -10,8 +10,8 @@ import {
 import { Link } from "@/components/ui/link";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
-import { useEffect, useRef, useState, memo } from "react";
-import { getIconComponent, type AsciiIconProps } from "@/lib/utils/portfolio-icons";
+import { useEffect, useRef, useState } from "react";
+import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { useAnalytics } from "@/components/common/analytics-provider";
 
 interface PortfolioCardProps {
@@ -21,39 +21,10 @@ interface PortfolioCardProps {
 
 // note: isHighlighted doesn't do anything for now
 
-// Memoized icon component that only re-renders when props change
-const MemoizedIcon = memo(({
-  IconComponent,
-  width,
-  // isHighlighted,
-  shouldRender
-}: {
-  IconComponent: React.ComponentType<AsciiIconProps> | undefined;
-  width: number;
-  isHighlighted: boolean;
-  shouldRender: boolean;
-}) => {
-  // If we shouldn't render the component or IconComponent is undefined, return placeholder
-  if (!shouldRender || !IconComponent) {
-    return <Box width={width} />
-  }
-
-  return (
-    <IconComponent
-      width={width}
-      highlightColor="yellow.400"
-      isHighlighted={false}
-    />
-  );
-});
-
-MemoizedIcon.displayName = 'MemoizedIcon';
-
 export const PortfolioCard = ({
   entry,
-  isHighlighted = false,
+  isHighlighted: _isHighlighted = false,
 }: PortfolioCardProps) => {
-  const IconComponent = getIconComponent(entry.icon);
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const ref = useRef(null);
@@ -112,12 +83,9 @@ export const PortfolioCard = ({
           zIndex={0}
         >
           <Center>
-            <MemoizedIcon
-              IconComponent={IconComponent}
-              width={220}
-              isHighlighted={true}
-              shouldRender={hasBeenInView}
-            />
+            {hasBeenInView && (
+              <DynamicPrecomputedAsciiIcon iconName={entry.icon} />
+            )}
           </Center>
         </Box>
         <Flex direction="column-reverse" height="100%">

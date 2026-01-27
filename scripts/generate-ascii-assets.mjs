@@ -4,6 +4,60 @@ import sharp from "sharp";
 
 const asciiChars = " '.,:;+=?*/#%$@";
 
+// Portfolio icon configurations - must match lib/ascii-icon-factory.tsx
+const ICON_CONFIGS = {
+  LightSabreIcon: {
+    imagePath: "/images/lightsabre.jpg",
+    widthDivisor: 2,
+  },
+  PostQuantumEncryptionIcon: {
+    imagePath: "/images/post-quantum-encryption.jpg",
+  },
+  DreamboothIcon: {
+    imagePath: "/images/dreambooth.jpg",
+  },
+  CryptoChartIcon: {
+    imagePath: "/images/crypto-candlestick-charts.jpg",
+  },
+  CandlestickChartIcon: {
+    imagePath: "/images/candlestick-charts.jpg",
+  },
+  UnderTheRockIcon: {
+    imagePath: "/images/under-the-rock.jpg",
+    widthDivisor: 2,
+  },
+  ETHTokyo23Icon: {
+    imagePath: "/images/ethtokyo23-square.jpg",
+  },
+  EdgeAIIcon: {
+    imagePath: "/images/edge-ai.jpg",
+  },
+  MaritimeSatelliteIcon: {
+    imagePath: "/images/maritime-satellite.jpg",
+  },
+  DegenLogoIcon: {
+    imagePath: "/images/degen-logo.jpg",
+  },
+  BattleBotIcon: {
+    imagePath: "/images/edhbattlebot.jpg",
+  },
+  AirdropIcon: {
+    imagePath: "/images/airdrop.jpg",
+  },
+  BacksimIcon: {
+    imagePath: "/images/backsim.jpg",
+  },
+  TeatheGatheringLogoIcon: {
+    imagePath: "/images/teathegathering.jpg",
+  },
+  VampTutorIcon: {
+    imagePath: "/images/vamp-tutor.jpg",
+  },
+};
+
+// Default width used in portfolio-card.tsx
+const PORTFOLIO_ICON_WIDTH = 220;
+
 const mapBrightnessToChar = (brightness) => {
   const index = Math.floor((brightness / 255) * (asciiChars.length - 1));
   return asciiChars[index];
@@ -79,6 +133,41 @@ const main = async () => {
     // eslint-disable-next-line no-await-in-loop
     const ascii = await imageToAscii({ inputPath: heroInput, width: w, cellAspect: 0.4 });
     assets.hero.widths[w] = ascii;
+  }
+
+  // Generate portfolio icons
+  assets.portfolioIcons = {};
+
+  for (const [iconName, config] of Object.entries(ICON_CONFIGS)) {
+    const widthDivisor = config.widthDivisor || 1;
+    const effectiveWidth = PORTFOLIO_ICON_WIDTH / widthDivisor;
+
+    // Handle both /images/... and images/... paths
+    const imagePath = config.imagePath.startsWith("/")
+      ? config.imagePath.slice(1)
+      : config.imagePath;
+    const inputPath = path.join(repoRoot, "public", imagePath);
+
+    // eslint-disable-next-line no-console
+    console.log(`[ascii] generating ${iconName} width=${effectiveWidth}`);
+
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const ascii = await imageToAscii({
+        inputPath,
+        width: effectiveWidth,
+        cellAspect: 0.4,
+      });
+
+      assets.portfolioIcons[iconName] = {
+        ascii,
+        width: PORTFOLIO_ICON_WIDTH,
+        effectiveWidth,
+      };
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`[ascii] failed to generate ${iconName}: ${err.message}`);
+    }
   }
 
   await fs.mkdir(outDir, { recursive: true });

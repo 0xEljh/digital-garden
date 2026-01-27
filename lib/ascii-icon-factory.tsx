@@ -86,10 +86,10 @@ const ICON_CONFIGS = {
         imagePath: "/images/backsim.jpg",
     },
     TeatheGatheringLogoIcon: {
-        imagePath: "images/teathegathering.jpg"
+        imagePath: "/images/teathegathering.jpg",
     },
     VampTutorIcon: {
-        imagePath: "images/vamp-tutor.jpg"
+        imagePath: "/images/vamp-tutor.jpg",
     }
 } as const satisfies Record<string, AsciiIconConfig>;
 
@@ -217,3 +217,5 @@ export const DegenLogoIcon = iconComponents.DegenLogoIcon;
 export const BattleBotIcon = iconComponents.BattleBotIcon;
 export const AirdropIcon = iconComponents.AirdropIcon;
 export const BacksimIcon = iconComponents.BacksimIcon;
+export const TeatheGatheringLogoIcon = iconComponents.TeatheGatheringLogoIcon;
+export const VampTutorIcon = iconComponents.VampTutorIcon;
