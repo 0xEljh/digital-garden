@@ -18,7 +18,8 @@ const ResumePage: NextPageWithLayout = () => {
       {/* Download button - hidden in print */}
       <Box
         position="fixed"
-        top="4"
+        top={{ base: "auto", md: "4" }}
+        bottom={{ base: "4", md: "auto" }}
         right="4"
         zIndex="1000"
         className="no-print"
@@ -27,10 +28,11 @@ const ResumePage: NextPageWithLayout = () => {
           onClick={handleDownloadPDF}
           colorPalette="gray"
           variant="solid"
-          size="lg"
+          size={{ base: "md", md: "lg" }}
+          aria-label="Download PDF"
         >
           <LuDownload />
-          Download PDF
+          <Text hideBelow="md">Download PDF</Text>
         </Button>
       </Box>
 
@@ -84,7 +86,7 @@ const ResumePage: NextPageWithLayout = () => {
         {/* Skills */}
         <ResumeSection title="Skills">
           <VStack align="stretch" gap="0.05in">
-            <SkillRow label="Training and Inference Optimisation" skills="PyTorch internals, Triton, torch.compile, quantisation, CUDA (reading), FSDP2, HuggingFace ecosystem (accelerate, transformers, etc.), Unsloth, bitsnbytes, tinygrad" />
+            <SkillRow label="Training and Inference Optimisation" skills="PyTorch internals, Triton, torch.compile, quantisation, CUDA (reading), FSDP2, HuggingFace ecosystem (accelerate, transformers, etc.), Unsloth, bitsandbytes, tinygrad" />
             <SkillRow label="Machine Learning" skills="PyTorch, finetuning, LLM/Vision pipelines, RAG, wandb, mlflow" />
             <SkillRow label="Data & Pipelines" skills="Prefect, Pandas, SQL, Pydantic, OpenTelemetry" />
             <SkillRow label="Infrastructure" skills="Docker, Nix, FastAPI, PostgreSQL, GCP, AWS/Cloudflare" />
@@ -98,9 +100,9 @@ const ResumePage: NextPageWithLayout = () => {
             company="IBVC Inc. (Legal/Real Estate Tech)"
             date="2025–Present"
             bullets={[
-              "Shipped production LLM pipeline to extract structured data from unstructured legal PDFs, implementing schema validation, repair logic, and pipeline idempotence.",
+              "Shipped production LLM pipeline to extract structured data from unstructured legal PDFs, implementing schema validation, repair logic, and pipeline idempotence",
               "Built a context-aware query-variant generator and results filter for skip-tracing. Improved contact hit-rate by 20x while capping cost to <$1/lead",
-              "Built Prefect flows aggregating 50+ heterogenous legal/market data sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads.",
+              "Built Prefect flows aggregating 50+ heterogenous legal/market data sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads",
             ]}
           />
           <ExperienceEntry
@@ -108,7 +110,7 @@ const ResumePage: NextPageWithLayout = () => {
             company="Pacts (Crypto x Anti-Sybil)"
             date="2024"
             bullets={[
-              "Owned design and implementation of frontend apps + on-chain analytics for the airdrop-as-a-service platform."
+              "Owned the design and implementation of the app layer + on-chain analytics for the airdrop-as-a-service platform"
             ]}
           />
           <ExperienceEntry
@@ -164,7 +166,7 @@ const ResumePage: NextPageWithLayout = () => {
             title="Dreambooth Optimization"
             date="2023"
             bullets={[
-              "Reduced peak VRAM by 50% for Stable Diffusion fine-tuning through quantization and attention chunking. Turned client profitable by fitting training on 3080 instances."
+              "Reduced peak VRAM by 50% for Stable Diffusion fine-tuning through quantization and attention chunking. Turned client profitable by fitting training on 3080 instances"
             ]}
           />
           <ProjectEntry
@@ -199,7 +201,7 @@ const ResumePage: NextPageWithLayout = () => {
             Specializations: Computational Engineering, Biomedical Engineering
           </Text>
           <Text fontSize="10.5pt">
-            A- median grade | Completed 5 postgraduate modules
+            Honors with Distinction; A- median grade | 5 postgraduate modules
           </Text>
           <Text fontSize="10.5pt">
             Final Year Project: Self-Organising Neural Networks
