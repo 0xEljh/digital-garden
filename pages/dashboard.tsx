@@ -10,7 +10,7 @@ import {
     HStack,
     Flex,
 } from "@chakra-ui/react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { BarList } from "@/components/ui/blocks/charts/bar-list";
 import {
     getAnalyticsForWindow,
@@ -224,8 +224,21 @@ const NoDataMessage = () => (
     </Box>
 );
 
-export default function Dashboard({ analyticsData }: DashboardProps) {
+export default function Dashboard({ analyticsData: initialData }: DashboardProps) {
+    const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(initialData);
     const [lookback, setLookback] = useState<LookbackWindow>("7d");
+
+    // Fetch fresh data client-side to handle browser-cached pages
+    useEffect(() => {
+        fetch("/api/analytics")
+            .then((res) => res.ok ? res.json() : null)
+            .then((data) => {
+                if (data && data.generated_at !== initialData?.generated_at) {
+                    setAnalyticsData(data);
+                }
+            })
+            .catch(() => {}); // Silently fail, we have ISR data as fallback
+    }, [initialData?.generated_at]);
 
     const analytics = useMemo(() => {
         if (!analyticsData) return null;

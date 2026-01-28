@@ -216,7 +216,7 @@ const ResumePage: NextPageWithLayout = () => {
           <Box as="ul" ml="0.15in" fontSize="10.5pt">
             <Box as="li" mb="0.02in">
               <Link href="/posts/cut-cross-entropy" color="gray.900" textDecoration="none">
-                Saving VRAM with Apple's Cut Cross Entropy
+                Saving VRAM with Apple&apos;s Cut Cross Entropy
               </Link>
               <Text as="span" color="gray.600"> — Triton kernel breakdown</Text>
             </Box>
