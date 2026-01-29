@@ -78,8 +78,8 @@ const ResumePage: NextPageWithLayout = () => {
         <ResumeSection title="Summary">
           <Text fontSize="10.5pt">
             Machine Learning / Systems Engineer focused on training and inference optimisation.
-            Experienced with PyTorch internals, feature engineering, and production Vision/LLM systems.
-            Proven ability to translate research concepts into measurable performance gains and thrive in uncertain/fast-paced environments.
+            Experienced with PyTorch internals and kernel level work as well as upstream problem framing— turning business needs into production Vision/LLM systems.
+            Proven ability to translate research concepts into measurable performance gains.
           </Text>
         </ResumeSection>
 
@@ -100,7 +100,7 @@ const ResumePage: NextPageWithLayout = () => {
             company="IBVC Inc. (Legal/Real Estate Tech)"
             date="2025–Present"
             bullets={[
-              "Shipped production LLM pipeline to extract structured data from unstructured legal PDFs, implementing schema validation, repair logic, and pipeline idempotence",
+              "Shipped production document understanding & LLM pipeline to extract structured data from unstructured records/filings, implementing schema validation, repair logic, and pipeline idempotence",
               "Built a context-aware query-variant generator and results filter for skip-tracing. Improved contact hit-rate by 20x while capping cost to <$1/lead",
               "Built Prefect flows aggregating 50+ heterogenous legal/market data sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads",
             ]}
@@ -110,7 +110,7 @@ const ResumePage: NextPageWithLayout = () => {
             company="Pacts (Crypto x Anti-Sybil)"
             date="2024"
             bullets={[
-              "Owned the design and implementation of the app layer + on-chain analytics for the airdrop-as-a-service platform"
+              "Owned app/frontend design and implementation; built on-chain analytics tooling the anti-Sybil airdrop platform"
             ]}
           />
           <ExperienceEntry
@@ -141,7 +141,7 @@ const ResumePage: NextPageWithLayout = () => {
             subtitle="MLPerf Puzzles"
             bullets={[
               // "Solved Unsloth's MLPerf challenges",
-              "Implemented custom Triton kernel for NF4 dequantisation, achieved 25% speedup over Unsloth baseline",
+              "Implemented custom Triton kernel for NF4 dequantisation, achieved 25% speedup over Unsloth baseline on T4",
               "Enabled QLoRA fine-tuning with FSDP2 and torch.compile with no graph breaks",
               "Implemented a memory-efficient backprop (inspired by cut-cross-entropy) that is compatible with GRPO"
             ]}
@@ -157,7 +157,7 @@ const ResumePage: NextPageWithLayout = () => {
           />
           <ProjectEntry
             title="ETH Tokyo 2023"
-            subtitle="Winner: Best Dashboard (3K USD prize)"
+            subtitle="Winner: Best Dashboard (3K USD)"
             bullets={[
               "Doubled down on analysis over visuals: shipped a functional Jupyter Notebook with aggregated analytics for 1inch Fusion resolver on-chain activity, execution profits, and gas spend"
             ]}
@@ -166,7 +166,7 @@ const ResumePage: NextPageWithLayout = () => {
             title="Dreambooth Optimization"
             date="2023"
             bullets={[
-              "Reduced peak VRAM by 50% for Stable Diffusion fine-tuning through quantization and attention chunking. Turned client profitable by fitting training on 3080 instances"
+              "Reduced peak VRAM by 50% for Stable Diffusion fine-tuning through quantization and attention chunking. Turned client profitable by fitting training on 3080 instances from 3090s"
             ]}
           />
           <ProjectEntry
