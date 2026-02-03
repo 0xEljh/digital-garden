@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, Text, Link, VStack, Heading } from "@chakra-ui/react";
 import { NavBar } from "@/components/common/nav";
-import { LuDownload } from "react-icons/lu";
+import { LuDownload, LuLink2 } from "react-icons/lu";
 import type { ReactElement } from "react";
 import type { NextPageWithLayout } from "./_app";
 
@@ -78,7 +78,7 @@ const ResumePage: NextPageWithLayout = () => {
         <ResumeSection title="Summary">
           <Text fontSize="10.5pt">
             Machine Learning / Systems Engineer focused on training and inference optimisation.
-            Experienced with PyTorch internals and kernel level work as well as upstream problem framing— turning business needs into production Vision/LLM systems.
+            Experienced with PyTorch internals and kernel level work as well as upstream problem formulation: turning business needs into production Vision/LLM systems.
             Proven ability to translate research concepts into measurable performance gains.
           </Text>
         </ResumeSection>
@@ -100,9 +100,10 @@ const ResumePage: NextPageWithLayout = () => {
             company="IBVC Inc. (Legal/Real Estate Tech)"
             date="2025–Present"
             bullets={[
-              "Shipped production document understanding & LLM pipeline to extract structured data from unstructured records/filings, implementing schema validation, repair logic, and pipeline idempotence",
+              "Designed and deployed a Prefect-based ETL pipeline consolidating 50+ legal/real estate data sources into a unified data lake; processed 3k records/day with idempotent and checkpointed runs, growing qualified leads by 10x YoY.",
+              "Implemented OpenTelemetry-based observability with LLM-enriched diagnostics to expedite pipeline debugging",
+              "Ship an LLM-based information retrieval and document understanding pipeline to extract validated, structured data from unstructured filings to automate downstream lead qualification",
               "Built a context-aware query-variant generator and results filter for skip-tracing. Improved contact hit-rate by 20x while capping cost to <$1/lead",
-              "Built Prefect flows aggregating 50+ heterogenous legal/market data sources into a unified data lake; processed 3k records/day with OpenTelemetry tracing and LLM-assisted error logging, driving 10x YoY growth in qualified leads",
             ]}
           />
           <ExperienceEntry
@@ -110,7 +111,7 @@ const ResumePage: NextPageWithLayout = () => {
             company="Pacts (Crypto x Anti-Sybil)"
             date="2024"
             bullets={[
-              "Owned app/frontend design and implementation; built on-chain analytics tooling the anti-Sybil airdrop platform"
+              "Owned app/frontend design and implementation; built on-chain analytics tooling for the airdrop platform"
             ]}
           />
           <ExperienceEntry
@@ -118,7 +119,7 @@ const ResumePage: NextPageWithLayout = () => {
             company="MarinaChain (Crypto x Maritime Sustainability)"
             date="2022"
             bullets={[
-              "Processed 1.3TB of raw telemetry data via Dusk to engineer features for a physics-informed maritime CO2 emissions model. Fused geospatial data with vessel specs to achieve explainable fuel and emissions estimates",
+              "Processed 1.3TB of raw telemetry data via Dusk to engineer features for a physics-informed maritime CO2 emissions model. Combined geospatial data with parsed vessel engineering specs to achieve explainable estimates",
             ]}
           />
           <ExperienceEntry
@@ -139,8 +140,8 @@ const ResumePage: NextPageWithLayout = () => {
             title="Unsloth Challenge"
             date="2025"
             subtitle="MLPerf Puzzles"
+            link="https://github.com/0xEljh/unsloth-ai-feb2025"
             bullets={[
-              // "Solved Unsloth's MLPerf challenges",
               "Implemented custom Triton kernel for NF4 dequantisation, achieved 25% speedup over Unsloth baseline on T4",
               "Enabled QLoRA fine-tuning with FSDP2 and torch.compile with no graph breaks",
               "Implemented a memory-efficient backprop (inspired by cut-cross-entropy) that is compatible with GRPO"
@@ -148,20 +149,14 @@ const ResumePage: NextPageWithLayout = () => {
           />
           <ProjectEntry
             title="vamptutor.com"
-            subtitle="Vector-based card search for MTG"
+            subtitle="Magic: The Gathering vector-based card search"
             date="2025"
             link="https://vamptutor.com"
             bullets={[
-              "Built a natural-language search for Magic: The Gathering cards using a fine-tuned qwen-embedding model"
+              "Built a 'RAG-like' natural-language search using finetuned gemma/qwen models and HyDe based-retrieval."
             ]}
           />
-          <ProjectEntry
-            title="ETH Tokyo 2023"
-            subtitle="Winner: Best Dashboard (3K USD)"
-            bullets={[
-              "Doubled down on analysis over visuals: shipped a functional Jupyter Notebook with aggregated analytics for 1inch Fusion resolver on-chain activity, execution profits, and gas spend"
-            ]}
-          />
+
           <ProjectEntry
             title="Dreambooth Optimization"
             date="2023"
@@ -170,18 +165,33 @@ const ResumePage: NextPageWithLayout = () => {
             ]}
           />
           <ProjectEntry
+            title="ETH Tokyo 2023"
+            subtitle="Winner: Best Data Dashboard (3K USD)"
+            bullets={[
+              "Doubled down on analysis over visuals: shipped a functional Jupyter Notebook with aggregated analytics for 1inch Fusion resolver on-chain activity, execution profits, and gas spend"
+            ]}
+          />
+          <ProjectEntry
             title="Liquid Crypto Index Fund"
             subtitle="Empire Group (HK fund)"
             date="2023"
             bullets={[
-              "Curated a dataset of 2,000+ tokens from 2013–2023; developed backtests for systematic index fund strategies with simulated execution conditions (slippage; modelled from market data)"
+              "Curated a dataset of 2,000+ tokens from 2013–2023 across venues; developed backtests for systematic index fund strategies with modelled and simulated execution conditions (slippage, liquidity, etc.)"
             ]}
           />
           <Box mb="0.12in">
             <Text fontWeight="600" fontSize="11pt">Open Source</Text>
-            <Box as="ul" ml="0.15in" mt="0.03in" fontSize="10.5pt">
+            <Box
+              as="ul"
+              pl="0.15in"
+              mt="0.03in"
+              fontSize="10.5pt"
+              listStyleType="disc"
+              listStylePosition="outside"
+            >
               <Box as="li" mb="0.02in">Contributed bug fixes to PyTorch Lightning and bt (backtrader)</Box>
-              <Box as="li" mb="0.02in">*Classic SGD: Reverted PyTorch SGD to original Sutskever formula for separable LR/momentum behavior</Box>
+              <Box as="li" mb="0.02in">Classic SGD: Reverted PyTorch SGD to original Sutskever formula for separable LR/momentum behavior</Box>
+              <Box as="li" mb="0.02in">Dotfiles: collection of configs and scripts for AI-tools (OpenCode, Claude Code), NixOS, productivity tracking, etc.</Box>
             </Box>
           </Box>
         </ResumeSection>
@@ -213,22 +223,31 @@ const ResumePage: NextPageWithLayout = () => {
 
         {/* Technical Writing */}
         <ResumeSection title="Writing">
-          <Box as="ul" ml="0.15in" fontSize="10.5pt">
+          <Box
+            as="ul"
+            pl="0.15in"
+            fontSize="10.5pt"
+            listStyleType="disc"
+            listStylePosition="outside"
+          >
             <Box as="li" mb="0.02in">
               <Link href="/posts/cut-cross-entropy" color="gray.900" textDecoration="none">
                 Saving VRAM with Apple&apos;s Cut Cross Entropy
+                <InlineLinkIcon />
               </Link>
               <Text as="span" color="gray.600"> — Triton kernel breakdown</Text>
             </Box>
             <Box as="li" mb="0.02in">
               <Link href="/posts/cross-entropy" color="gray.900" textDecoration="none">
                 Derivation: Cross-Entropy
+                <InlineLinkIcon />
               </Link>
               <Text as="span" color="gray.600"> — First principles derivation</Text>
             </Box>
             <Box as="li" mb="0.02in">
               <Link href="/posts/classic-sgd" color="gray.900" textDecoration="none">
                 LR Scheduling and SGD
+                <InlineLinkIcon />
               </Link>
               <Text as="span" color="gray.600"> — PyTorch SGD internals</Text>
             </Box>
@@ -330,7 +349,14 @@ function ExperienceEntry({
         </Box>
         <Text fontSize="10pt" color="gray.600" whiteSpace="nowrap">{date}</Text>
       </Flex>
-      <Box as="ul" ml="0.15in" mt="0.03in" fontSize="10.5pt">
+      <Box
+        as="ul"
+        pl="0.15in"
+        mt="0.03in"
+        fontSize="10.5pt"
+        listStyleType="disc"
+        listStylePosition="outside"
+      >
         {bullets.map((bullet, i) => (
           <Box as="li" key={i} mb="0.02in">{bullet}</Box>
         ))}
@@ -359,6 +385,7 @@ function ProjectEntry({
           {link ? (
             <Link href={link} fontWeight="600" fontSize="11pt" color="gray.900" textDecoration="none">
               {title}
+              <InlineLinkIcon />
             </Link>
           ) : (
             <Text as="span" fontWeight="600" fontSize="11pt">{title}</Text>
@@ -367,11 +394,33 @@ function ProjectEntry({
         </Box>
         {date && <Text fontSize="10pt" color="gray.600" whiteSpace="nowrap">{date}</Text>}
       </Flex>
-      <Box as="ul" ml="0.15in" mt="0.03in" fontSize="10.5pt">
+      <Box
+        as="ul"
+        pl="0.15in"
+        mt="0.03in"
+        fontSize="10.5pt"
+        listStyleType="disc"
+        listStylePosition="outside"
+      >
         {bullets.map((bullet, i) => (
           <Box as="li" key={i} mb="0.02in">{bullet}</Box>
         ))}
       </Box>
+    </Box>
+  );
+}
+
+function InlineLinkIcon() {
+  return (
+    <Box
+      as="span"
+      ml="0.01in"
+      display="inline-flex"
+      alignItems="center"
+      color="gray.600"
+      aria-hidden="true"
+    >
+      <LuLink2 size="0.85em" />
     </Box>
   );
 }
