@@ -14,5 +14,6 @@ export {
   Layer,
   LayerRow,
   InlineLatex,
+  VarTooltip,
 } from "./post-blocks";
 export { PostCardGrid } from "./post-card-grid";

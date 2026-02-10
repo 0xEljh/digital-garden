@@ -9,3 +9,4 @@ export { GithubPreview } from "./github-preview";
 export { VariableEquation } from "./variable-equation";
 export { LayerDiagram, Layer, LayerRow } from "./layer-diagram";
 export { InlineLatex } from "./latex";
+export { VarTooltip } from "./var-tooltip";

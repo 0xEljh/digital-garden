@@ -17,6 +17,7 @@ import {
   Layer,
   LayerRow,
   InlineLatex,
+  VarTooltip,
 } from "@/components/garden/post-blocks";
 
 interface StyledProseProps extends BoxProps {
@@ -41,6 +42,7 @@ export const mdxComponents = {
   Layer,
   LayerRow,
   InlineLatex,
+  VarTooltip,
   a: (p: any) => <Link _hover={{ textDecoration: "italic" }} target="_blank" rel="noopener noreferrer" {...p} />,
 };
 

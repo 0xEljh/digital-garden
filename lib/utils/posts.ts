@@ -5,6 +5,10 @@ import { serialize } from "next-mdx-remote/serialize";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import { Post, PostMetaData } from "@/types/posts";
+import { remarkMathTooltips } from "@/lib/remark/remark-math-tooltips";
+import { rehypeMathTooltips } from "@/lib/rehype/rehype-math-tooltips";
+
+const katexTrust = (context: any) => context?.command === "\\htmlClass";
 
 const POSTS_DIR = path.join(process.cwd(), "content/posts");
 
@@ -42,14 +46,24 @@ const parsePostFile = async (filename: string): Promise<Post> => {
   const source = await fs.readFile(filePath, "utf8");
 
   const { content, data } = matter(source);
+  const metadata = data as PostMetaData;
+  const tooltips = metadata.mathTooltips ?? [];
+
   const mdxSource = await serialize(content, {
     mdxOptions: {
-      remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex],
+      remarkPlugins: [remarkMath, [remarkMathTooltips, { tooltips }]],
+      rehypePlugins: [
+        [
+          rehypeKatex,
+          {
+            throwOnError: false,
+            trust: katexTrust,
+          },
+        ],
+        [rehypeMathTooltips, { tooltips }],
+      ],
     },
   });
-
-  const metadata = data as PostMetaData;
 
   // Use filename (without .mdx) as default slug if not defined
   const slug = metadata.slug || filename.replace(/\.mdx$/, "");

@@ -4,14 +4,19 @@ date: "2025-05-21"
 excerpt: "A comprehensive breakdown of apple's memory-efficient cut cross entropy implementation"
 categories: ["deep learning", "math", "triton"]
 relatedPosts: ["cross-entropy"]
+mathTooltips:
+  - tex: "- z_{y_i}"
+    tooltip: "Logit for the correct class $y_i$."
+  - tex: "z_k"
+    tooltip: "Logit for class $k$."
 ---
 
 
-This is the source code that's referenced throughout this article. It might be helpful to have this open in another tab: [GitHub - Apple ML Cut Cross Entropy](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce.py)
+This is the source code that's referenced throughout this article. It might be helpful to have this open in another tab: <GithubPreview repo="apple/ml-cross-entropy">GitHub - Apple ML Cut Cross Entropy</GithubPreview>
 
 ## Memory-Efficient Cross-Entropy is a Game Changer
 
-Cross Entropy is a ubiquitous loss function in deep learning, including the training of LLMs (next token prediction is a classification task). However, computing the cross entropy loss can be memory-intensive, as vocab sizes in LLMs can be enormous. As noted in [Apple's CCE paper](https://arxiv.org/abs/2411.09009), cross-entropy loss can account for **40–90% of total GPU memory usage**.
+Cross Entropy is a ubiquitous loss function in deep learning, including the training of LLMs (next token prediction is a classification task). However, computing the cross entropy loss can be memory-intensive, as vocab sizes in LLMs can be enormous. As noted in <PaperPreview arxivId="2411.09009">Apple's CCE paper</PaperPreview>, cross-entropy loss can account for **40–90% of total GPU memory usage**.
 By reducing the memory footprint of cross-entropy, we can significantly decrease the hardware requirements for training LLMs!
 
 ## Quick Recap: Cross Entropy
@@ -75,7 +80,7 @@ Key operations:
 
 ### Forward Kernel
 
-Between the kernels, the `cce_lse_forward_kernel` is more interesting, so [lets down its triton implementation](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce_lse_forward.py#L138).
+Between the kernels, the `cce_lse_forward_kernel` is more interesting, so [lets explore its triton implementation](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce_lse_forward.py#L138).
 
 <br />
 
