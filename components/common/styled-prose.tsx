@@ -2,7 +2,22 @@ import React from "react";
 import { Image, Box, type BoxProps, Container } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
 import { AnimatedHeading } from "@/components/animations/animated-heading";
-import { CodeBlock, CaptionedImage, CaptionedVideo, Callout } from "@/components/garden/post-blocks";
+import {
+  CodeBlock,
+  CaptionedImage,
+  CaptionedVideo,
+  Callout,
+  Timeline,
+  TimelineEntry,
+  ElasticSlider,
+  PaperPreview,
+  GithubPreview,
+  VariableEquation,
+  LayerDiagram,
+  Layer,
+  LayerRow,
+  InlineLatex,
+} from "@/components/garden/post-blocks";
 
 interface StyledProseProps extends BoxProps {
   children: React.ReactNode;
@@ -16,6 +31,16 @@ export const mdxComponents = {
   Callout,
   CaptionedImage,
   CaptionedVideo,
+  Timeline,
+  TimelineEntry,
+  ElasticSlider,
+  PaperPreview,
+  GithubPreview,
+  VariableEquation,
+  LayerDiagram,
+  Layer,
+  LayerRow,
+  InlineLatex,
   a: (p: any) => <Link _hover={{ textDecoration: "italic" }} target="_blank" rel="noopener noreferrer" {...p} />,
 };
 
