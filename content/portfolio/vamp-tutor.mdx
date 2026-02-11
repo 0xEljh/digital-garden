@@ -1,0 +1,34 @@
+---
+title: "Vamp Tutor"
+slug: "vamp-tutor"
+size: 2
+shortDescription: "Natural language card search"
+link: "https://vamptutor.com"
+icon: "VampTutorIcon"
+categories: ["Deep Learning", "Web Application"]
+date: "2026-05-01"
+techStack: ["Next.js", "FastAPI", "PostgreSQL", "pgvector", "DeepSeek"]
+---
+
+Search for Magic cards using natural language instead of using keyword combinations. When searching for cards with die triggers, we want to find both "when this creature dies" and "when this creature is put into the graveyard from the battlefield".
+
+The project has two parts: a finetuning pipeline for the embedding model, and a web application serving semantic search for cards.
+
+### Dataset and Model Training
+
+The main challenge is to have a model learn MTG mechanics (and language).
+This is not the same as remembering what popular cards do, or being able to tell you whether a card might be valuable.
+
+Instead, we want the model to understand, based on the oracle text, which cards had similar mechanics and which ones didn't.
+
+For this, we designed a dataset of over 80k (query, oracle) pairings, using Multiple Negative Ranking Loss to contrastively learn and cluster equivalences in mechanics and texts.
+
+The dataset is still a work in progress, but for now we've made this ontologically aware (e.g. flying and menace are both combat evasion mechnaics).
+
+We're currently using a Qwen-4b + qLoRA model.
+
+### Web Application
+
+Next.js frontend with autocomplete and real-time search. FastAPI backend with PostgreSQL and pgvector extension for vector similarity search.
+
+Also tries to parse filters within the query (e.g. mana value < 3)

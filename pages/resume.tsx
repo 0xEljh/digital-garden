@@ -153,7 +153,9 @@ const ResumePage: NextPageWithLayout = () => {
             date="2025"
             link="https://vamptutor.com"
             bullets={[
-              "Built a 'RAG-like' natural-language search using finetuned gemma/qwen models and HyDe based-retrieval."
+              "Fine-tuned Qwen3-Embedding-4B via 4-bit QLoRA (MultipleNegativesRankingLoss) on an 84k-pair contrastive dataset spanning 700+ mechanics; exported to GGUF for use in the embedding + retrieval pipeline of the semantic search app (Next.js + FastAPI + Postgres)",
+              "Built a curated challenge-set benchmark with hard negatives and nDCG@k/MRR reports to guide iteration and catch regressions",
+
             ]}
           />
 
