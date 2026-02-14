@@ -1,3 +1,7 @@
+import type { Node, Parent, Root } from "mdast";
+import type { InlineMath, Math } from "mdast-util-math";
+import type { RootContent as HastRootContent, Text as HastText } from "hast";
+
 type MathTooltipDefinition = {
   tex: string;
   tooltip: string;
@@ -13,6 +17,10 @@ type Match = {
   end: number;
   id: number;
 };
+
+type MathNode = InlineMath | Math;
+
+type HastChild = HastRootContent;
 
 function collectMatches(input: string, patterns: TooltipPattern[]): Match[] {
   const matches: Match[] = [];
@@ -61,27 +69,36 @@ function wrapTooltipMatches(input: string, patterns: TooltipPattern[]): string {
   return out;
 }
 
-function walk(node: any, fn: (n: any) => void) {
+function isParent(node: Node): node is Parent {
+  return Array.isArray((node as Parent).children);
+}
+
+function isMathNode(node: Node): node is MathNode {
+  return node.type === "inlineMath" || node.type === "math";
+}
+
+function walk(node: Node, fn: (n: Node) => void) {
   fn(node);
 
-  const children = node?.children;
-  if (!Array.isArray(children)) return;
+  if (!isParent(node)) return;
 
-  for (const child of children) {
+  for (const child of node.children) {
     walk(child, fn);
   }
 }
 
-function overwriteTextDescendants(children: any, nextValue: string) {
-  if (!Array.isArray(children)) return;
+function isHastText(node: HastChild): node is HastText {
+  return node.type === "text";
+}
 
+function overwriteTextDescendants(children: HastChild[], nextValue: string) {
   for (const child of children) {
-    if (child?.type === "text" && typeof child.value === "string") {
+    if (isHastText(child)) {
       child.value = nextValue;
     }
 
-    if (Array.isArray(child?.children)) {
-      overwriteTextDescendants(child.children, nextValue);
+    if ("children" in child && Array.isArray(child.children)) {
+      overwriteTextDescendants(child.children as HastChild[], nextValue);
     }
   }
 }
@@ -96,18 +113,17 @@ export function remarkMathTooltips(options: RemarkMathTooltipsOptions = {}) {
     .map((t, id) => ({ id, tex: t?.tex }))
     .filter((t): t is TooltipPattern => typeof t.tex === "string" && t.tex.length > 0);
 
-  return (tree: any) => {
+  return (tree: Root) => {
     if (patterns.length === 0) return;
 
     walk(tree, (node) => {
-      if (
-        (node?.type === "inlineMath" || node?.type === "math") &&
-        typeof node.value === "string"
-      ) {
+      if (isMathNode(node) && typeof node.value === "string") {
         const nextValue = wrapTooltipMatches(node.value, patterns);
         node.value = nextValue;
 
-        overwriteTextDescendants(node?.data?.hChildren, nextValue);
+        const hChildren = (node.data as { hChildren?: HastChild[] } | undefined)
+          ?.hChildren;
+        if (hChildren) overwriteTextDescendants(hChildren, nextValue);
       }
     });
   };

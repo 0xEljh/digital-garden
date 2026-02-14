@@ -51,11 +51,15 @@ export function Timeline({
       <Box ref={contentRef} position="relative" pb={10}>
         {React.Children.map(children, (child, index) => {
           if (!React.isValidElement(child)) return child;
-          return React.cloneElement(child as React.ReactElement<any>, {
-            _stickyTop: stickyTop,
-            _showDot: showDots,
-            _isFirst: index === 0,
-          });
+          if (child.type !== TimelineEntry) return child;
+          return React.cloneElement(
+            child as React.ReactElement<TimelineEntryProps>,
+            {
+              _stickyTop: stickyTop,
+              _showDot: showDots,
+              _isFirst: index === 0,
+            }
+          );
         })}
 
         {/* Track background line */}

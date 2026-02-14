@@ -30,7 +30,6 @@ export interface AsciiIconProps extends BoxProps {
     sampleFactor?: number;
     fontSize?: string;
     highlightColor?: string;
-    isHighlighted?: boolean;
     scrambleAnimationDuration?: number;
     noAnimation?: boolean;
 }

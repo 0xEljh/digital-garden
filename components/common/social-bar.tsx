@@ -1,7 +1,7 @@
-import { ButtonGroup, IconButton, useToken, HStack, Button, Icon } from "@chakra-ui/react";
+import { ButtonGroup, IconButton, useToken, HStack } from "@chakra-ui/react";
+import type { ButtonGroupProps } from "@chakra-ui/react";
 import { FaXTwitter, FaGithub, FaLinkedin, FaEnvelope, FaThreads, FaTelegram } from "react-icons/fa6";
 import { m } from "motion/react";
-import { Box } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
 
 export const MotionButton = m.create(IconButton);
@@ -10,7 +10,7 @@ export const MotionButton = m.create(IconButton);
 interface AnimatedIconButtonProps {
   href: string;
   ariaLabel: string;
-  icon: any;
+  icon: React.ReactNode;
   delay?: number;
 }
 
@@ -71,7 +71,7 @@ const socials = [
   },
 ];
 
-export function SocialBar({ ...props }: any) {
+export function SocialBar({ ...props }: ButtonGroupProps) {
   return (
     <ButtonGroup variant="outline" {...props}>
       {socials.map((social, i) => (

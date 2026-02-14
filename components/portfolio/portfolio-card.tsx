@@ -16,14 +16,10 @@ import { useAnalytics } from "@/components/common/analytics-provider";
 
 interface PortfolioCardProps {
   entry: PortfolioEntry;
-  isHighlighted?: boolean;
 }
-
-// note: isHighlighted doesn't do anything for now
 
 export const PortfolioCard = ({
   entry,
-  isHighlighted: _isHighlighted = false,
 }: PortfolioCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });

@@ -4,6 +4,11 @@ import { useEffect, useState, createContext, useContext } from "react";
 import { Router } from "next/router";
 import type { PostHog } from "posthog-js";
 
+type PosthogWindow = Window & {
+  posthog?: PostHog;
+  __posthog_router_pageview_hooked?: boolean;
+};
+
 const AnalyticsContext = createContext<PostHog | null>(null);
 
 export const useAnalytics = () => {
@@ -17,9 +22,10 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
         // Only init on client
         if (typeof window === "undefined") return;
 
+        const win = window as PosthogWindow;
         const isLocalhost =
-            window.location.hostname === "localhost" ||
-            window.location.hostname === "127.0.0.1";
+            win.location.hostname === "localhost" ||
+            win.location.hostname === "127.0.0.1";
         const disableSessionRecording =
             process.env.NODE_ENV === "development" || isLocalhost;
 
@@ -29,10 +35,9 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
         const uiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
         if (!uiHost) return;
 
-        const ensureRouterPageviews = (ph: any) => {
-            const hookKey = "__posthog_router_pageview_hooked";
-            if ((window as any)[hookKey]) return;
-            (window as any)[hookKey] = true;
+        const ensureRouterPageviews = (ph: PostHog) => {
+            if (win.__posthog_router_pageview_hooked) return;
+            win.__posthog_router_pageview_hooked = true;
 
             const handleRouteChange = () => ph.capture("$pageview");
             Router.events.on("routeChangeComplete", handleRouteChange);
@@ -41,7 +46,7 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
             ph.capture("$pageview");
         };
 
-        const ensureSessionRecordingSetting = (ph: any) => {
+        const ensureSessionRecordingSetting = (ph: PostHog) => {
             if (disableSessionRecording) {
                 ph?.stopSessionRecording?.();
                 ph?.set_config?.({ disable_session_recording: true });
@@ -49,8 +54,8 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
         };
 
         // Check if we already have an instance
-        if ((window as any).posthog) {
-            const existing = (window as any).posthog;
+        if (win.posthog) {
+            const existing = win.posthog;
             ensureSessionRecordingSetting(existing);
             ensureRouterPageviews(existing);
             setPosthog(existing);

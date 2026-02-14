@@ -7,7 +7,7 @@ import {
 
 type AnimatedHeadingProps = {
     level: number;
-    children: React.ReactNode;
+    children?: React.ReactNode;
     sx?: SystemStyleObject;
 };
 

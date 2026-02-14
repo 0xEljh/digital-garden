@@ -4,11 +4,14 @@ import matter from "gray-matter";
 import { serialize } from "next-mdx-remote/serialize";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import type { StrictFunction, TrustContext } from "katex";
 import { Post, PostMetaData } from "@/types/posts";
 import { remarkMathTooltips } from "@/lib/remark/remark-math-tooltips";
 import { rehypeMathTooltips } from "@/lib/rehype/rehype-math-tooltips";
 
-const katexTrust = (context: any) => context?.command === "\\htmlClass";
+const katexTrust = (context: TrustContext) => context.command === "\\htmlClass";
+const katexStrict: StrictFunction = (code) =>
+  code === "htmlExtension" ? "ignore" : "warn";
 
 const POSTS_DIR = path.join(process.cwd(), "content/posts");
 
@@ -58,6 +61,7 @@ const parsePostFile = async (filename: string): Promise<Post> => {
           {
             throwOnError: false,
             trust: katexTrust,
+            strict: katexStrict,
           },
         ],
         [rehypeMathTooltips, { tooltips }],

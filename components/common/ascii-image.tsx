@@ -4,6 +4,8 @@ import { m, cubicBezier, steps, animate, MotionValue, useTransform, motionValue 
 import { convertImageToAscii } from "../../lib/utils/asciiConverter";
 import dynamic from "next/dynamic";
 
+const SCRAMBLE_EASING = cubicBezier(0.32, 0.12, 0.68, 0.93);
+
 interface AsciiImageProps {
   imagePath: string;
   // Desired width (number of characters). The height will be auto-calculated based on the image aspect ratio.
@@ -351,10 +353,6 @@ export const ScrambledAsciiImage = ({
   // Characters to use for scrambling - we'll use a mix of special chars and letters
   const scrambleChars = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  // Define a smooth easing curve with precise control points
-  // Slow start, quick middle, gentle end
-  const smoothEasing = cubicBezier(.32, .12, .68, .93);
-
   useEffect(() => {
     const image = new Image();
     image.src = imagePath;
@@ -375,7 +373,7 @@ export const ScrambledAsciiImage = ({
         // @ts-expect-error Type '1' has no properties in common with type 'ObjectTarget<MotionValue<number>>' 
         animationRef.current = animate(progressValue, 1, {
           duration: scrambleAnimationDuration,
-          easing: smoothEasing,
+          easing: SCRAMBLE_EASING,
           repeat: 0,
         });
       } catch (err) {
@@ -393,7 +391,7 @@ export const ScrambledAsciiImage = ({
         animationRef.current.stop();
       }
     };
-  }, [imagePath, width, sampleFactor, progressValue]);
+  }, [imagePath, width, sampleFactor, progressValue, scrambleAnimationDuration]);
 
   return (
     <Box
@@ -414,7 +412,7 @@ export const ScrambledAsciiImage = ({
           scrambleChars={scrambleChars}
           rowIndex={rowIndex}
           totalRows={rows.length}
-          smoothEasing={smoothEasing}
+          smoothEasing={SCRAMBLE_EASING}
         />
       ))}
     </Box>

@@ -102,7 +102,6 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
           <IconComponent
             width={iconWidth}
             highlightColor={"yellow.500"}
-            isHighlighted={true}
             scrambleAnimationDuration={8}
           />
         )}

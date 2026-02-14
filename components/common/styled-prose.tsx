@@ -1,5 +1,6 @@
-import React from "react";
-import { Image, Box, type BoxProps, Container } from "@chakra-ui/react";
+import type { BoxProps, ContainerProps } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
+import type { MDXComponents } from "mdx/types";
 import { Link } from "@/components/ui/link";
 import { AnimatedHeading } from "@/components/animations/animated-heading";
 import {
@@ -20,30 +21,30 @@ import {
   VarTooltip,
 } from "@/components/garden/post-blocks";
 
-interface StyledProseProps extends BoxProps {
+interface StyledProseProps extends ContainerProps {
   children: React.ReactNode;
 }
 
-export const mdxComponents = {
-  h1: (p: any) => <AnimatedHeading level={1} {...p} />,
-  h2: (p: any) => <AnimatedHeading level={2} {...p} />,
-  h3: (p: any) => <AnimatedHeading level={3} {...p} />,
-  pre: CodeBlock,
-  Callout,
-  CaptionedImage,
-  CaptionedVideo,
-  Timeline,
-  TimelineEntry,
-  ElasticSlider,
-  PaperPreview,
-  GithubPreview,
-  VariableEquation,
-  LayerDiagram,
-  Layer,
-  LayerRow,
-  InlineLatex,
-  VarTooltip,
-  a: (p: any) => <Link _hover={{ textDecoration: "italic" }} target="_blank" rel="noopener noreferrer" {...p} />,
+export const mdxComponents: MDXComponents = {
+  h1: (p: Record<string, unknown>) => <AnimatedHeading level={1} {...p} />,
+  h2: (p: Record<string, unknown>) => <AnimatedHeading level={2} {...p} />,
+  h3: (p: Record<string, unknown>) => <AnimatedHeading level={3} {...p} />,
+  pre: CodeBlock as React.ComponentType<BoxProps>,
+  Callout: Callout as React.ComponentType<BoxProps>,
+  CaptionedImage: CaptionedImage as React.ComponentType<BoxProps>,
+  CaptionedVideo: CaptionedVideo as React.ComponentType<BoxProps>,
+  Timeline: Timeline as React.ComponentType<BoxProps>,
+  TimelineEntry: TimelineEntry as React.ComponentType<BoxProps>,
+  ElasticSlider: ElasticSlider as React.ComponentType<BoxProps>,
+  PaperPreview: PaperPreview as React.ComponentType<BoxProps>,
+  GithubPreview: GithubPreview as React.ComponentType<BoxProps>,
+  VariableEquation: VariableEquation as React.ComponentType<BoxProps>,
+  LayerDiagram: LayerDiagram as React.ComponentType<BoxProps>,
+  Layer: Layer as React.ComponentType<BoxProps>,
+  LayerRow: LayerRow as React.ComponentType<BoxProps>,
+  InlineLatex: InlineLatex as React.ComponentType<BoxProps>,
+  VarTooltip: VarTooltip as React.ComponentType<BoxProps>,
+  a: (p: Record<string, unknown>) => <Link _hover={{ textDecoration: "italic" }} target="_blank" rel="noopener noreferrer" {...p} />,
 };
 
 export function StyledProse({ children, ...props }: StyledProseProps) {

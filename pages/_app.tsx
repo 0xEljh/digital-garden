@@ -10,12 +10,13 @@ import type { NextPage } from "next";
 import { Provider } from "@/components/ui/provider";
 import { PageTransition } from "@/components/animations/page-transition";
 import { DefaultLayout } from "@/components/layout";
+import type { HeadMetaProps } from "@/types/head-meta";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
 
-type AppPropsWithLayout = AppProps & {
+type AppPropsWithLayout = AppProps<{ headMeta?: HeadMetaProps }> & {
   Component: NextPageWithLayout;
 };
 
@@ -23,7 +24,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
 
   // Merge page-specific SEO if provided
-  const pageHeadMeta = (pageProps as any).headMeta || {};
+  const pageHeadMeta = pageProps.headMeta || {};
 
   const getLayout =
     Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);

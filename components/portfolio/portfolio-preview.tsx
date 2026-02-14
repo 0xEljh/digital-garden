@@ -149,7 +149,6 @@ export const PortfolioPreview = ({
                         {IconComponent && (
                           <IconComponent
                             highlightColor="yellow.400"
-                            isHighlighted={false}
                             noAnimation={true}
                           />
                         )}

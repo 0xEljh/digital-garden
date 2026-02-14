@@ -1,36 +1,30 @@
+import type { Element, Node, Parent, RootContent } from "hast";
+import type {
+  MdxJsxAttribute,
+  MdxJsxTextElementHast,
+} from "mdast-util-mdx-jsx";
+
 type MathTooltipDefinition = {
   tex: string;
   tooltip: string;
 };
 
-type HastElement = {
-  type: "element";
-  tagName: string;
-  properties?: Record<string, unknown>;
-  children?: any[];
-};
+type HastNode = Node;
 
-type HastNode = HastElement | { type: string; [key: string]: any };
+function isElement(node: HastNode): node is Element {
+  return node.type === "element";
+}
 
-type MdxJsxAttribute = {
-  type: "mdxJsxAttribute";
-  name: string;
-  value?: any;
-};
-
-type MdxJsxTextElement = {
-  type: "mdxJsxTextElement";
-  name: string;
-  attributes?: MdxJsxAttribute[];
-  children?: any[];
-};
+function isParent(node: HastNode): node is Parent {
+  return Array.isArray((node as Parent).children);
+}
 
 function getClassNames(node: HastNode): string[] {
-  const props = (node as any)?.properties;
-  const className = props?.className;
+  if (!isElement(node)) return [];
+  const className = node.properties?.className;
 
   if (Array.isArray(className)) {
-    return className.filter((x) => typeof x === "string") as string[];
+    return className.filter((x): x is string => typeof x === "string");
   }
 
   if (typeof className === "string") {
@@ -50,17 +44,17 @@ function extractTooltipId(classNames: string[]): number | null {
 
 function walk(
   node: HastNode,
-  visitor: (node: HastNode, parent: HastNode | null, index: number | null) => void,
-  parent: HastNode | null = null,
+  visitor: (node: HastNode, parent: Parent | null, index: number | null) => void,
+  parent: Parent | null = null,
   index: number | null = null
 ) {
   visitor(node, parent, index);
 
-  const children = (node as any)?.children;
-  if (!Array.isArray(children)) return;
+  if (!isParent(node)) return;
 
+  const children = node.children as RootContent[];
   for (let i = 0; i < children.length; i++) {
-    walk(children[i], visitor, node, i);
+    walk(children[i] as HastNode, visitor, node, i);
   }
 }
 
@@ -76,7 +70,7 @@ export function rehypeMathTooltips(options: RehypeMathTooltipsOptions = {}) {
 
     walk(tree, (node, parent, index) => {
       if (!parent || index === null) return;
-      if ((node as any)?.type !== "element") return;
+      if (!isElement(node)) return;
 
       const classNames = getClassNames(node);
       if (classNames.length === 0) return;
@@ -91,17 +85,19 @@ export function rehypeMathTooltips(options: RehypeMathTooltipsOptions = {}) {
 
       const classNameValue = classNames.join(" ");
 
-      const replacement: MdxJsxTextElement = {
+      const attributes: MdxJsxAttribute[] = [
+        { type: "mdxJsxAttribute", name: "tooltip", value: tooltip },
+        { type: "mdxJsxAttribute", name: "className", value: classNameValue },
+      ];
+
+      const replacement: MdxJsxTextElementHast = {
         type: "mdxJsxTextElement",
         name: "VarTooltip",
-        attributes: [
-          { type: "mdxJsxAttribute", name: "tooltip", value: tooltip },
-          { type: "mdxJsxAttribute", name: "className", value: classNameValue },
-        ],
-        children: (node as any).children ?? [],
+        attributes,
+        children: node.children,
       };
 
-      (parent as any).children[index] = replacement;
+      parent.children[index] = replacement;
     });
   };
 }
