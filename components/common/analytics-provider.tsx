@@ -4,10 +4,12 @@ import { useEffect, useState, createContext, useContext } from "react";
 import { Router } from "next/router";
 import type { PostHog } from "posthog-js";
 
-type PosthogWindow = Window & {
-  posthog?: PostHog;
-  __posthog_router_pageview_hooked?: boolean;
-};
+declare global {
+  interface Window {
+    posthog?: PostHog;
+    __posthog_router_pageview_hooked?: boolean;
+  }
+}
 
 const AnalyticsContext = createContext<PostHog | null>(null);
 
@@ -22,10 +24,9 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
         // Only init on client
         if (typeof window === "undefined") return;
 
-        const win = window as PosthogWindow;
         const isLocalhost =
-            win.location.hostname === "localhost" ||
-            win.location.hostname === "127.0.0.1";
+            window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1";
         const disableSessionRecording =
             process.env.NODE_ENV === "development" || isLocalhost;
 
@@ -36,8 +37,8 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
         if (!uiHost) return;
 
         const ensureRouterPageviews = (ph: PostHog) => {
-            if (win.__posthog_router_pageview_hooked) return;
-            win.__posthog_router_pageview_hooked = true;
+            if (window.__posthog_router_pageview_hooked) return;
+            window.__posthog_router_pageview_hooked = true;
 
             const handleRouteChange = () => ph.capture("$pageview");
             Router.events.on("routeChangeComplete", handleRouteChange);
@@ -54,8 +55,8 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
         };
 
         // Check if we already have an instance
-        if (win.posthog) {
-            const existing = win.posthog;
+        if (window.posthog) {
+            const existing = window.posthog;
             ensureSessionRecordingSetting(existing);
             ensureRouterPageviews(existing);
             setPosthog(existing);
