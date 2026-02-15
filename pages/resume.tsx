@@ -89,7 +89,7 @@ const ResumePage: NextPageWithLayout = () => {
             <SkillRow label="Training and Inference Optimisation" skills="PyTorch internals, Triton, torch.compile, quantisation, CUDA (reading), FSDP2, HuggingFace ecosystem (accelerate, transformers, etc.), Unsloth, bitsandbytes, tinygrad" />
             <SkillRow label="Machine Learning" skills="PyTorch, finetuning, LLM/Vision pipelines, RAG, wandb, mlflow" />
             <SkillRow label="Data & Pipelines" skills="Prefect, Pandas, SQL, Pydantic, OpenTelemetry" />
-            <SkillRow label="Infrastructure" skills="Docker, Nix, FastAPI, PostgreSQL, GCP, AWS/Cloudflare" />
+            <SkillRow label="Infrastructure" skills="Docker, Nix, FastAPI, PostgreSQL, GCP, AWS/Cloudflare, Next.js" />
           </VStack>
         </ResumeSection>
 
@@ -153,8 +153,8 @@ const ResumePage: NextPageWithLayout = () => {
             date="2025"
             link="https://vamptutor.com"
             bullets={[
-              "Fine-tuned Qwen3-Embedding-4B via 4-bit QLoRA (MultipleNegativesRankingLoss) on an 84k-pair contrastive dataset spanning 700+ mechanics; exported to GGUF for use in the embedding + retrieval pipeline of the semantic search app (Next.js + FastAPI + Postgres)",
-              "Built a curated challenge-set benchmark with hard negatives and nDCG@k/MRR reports to guide iteration and catch regressions",
+              "Fine-tuned Qwen3-Embedding-4B via 4-bit QLoRA (MultipleNegativesRankingLoss) on a generated contrastive dataset spanning 700+ mechanics; deployed via llama.cpp in the embedding pipeline of the semantic search app",
+              "Built a curated challenge-set benchmark with hard negatives and nDCG@k/MRR reports to guide iteration",
 
             ]}
           />
