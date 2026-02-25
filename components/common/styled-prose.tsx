@@ -104,6 +104,31 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
             },
           },
         },
+        "& table": {
+          width: "100%",
+          borderCollapse: "collapse",
+          marginTop: "1.5rem",
+          marginBottom: "1.5rem",
+          fontSize: "clamp(0.95rem, 2.3vw, 1.05rem)",
+        },
+        "& th, & td": {
+          border: "1px solid var(--chakra-colors-gray-700)",
+          padding: "0.5rem 0.75rem",
+          verticalAlign: "top",
+        },
+        "& thead th": {
+          background: "rgba(255, 255, 255, 0.05)",
+          color: "var(--chakra-colors-gray-100)",
+          fontFamily: "Aeion Mono",
+          letterSpacing: "0.02em",
+          textAlign: "left",
+        },
+        "& tbody tr:nth-of-type(odd)": {
+          background: "rgba(255, 255, 255, 0.02)",
+        },
+        "& table code": {
+          fontSize: "0.95em",
+        },
         "& blockquote": {
           borderLeft: "4px solid",
           borderColor: "gray.300",

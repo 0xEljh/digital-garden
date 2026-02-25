@@ -6,7 +6,6 @@ categories: ["deep learning", "math"]
 relatedPosts: ["cut-cross-entropy"]
 ---
 
-
 Cross-entropy is is widely used in deep learning. It is what neural networks minimise when learning to model an underlying data distribution, especially in classification tasks like language modelling, where the models predict the probability of a token.
 Understanding this loss and deriving it will require us to walk through a few ideas from information theory: entropy, divergence, and modelling probability distributions.
 
@@ -49,11 +48,11 @@ probability of each event is $$p(y)$$. So by weighing each event by it's
 probability, we get the expected information content:
 
 $$
-	H(Y) = \mathbb{E}[I(Y)] = \sum_{y} p(y) I(y)
+ H(Y) = \mathbb{E}[I(Y)] = \sum_{y} p(y) I(y)
 $$
 
 $$
-	H(Y) = - \sum_{y} p(y) \log p(y)
+ H(Y) = - \sum_{y} p(y) \log p(y)
 $$
 
 ## Derivation: Cross-Entropy
@@ -80,14 +79,14 @@ Likewise, if $$q(y)$$ is a good appproximation of $$p(y)$$, then "no modificatio
 Mathematically:
 
 $$
-	D_{KL}(p \parallel q) = \sum_{y} p(y) \log \frac{p(y)}{q(y)}
+ D_{KL}(p \parallel q) = \sum_{y} p(y) \log \frac{p(y)}{q(y)}
 $$
 
 Expressed in terms of expectations ($$p(y)$$ is the true distribution, we're using it's probability distribution
 to compute the expectation):
 
 $$
-	D_{KL}(p \parallel q) = \mathbb{E}[\log(p) - \log(q)]
+ D_{KL}(p \parallel q) = \mathbb{E}[\log(p) - \log(q)]
 $$
 
 <br />
@@ -95,13 +94,13 @@ $$
 KL-divergence hence tells us how far apart two distributions are. It is the expected difference in information between the two distributions. To anchor this back on cross-entropy, we can express KL-divergence in terms of entropy:
 
 $$
-	D_{KL}(p \parallel q) = H(p, q) - H(p)
+ D_{KL}(p \parallel q) = H(p, q) - H(p)
 $$
 
 Where $$H(p, q)$$ is the cross-entropy, and $$H(p)$$ is the true entropy.
 
 $$
-	H(p, q) = H(p) + D_{KL}(p \parallel q)
+ H(p, q) = H(p) + D_{KL}(p \parallel q)
 $$
 
 Thus, cross-entropy consists of two parts:

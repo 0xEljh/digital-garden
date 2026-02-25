@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from "motion/react";
 import { Box, Heading, Stack, Button, Flex, Text, Center } from "@chakra-ui/react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from 'next/router';
 import type { PortfolioEntry } from "@/types/portfolio";
 import { LuDownload } from "react-icons/lu";
@@ -10,29 +10,23 @@ import { useAnalytics } from "@/components/common/analytics-provider";
 
 const MotionFlex = m.create(Flex);
 
+// Fixed width constants to prevent layout shift
+const EXPANDED_WIDTH = 384;
+const COLLAPSED_WIDTH = 80;
+const GAP = 8; // Chakra gap={2} = 0.5rem = 8px
+
 export const PortfolioPreview = ({
   entries,
 }: {
   entries: PortfolioEntry[];
 }) => {
-  const [expandedPanel, setExpandedPanel] = useState<string | null>(entries.length > 0 ? entries[0].slug : null);
+  const defaultPanel = entries.length > 0 ? entries[0].slug : null;
+  const [expandedPanel, setExpandedPanel] = useState<string | null>(defaultPanel);
   const router = useRouter();
-  const [isHovered, setIsHovered] = useState(false);
   const posthog = useAnalytics();
-
-  // Auto-collapse panels when not hovered
-  useEffect(() => {
-    if (!isHovered && expandedPanel) {
-      const timer = setTimeout(() => {
-        setExpandedPanel(null);
-      }, 15000);
-      return () => clearTimeout(timer);
-    }
-  }, [isHovered, expandedPanel]);
 
   const handleMouseEnter = (slug: string) => {
     setExpandedPanel(slug);
-    setIsHovered(true);
 
     posthog?.capture('portfolio_preview_expand', {
       portfolio_item: entries.find(entry => entry.slug === slug)?.title,
@@ -40,6 +34,9 @@ export const PortfolioPreview = ({
       location: router.asPath
     });
   };
+
+  // Calculate fixed container width: 1 expanded + (n-1) collapsed + gaps
+  const containerWidth = EXPANDED_WIDTH + (entries.length - 1) * COLLAPSED_WIDTH + (entries.length - 1) * GAP;
 
   return (
     <Stack gap={6} w="full" align="center">
@@ -51,7 +48,8 @@ export const PortfolioPreview = ({
         gap={2}
         overflow="auto"
         w="full"
-        onMouseLeave={() => setIsHovered(false)}
+        maxW={`${containerWidth}px`}
+        onMouseLeave={() => setExpandedPanel(defaultPanel)}
       >
         {entries.map((entry) => {
           const IconComponent = getIconComponent(entry.icon);

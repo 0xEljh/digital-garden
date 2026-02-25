@@ -11,7 +11,6 @@ mathTooltips:
     tooltip: "Logit for class $k$."
 ---
 
-
 This is the source code that's referenced throughout this article. It might be helpful to have this open in another tab: <GithubPreview repo="apple/ml-cross-entropy">GitHub - Apple ML Cut Cross Entropy</GithubPreview>
 
 ## Memory-Efficient Cross-Entropy is a Game Changer
@@ -82,9 +81,7 @@ Key operations:
 
 Between the kernels, the `cce_lse_forward_kernel` is more interesting, so [lets explore its triton implementation](https://github.com/apple/ml-cross-entropy/blob/main/cut_cross_entropy/cce_lse_forward.py#L138).
 
-<br />
-
-Skipping over the offset and pointer intitialisation, we hit the first math operation:
+Skipping over the initialisation (of the pointer and offset) we hit the first math operation:
 
 ```triton
 accum = tl.zeros((BLOCK_B, BLOCK_V), dtype=tl.float32)
@@ -169,22 +166,23 @@ Here is how the paper describes the backward pass (don't worry, you can skip thi
 > Formally, the gradient is defined as $$ \nabla E^T = (S \cdot \nabla \text{LSE}) C \quad \text{and} \quad \nabla C^T = (S \cdot \nabla \text{LSE})^T E $$ where $$ S = \text{softmax}(C^T E) $$ and $$ \cdot $$ refers to the row-by-row elementwise multiplication of the softmax $$ S $$ and the gradient $$ \nabla \text{LSE} $$: $$ \hat{S} = S \cdot \nabla \text{LSE} $$.
 >
 > <br />
-> Computationally, the backward pass is a double matrix multiplication $$ C^T E $$
-> and $$ \hat{S} C $$ or $$ \hat{S}^T E $$ with intermediate matrices $$ S $$
-> and $$ \hat{S} $$ that do not fit into GPU memory and undergo a non-linear operation.
-> We take a similar approach to the forward pass, recomputing the matrix $$ C^T E$$ 
-> implicitly in the GPU's shared memory. For the backward pass, we do not need
-> to compute the normalization constant of the softmax, since 
-> $$ S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE}) $$.
-> This allows us to reuse the global synchronization
-> of the forward pass, and compute $$ S $$ efficiently in parallel.
+> Computationally, the backward pass is a double matrix multiplication $$ C^T E
+> $$ and $$ \hat{S} C $$ or $$ \hat{S}^T E $$ with intermediate matrices $S$ and
+> $$ \hat{S} $$ that do not fit into GPU memory and undergo a non-linear
+> operation. We take a similar approach to the forward pass, recomputing the
+> matrix $$ C^T E$$ implicitly in the GPU's shared memory. For the backward
+> pass, we do not need to compute the normalization constant of the softmax,
+> since $$ S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE}) $$. This allows
+> us to reuse the global synchronization of the forward pass, and compute $S$
+> efficiently in parallel.
 > <br />
-> We implement the second matrix multiplication in the main memory of the GPU, as
-> a canonical blockwise implementation would require storing or synchronizing $$ S $$. 
-> Algorithm 3 and Fig. 2c summarize the computation and access patterns. A
-> naive implementation of this algorithm requires zero additional memory but is slow
-> due to repeated global memory load and store operations. We use two techniques
-> to improve the memory access pattern: gradient filtering and vocabulary sorting.
+> We implement the second matrix multiplication in the main memory of the GPU,
+> as a canonical blockwise implementation would require storing or synchronizing
+> $S$. Algorithm 3 and Fig. 2c summarize the computation and access patterns. A
+> naive implementation of this algorithm requires zero additional memory but is
+> slow due to repeated global memory load and store operations. We use two
+> techniques to improve the memory access pattern: gradient filtering and
+> vocabulary sorting.
 
 <br />
 
@@ -194,6 +192,8 @@ Overall, this is what the backward pass needs to do:
 2. Recompute the logits ($$C^T E$$) in chunks (like in the forward pass).
 3. Compute $$S = \text{softmax}(C^T E) = \exp(C^T E - \text{LSE})$$, the Softmax probabilities.
 4. Compute the gradient signal for the log-sum-exponent, $$\hat{S} = (S - Y) \cdot \nabla \text{LSE}$$, using its upstream gradient $$\nabla \text{LSE}$$ (or `d_out` in the code) and the targets $$Y$$.
+
+Which looks like this in code:
 
 ```triton
 # Compute S
@@ -241,10 +241,11 @@ d_accum = d_accum * d_out
 
 ```
 
-5. Compute $$\nabla E^T = \hat{S} C$$, the gradient of the query embeddings.
-6. Compute $$\nabla C^T = \hat{S}^T E$$, the gradient of the class embeddings.
+1. Compute $$\nabla E^T = \hat{S} C$$, the gradient of the query embeddings.
+2. Compute $$\nabla C^T = \hat{S}^T E$$, the gradient of the class embeddings.
 
-If you can recall chain-rule, you can see why $$\hat{S}$$ makes up the gradient of both the query and class embeddings. It is the key intermediate product in this series of steps.
+If you can recall chain-rule, you can see why $$\hat{S}$$ makes up the gradient of both the query and class embeddings.
+It is the key intermediate product in this series of steps.
 
 <br />
 

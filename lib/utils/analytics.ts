@@ -12,19 +12,38 @@ export const aggregateDailyReports = (
   dailyReports: AnalyticsReport[],
   lookbackDays: number
 ): AggregatedAnalytics => {
-  // Use date-only comparison to avoid timezone issues
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const cutoffDate = new Date(today);
-  cutoffDate.setDate(cutoffDate.getDate() - (lookbackDays - 1));
+  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  const getUtcDay = (dateString: string): number | null => {
+    const parts = dateString.split("-").map(Number);
+    if (parts.length !== 3) return null;
+    const [year, month, day] = parts;
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+      return null;
+    }
+    return Math.floor(Date.UTC(year, month - 1, day) / MS_PER_DAY);
+  };
+
+  // Anchor the window to the latest report date for deterministic SSR/CSR
+  const reportDays = dailyReports
+    .map((report) => ({
+      report,
+      utcDay: getUtcDay(report.period.start_date),
+    }))
+    .filter((entry): entry is { report: AnalyticsReport; utcDay: number } =>
+      typeof entry.utcDay === "number"
+    );
+
+  if (reportDays.length === 0) {
+    return createEmptyAggregate();
+  }
+
+  const latestDay = Math.max(...reportDays.map((entry) => entry.utcDay));
+  const cutoffDay = latestDay - (lookbackDays - 1);
 
   // Filter reports within the lookback window
-  const filteredReports = dailyReports.filter((report) => {
-    // Parse date string and normalize to local midnight for comparison
-    const dateParts = report.period.start_date.split("-").map(Number);
-    const reportDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-    return reportDate >= cutoffDate && reportDate <= today;
-  });
+  const filteredReports = reportDays
+    .filter((entry) => entry.utcDay >= cutoffDay && entry.utcDay <= latestDay)
+    .map((entry) => entry.report);
 
   if (filteredReports.length === 0) {
     return createEmptyAggregate();

@@ -11,7 +11,7 @@ import {
     Flex,
 } from "@chakra-ui/react";
 import { useState, useMemo, useEffect } from "react";
-import { BarList } from "@/components/ui/blocks/charts/bar-list";
+import { AsciiBarList, AsciiRatioBar } from "@/components/ui/ascii-bar";
 import {
     getAnalyticsForWindow,
     type AggregatedAnalytics,
@@ -75,8 +75,6 @@ const DevPlanningRatioCard = ({
 }: {
     analytics: AggregatedAnalytics;
 }) => {
-    const devWidth = analytics.devTime.percentage;
-    const planningWidth = analytics.planningTime.percentage;
     const activeTime = analytics.devTime.hours + analytics.planningTime.hours;
 
     return (
@@ -98,22 +96,13 @@ const DevPlanningRatioCard = ({
                             {analytics.planningTime.percentage.toFixed(0)}%)
                         </Text>
                     </HStack>
-                    <Box h="8px" bg="gray.800" borderRadius="full" overflow="hidden">
-                        <HStack gap={0} h="full">
-                            <Box
-                                h="full"
-                                bg="cyan.500"
-                                w={`${devWidth}%`}
-                                transition="width 0.3s"
-                            />
-                            <Box
-                                h="full"
-                                bg="purple.500"
-                                w={`${planningWidth}%`}
-                                transition="width 0.3s"
-                            />
-                        </HStack>
-                    </Box>
+                    <AsciiRatioBar
+                        leftValue={analytics.devTime.percentage}
+                        rightValue={analytics.planningTime.percentage}
+                        width={32}
+                        leftColor="cyan.400"
+                        rightColor="purple.400"
+                    />
                     <Box>
                         <Stack fontSize="xs" color="fg.muted" fontFamily="Aeion Mono" align="flex-end">
                             <HStack justify="space-between">
@@ -164,9 +153,12 @@ const DevToolsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
                 </Card.Title>
             </Card.Header>
             <Card.Body>
-                <BarList
+                <AsciiBarList
                     data={barData}
-                    labels={{ title: "Tool", value: "%" }}
+                    barWidth={16}
+                    color="cyan.400"
+                    showValue={true}
+                    valueSuffix="%"
                 />
             </Card.Body>
         </Card.Root>
@@ -204,9 +196,12 @@ const AiChatsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
                 </Card.Title>
             </Card.Header>
             <Card.Body>
-                <BarList
+                <AsciiBarList
                     data={barData}
-                    labels={{ title: "Service", value: "%" }}
+                    barWidth={16}
+                    color="purple.400"
+                    showValue={true}
+                    valueSuffix="%"
                 />
             </Card.Body>
         </Card.Root>

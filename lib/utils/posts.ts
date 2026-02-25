@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { serialize } from "next-mdx-remote/serialize";
 import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import type { StrictFunction, TrustContext } from "katex";
 import { Post, PostMetaData } from "@/types/posts";
@@ -54,7 +55,7 @@ const parsePostFile = async (filename: string): Promise<Post> => {
 
   const mdxSource = await serialize(content, {
     mdxOptions: {
-      remarkPlugins: [remarkMath, [remarkMathTooltips, { tooltips }]],
+      remarkPlugins: [remarkGfm, remarkMath, [remarkMathTooltips, { tooltips }]],
       rehypePlugins: [
         [
           rehypeKatex,
