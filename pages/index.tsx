@@ -192,21 +192,24 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
           </Box>
         ))}
       </Stack>
-      <Button
-        asChild
-        colorScheme="teal"
-        variant="outline"
-        size="sm"
-        alignSelf="center"
-        fontWeight="400"
+
+      <Link href="/posts"
         onClick={() => {
           posthog?.capture("explore_garden_click", {
             location: "/",
           });
         }}
       >
-        <NextLink href="/posts">Explore Garden</NextLink>
-      </Button>
+        <Text
+          fontSize="xs"
+          fontFamily="Aeion Mono"
+          color="cyan.600"
+          _hover={{ color: "cyan.400" }}
+          transition="color 0.2s"
+        >
+          → Explore Garden
+        </Text>
+      </Link>
     </Stack>
   );
 };

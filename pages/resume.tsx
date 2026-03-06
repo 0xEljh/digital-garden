@@ -89,7 +89,7 @@ const ResumePage: NextPageWithLayout = () => {
             <SkillRow label="Training and Inference Optimisation" skills="PyTorch internals, Triton, torch.compile, quantisation, CUDA (reading), FSDP2, HuggingFace ecosystem (accelerate, transformers, etc.), Unsloth, bitsandbytes, tinygrad" />
             <SkillRow label="Machine Learning" skills="PyTorch, finetuning, LLM/Vision pipelines, RAG, wandb, mlflow" />
             <SkillRow label="Data & Pipelines" skills="Prefect, Pandas, SQL, Pydantic, OpenTelemetry" />
-            <SkillRow label="Infrastructure" skills="Docker, Nix, FastAPI, PostgreSQL, GCP, AWS/Cloudflare, Next.js" />
+            <SkillRow label="Infrastructure" skills="Docker, Go, Nix, FastAPI, PostgreSQL, GCP, AWS/Cloudflare, Next.js" />
           </VStack>
         </ResumeSection>
 

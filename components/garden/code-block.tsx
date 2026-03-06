@@ -5,14 +5,22 @@ import {
   Clipboard,
   Button,
 } from "@chakra-ui/react";
+import { MermaidDiagram } from "./mermaid-diagram";
 
 interface CodeBlockProps {
-  children: React.ReactElement<{ children: string; className?: string }>;
+  children: React.ReactElement<{ children: string | string[]; className?: string }>;
 }
 
 export const CodeBlock = ({ children }: CodeBlockProps) => {
-  const codeString = children.props.children.trim();
-  const language = children.props.className?.replace(/language-/, "") || "";
+  const rawCode = children.props.children;
+  const codeString = (Array.isArray(rawCode) ? rawCode.join("") : rawCode).trim();
+  const language = children.props.className?.match(/language-([A-Za-z0-9_-]+)/)?.[1] || "";
+  const normalizedLanguage = language.toLowerCase();
+
+  if (normalizedLanguage === "mermaid") {
+    return <MermaidDiagram chart={codeString} />;
+  }
+
   return (
     <Card.Root overflow="hidden" variant="outline" m={4}>
       <Card.Header py={2} px={4} bg="blackAlpha.300">
