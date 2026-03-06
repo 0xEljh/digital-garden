@@ -89,6 +89,12 @@ const ICON_CONFIGS = {
     },
     VampTutorIcon: {
         imagePath: "/images/vamp-tutor.jpg",
+    },
+    UnslothIcon: {
+        imagePath: "/images/sloth.jpg",
+    },
+    VigilIcon: {
+        imagePath: "/images/vigil-black-bg.jpg",
     }
 } as const satisfies Record<string, AsciiIconConfig>;
 
@@ -218,3 +224,7 @@ export const AirdropIcon = iconComponents.AirdropIcon;
 export const BacksimIcon = iconComponents.BacksimIcon;
 export const TeatheGatheringLogoIcon = iconComponents.TeatheGatheringLogoIcon;
 export const VampTutorIcon = iconComponents.VampTutorIcon;
+export const UnslothIcon = iconComponents.UnslothIcon;
+export const VigilIcon = iconComponents.VigilIcon;
+
+
