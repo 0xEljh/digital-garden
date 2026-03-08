@@ -1,0 +1,57 @@
+{
+  "LightSabreIcon": {
+    "imagePath": "/images/lightsabre.jpg",
+    "fontSizeRatio": 0.0166,
+    "widthDivisor": 2
+  },
+  "PostQuantumEncryptionIcon": {
+    "imagePath": "/images/post-quantum-encryption.jpg"
+  },
+  "DreamboothIcon": {
+    "imagePath": "/images/dreambooth.jpg"
+  },
+  "CryptoChartIcon": {
+    "imagePath": "/images/crypto-candlestick-charts.jpg"
+  },
+  "CandlestickChartIcon": {
+    "imagePath": "/images/candlestick-charts.jpg"
+  },
+  "UnderTheRockIcon": {
+    "imagePath": "/images/under-the-rock.jpg",
+    "fontSizeRatio": 0.0166,
+    "widthDivisor": 2
+  },
+  "ETHTokyo23Icon": {
+    "imagePath": "/images/ethtokyo23-square.jpg"
+  },
+  "EdgeAIIcon": {
+    "imagePath": "/images/edge-ai.jpg"
+  },
+  "MaritimeSatelliteIcon": {
+    "imagePath": "/images/maritime-satellite.jpg"
+  },
+  "DegenLogoIcon": {
+    "imagePath": "/images/degen-logo.jpg"
+  },
+  "BattleBotIcon": {
+    "imagePath": "/images/edhbattlebot.jpg"
+  },
+  "AirdropIcon": {
+    "imagePath": "/images/airdrop.jpg"
+  },
+  "BacksimIcon": {
+    "imagePath": "/images/backsim.jpg"
+  },
+  "TeatheGatheringLogoIcon": {
+    "imagePath": "/images/teathegathering.jpg"
+  },
+  "VampTutorIcon": {
+    "imagePath": "/images/vamp-tutor.jpg"
+  },
+  "UnslothIcon": {
+    "imagePath": "/images/sloth.jpg"
+  },
+  "VigilIcon": {
+    "imagePath": "/images/vigil-black-bg.jpg"
+  }
+}

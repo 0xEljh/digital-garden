@@ -12,13 +12,14 @@ interface PrecomputedAsciiIconProps extends BoxProps {
   scrambleAnimationDuration?: number;
 }
 
+type PrecomputedPortfolioIconAsset = {
+  ascii: string;
+  width: number;
+  fontSizeRatio?: number;
+};
+
 // Default font size ratio (2px at width=240)
 const DEFAULT_FONT_SIZE_RATIO = 0.0083;
-// Icons with custom font size ratios
-const CUSTOM_FONT_SIZE_ICONS: Record<string, number> = {
-  LightSabreIcon: 0.0166,
-  UnderTheRockIcon: 0.0166,
-};
 
 // Characters to use for scrambling
 const SCRAMBLE_CHARS = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -35,7 +36,7 @@ export const PrecomputedAsciiIcon = ({
   scrambleAnimationDuration = 4,
   ...boxProps
 }: PrecomputedAsciiIconProps) => {
-  const iconData = (asciiAssets as { portfolioIcons?: Record<string, { ascii: string; width: number }> })
+  const iconData = (asciiAssets as { portfolioIcons?: Record<string, PrecomputedPortfolioIconAsset> })
     .portfolioIcons?.[iconName];
 
   const [isAnimating, setIsAnimating] = useState(true);
@@ -70,7 +71,7 @@ export const PrecomputedAsciiIcon = ({
   const rows = iconData.ascii.split("\n");
 
   // Calculate font size based on width and ratio
-  const fontSizeRatio = CUSTOM_FONT_SIZE_ICONS[iconName] ?? DEFAULT_FONT_SIZE_RATIO;
+  const fontSizeRatio = iconData.fontSizeRatio ?? DEFAULT_FONT_SIZE_RATIO;
   const calculatedFontSize = fontSize ?? `${Math.max(1, Math.round(iconData.width * fontSizeRatio))}px`;
 
   return (

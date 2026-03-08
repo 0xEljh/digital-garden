@@ -6,6 +6,7 @@ import {
     DynamicAsciiImage,
     DynamicScrambledAsciiImage,
 } from "@/components/common/ascii-image";
+import iconConfigs from "@/lib/ascii-icon-config.json";
 
 
 /**
@@ -40,63 +41,7 @@ export interface AsciiIconProps extends BoxProps {
  * Central registry of all ASCII icon configurations.
  * To add a new icon, simply add an entry here.
  */
-const ICON_CONFIGS = {
-    LightSabreIcon: {
-        imagePath: "/images/lightsabre.jpg",
-        fontSizeRatio: 0.0166,
-        widthDivisor: 2,
-    },
-    PostQuantumEncryptionIcon: {
-        imagePath: "/images/post-quantum-encryption.jpg",
-    },
-    DreamboothIcon: {
-        imagePath: "/images/dreambooth.jpg",
-    },
-    CryptoChartIcon: {
-        imagePath: "/images/crypto-candlestick-charts.jpg",
-    },
-    CandlestickChartIcon: {
-        imagePath: "/images/candlestick-charts.jpg",
-    },
-    UnderTheRockIcon: {
-        imagePath: "/images/under-the-rock.jpg",
-        fontSizeRatio: 0.0166,
-        widthDivisor: 2,
-    },
-    ETHTokyo23Icon: {
-        imagePath: "/images/ethtokyo23-square.jpg",
-    },
-    EdgeAIIcon: {
-        imagePath: "/images/edge-ai.jpg",
-    },
-    MaritimeSatelliteIcon: {
-        imagePath: "/images/maritime-satellite.jpg",
-    },
-    DegenLogoIcon: {
-        imagePath: "/images/degen-logo.jpg",
-    },
-    BattleBotIcon: {
-        imagePath: "/images/edhbattlebot.jpg",
-    },
-    AirdropIcon: {
-        imagePath: "/images/airdrop.jpg",
-    },
-    BacksimIcon: {
-        imagePath: "/images/backsim.jpg",
-    },
-    TeatheGatheringLogoIcon: {
-        imagePath: "/images/teathegathering.jpg",
-    },
-    VampTutorIcon: {
-        imagePath: "/images/vamp-tutor.jpg",
-    },
-    UnslothIcon: {
-        imagePath: "/images/sloth.jpg",
-    },
-    VigilIcon: {
-        imagePath: "/images/vigil-black-bg.jpg",
-    }
-} as const satisfies Record<string, AsciiIconConfig>;
+const ICON_CONFIGS = iconConfigs satisfies Record<string, AsciiIconConfig>;
 
 /**
  * Type-safe icon names derived from the config registry
@@ -226,5 +171,4 @@ export const TeatheGatheringLogoIcon = iconComponents.TeatheGatheringLogoIcon;
 export const VampTutorIcon = iconComponents.VampTutorIcon;
 export const UnslothIcon = iconComponents.UnslothIcon;
 export const VigilIcon = iconComponents.VigilIcon;
-
 

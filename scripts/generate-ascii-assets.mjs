@@ -4,59 +4,14 @@ import sharp from "sharp";
 
 const asciiChars = " '.,:;+=?*/#%$@";
 
-// Portfolio icon configurations - must match lib/ascii-icon-factory.tsx
-const ICON_CONFIGS = {
-  LightSabreIcon: {
-    imagePath: "/images/lightsabre.jpg",
-    widthDivisor: 2,
-  },
-  PostQuantumEncryptionIcon: {
-    imagePath: "/images/post-quantum-encryption.jpg",
-  },
-  DreamboothIcon: {
-    imagePath: "/images/dreambooth.jpg",
-  },
-  CryptoChartIcon: {
-    imagePath: "/images/crypto-candlestick-charts.jpg",
-  },
-  CandlestickChartIcon: {
-    imagePath: "/images/candlestick-charts.jpg",
-  },
-  UnderTheRockIcon: {
-    imagePath: "/images/under-the-rock.jpg",
-    widthDivisor: 2,
-  },
-  ETHTokyo23Icon: {
-    imagePath: "/images/ethtokyo23-square.jpg",
-  },
-  EdgeAIIcon: {
-    imagePath: "/images/edge-ai.jpg",
-  },
-  MaritimeSatelliteIcon: {
-    imagePath: "/images/maritime-satellite.jpg",
-  },
-  DegenLogoIcon: {
-    imagePath: "/images/degen-logo.jpg",
-  },
-  BattleBotIcon: {
-    imagePath: "/images/edhbattlebot.jpg",
-  },
-  AirdropIcon: {
-    imagePath: "/images/airdrop.jpg",
-  },
-  BacksimIcon: {
-    imagePath: "/images/backsim.jpg",
-  },
-  TeatheGatheringLogoIcon: {
-    imagePath: "/images/teathegathering.jpg",
-  },
-  VampTutorIcon: {
-    imagePath: "/images/vamp-tutor.jpg",
-  },
-};
-
 // Default width used in portfolio-card.tsx
 const PORTFOLIO_ICON_WIDTH = 220;
+
+const loadIconConfigs = async (repoRoot) => {
+  const configPath = path.join(repoRoot, "lib", "ascii-icon-config.json");
+  const configJson = await fs.readFile(configPath, "utf8");
+  return JSON.parse(configJson);
+};
 
 const mapBrightnessToChar = (brightness) => {
   const index = Math.floor((brightness / 255) * (asciiChars.length - 1));
@@ -112,6 +67,7 @@ const imageToAscii = async ({ inputPath, width, cellAspect = 0.4 }) => {
 
 const main = async () => {
   const repoRoot = process.cwd();
+  const iconConfigs = await loadIconConfigs(repoRoot);
 
   const heroInput = path.join(repoRoot, "public", "emiya_kiritsugu-small.png");
   const outDir = path.join(repoRoot, "lib", "generated");
@@ -138,7 +94,7 @@ const main = async () => {
   // Generate portfolio icons
   assets.portfolioIcons = {};
 
-  for (const [iconName, config] of Object.entries(ICON_CONFIGS)) {
+  for (const [iconName, config] of Object.entries(iconConfigs)) {
     const widthDivisor = config.widthDivisor || 1;
     const effectiveWidth = PORTFOLIO_ICON_WIDTH / widthDivisor;
 
@@ -159,11 +115,17 @@ const main = async () => {
         cellAspect: 0.4,
       });
 
-      assets.portfolioIcons[iconName] = {
+      const iconAsset = {
         ascii,
         width: PORTFOLIO_ICON_WIDTH,
         effectiveWidth,
       };
+
+      if (typeof config.fontSizeRatio === "number") {
+        iconAsset.fontSizeRatio = config.fontSizeRatio;
+      }
+
+      assets.portfolioIcons[iconName] = iconAsset;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`[ascii] failed to generate ${iconName}: ${err.message}`);
