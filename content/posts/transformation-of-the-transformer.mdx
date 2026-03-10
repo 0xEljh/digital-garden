@@ -126,6 +126,27 @@ This is such that $d_{model} = \text{num heads} \times d_{head}$
   caption="Figure — Transformer model architecture from 'Attention Is All You Need'."
 />
 
+These multiple heads are introduced not to "chunk" the computation into a smaller dimension size (we have other tools for optimizing memory footprint).
+
+Rather, multiple heads are added to allow the model to project the input into multiple independent "representations".
+
+For the sake of refining our intuition, let's explore why we add more heads instead of simply increasing the dimensions of a single head.
+
+Recall that the output of the dot-product between our $q$ and $k$ query/key vectors is a "score" that looks like this:
+
+$$
+a_{i,j} = \text{SoftMax}(\frac{q_i k_j ^{\mathsf{T}}} {\sqrt{d_k}})
+$$
+
+This means that no matter the dimensions of $q_i$ and $k_j$, we obtain a single scalar value for each token and vector pair.
+
+There are hence two ways to intuit this:
+
+1. By introducing heads, we decrease compression factor from $d_\text{model}:1$ to ${d_\text{head}:N_\text{heads}}$, allowing the representation to be richer.
+2. Each head allows us focus on types of token/vector pair interactions, and hence arrive at unique scores for each variant.
+
+These cannot be achieved by simply increasing $d_\text{model}$
+
 ---
 
 With that, we have the building blocks of the original transformer model.

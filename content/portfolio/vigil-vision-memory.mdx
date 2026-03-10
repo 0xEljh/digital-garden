@@ -7,9 +7,18 @@ link: "https://github.com/0xEljh/VIGIL"
 icon: "VigilIcon"
 categories: ["Deep Learning"]
 date: "2026-03-01"
-techStack: ["PyTorch", "OpenCV", "llama.cpp"]
+techStack: ["PyTorch", "OpenCV", "llama.cpp", "YOLO", "FAISS"]
 ---
 
-Created over a weekend at Mistral's worldwide hackathon.
+A framework to give compute constrained AI agents structured spatial-temporal memory.
+Created over a weekend at the Mistral Worldwide 2026 Hackathon with Daryl (he needs to setup an online profile of some kind).
+
+VIGIL represents scenes as graphs (tracked objects, spatial relations, motion events) and implements two kinds of memory:
+
+- a classic semantic vector-based index for entity recall
+- a store of historical graphs with a stochastic "forgetting" (eviction) system
+
+The whole system can be run on-device. Model-agnostic by design; bring your own detector, LLM, and UI.
 
 Check the GitHub for more information.
+
