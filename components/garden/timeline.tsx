@@ -125,7 +125,7 @@ export function TimelineEntry({
 }: TimelineEntryProps) {
   const titleContent = (
     <Text
-      fontFamily="Tickerbit"
+      fontFamily="heading"
       fontSize={{ base: "lg", md: "2xl" }}
       fontWeight="bold"
       color="gray.400"
@@ -173,7 +173,7 @@ export function TimelineEntry({
           <Stack gap={0}>
             <Text
               fontSize="xs"
-              fontFamily="Aeion Mono"
+              fontFamily="mono"
               color="gray.500"
               letterSpacing="wide"
             >
@@ -182,7 +182,7 @@ export function TimelineEntry({
             {/* Desktop title (sticky) */}
             <Box display={{ base: "none", md: "block" }}>
               {href ? (
-                <Link href={href} _hover={{ color: "cyan.400" }}>
+                <Link href={href} _hover={{ color: "accent.emphasized" }}>
                   {titleContent}
                 </Link>
               ) : (
@@ -198,7 +198,7 @@ export function TimelineEntry({
         {/* Mobile title (non-sticky) */}
         <Box display={{ base: "block", md: "none" }} mb={3}>
           {href ? (
-            <Link href={href} _hover={{ color: "cyan.400" }}>
+            <Link href={href} _hover={{ color: "accent.emphasized" }}>
               {titleContent}
             </Link>
           ) : (

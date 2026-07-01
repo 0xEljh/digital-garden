@@ -1,32 +1,47 @@
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  Stack,
-  Flex,
-  Text,
-} from "@chakra-ui/react";
-import NextLink from "next/link";
+import { Box, Container, Heading, HStack, Stack, Text } from "@chakra-ui/react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
 import { loadPosts } from "@/lib/utils/posts";
-import type { Post, PostMetaData } from "@/types/posts";
-import { PostCardGrid } from "@/components/garden/post-card-grid";
+import type { Post } from "@/types/posts";
+import {
+  deriveRelated,
+  type RelatedCandidate,
+  type RelatedReason,
+} from "@/lib/content/related";
 import { StyledProse, mdxComponents } from "@/components/common/styled-prose";
 import { SocialBar } from "@/components/common/social-bar";
 import "katex/dist/katex.min.css";
 import { useEffect } from "react";
 import { useAnalytics } from "@/components/common/analytics-provider";
 import Head from "next/head";
-import { LuArrowRight } from "react-icons/lu";
 import type { HeadMetaProps } from "@/types/head-meta";
 import { CategoryTags } from "@/components/garden/category-tag";
+import { GardenMeta } from "@/components/garden/garden-meta";
+import { StageNote } from "@/components/garden/stage-badge";
+import { GardenLink } from "@/components/garden/garden-link";
+
+interface RelatedRow {
+  slug: string;
+  title: string;
+  reason: RelatedReason;
+  sharedCategory: string | null;
+}
 
 interface PostPageProps {
   post: Post;
-  relatedPosts: PostMetaData[];
+  related: RelatedRow[];
+  backlinks: { slug: string; title: string }[];
   headMeta?: HeadMetaProps;
+}
+
+/** The muted right-hand note on a Related/Nearby row — names the dominant signal. */
+function reasonLabel(r: {
+  reason: RelatedReason;
+  sharedCategory: string | null;
+}): string {
+  if (r.reason === "related") return "related";
+  if (r.reason === "linked") return "links here";
+  return r.sharedCategory ? `shared · ${r.sharedCategory}` : "shared";
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -41,8 +56,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    // Set fallback to 'blocking' to handle potentially valid paths
-    // that weren't generated at build time
+    // 'blocking' handles potentially valid paths not generated at build time
     fallback: "blocking",
   };
 };
@@ -53,29 +67,43 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
   const posts = await loadPosts();
   const post = posts.find((p) => p.slug === params?.post);
 
-  // get related posts, but only send the metadata
-  const relatedPostsData = posts
-    .filter((p) => post?.relatedPosts.includes(p.slug))
+  if (!post) {
+    return { notFound: true };
+  }
+
+  // Graph-derived neighbors: outbound edges (manual relatedPosts + inline
+  // mentions) ∪ shared-category proximity, ranked (C6) — replaces the old
+  // manual-relatedPosts-only filter so the link graph actually drives discovery.
+  const candidates: RelatedCandidate[] = posts
+    .filter((p) => p.slug !== post.slug)
     .map((p) => ({
-      title: p.title,
       slug: p.slug,
-      excerpt: p.excerpt,
+      title: p.title,
       categories: p.categories,
       date: p.date,
-      relatedPosts: [],
-      readTime: p.readTime,
+      stage: p.stage,
     }));
+  const related: RelatedRow[] = deriveRelated(
+    { slug: post.slug, categories: post.categories, outgoing: post.outgoing },
+    candidates
+  ).map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    reason: p.reason,
+    sharedCategory: p.sharedCategory ?? null,
+  }));
 
-  if (!post) {
-    return {
-      notFound: true,
-    };
-  }
+  // Inbound: who links here (the "Linked from" list).
+  const titleBySlug = new Map(posts.map((p) => [p.slug, p.title]));
+  const backlinks = post.backlinks
+    .map((slug) => ({ slug, title: titleBySlug.get(slug) }))
+    .filter((b): b is { slug: string; title: string } => Boolean(b.title));
 
   return {
     props: {
       post,
-      relatedPosts: relatedPostsData,
+      related,
+      backlinks,
       headMeta: {
         title: post.title,
         description: post.excerpt,
@@ -84,7 +112,7 @@ export const getStaticProps: GetStaticProps<PostPageProps> = async ({
   };
 };
 
-export default function PostPage({ post, relatedPosts }: PostPageProps) {
+export default function PostPage({ post, related, backlinks }: PostPageProps) {
   const posthog = useAnalytics();
 
   useEffect(() => {
@@ -101,7 +129,7 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
     "@type": "BlogPosting",
     headline: post.title,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.tended,
     author: [
       {
         "@type": "Person",
@@ -123,18 +151,18 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
         <Container maxW="container.lg" px={{ base: 4, md: 12, lg: 24 }}>
           <Stack gap={8}>
             <Stack gap={4}>
-              <Heading size="2xl" fontFamily="Tickerbit">
+              <Heading size="2xl" fontFamily="heading">
                 {post.title}
               </Heading>
-              <CategoryTags categories={post.categories} />
-              <Text color="gray.600" fontFamily={"Aeion Mono"}>
-                {new Date(post.date).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}{" "}
-                · {post.readTime} min read
-              </Text>
+              <CategoryTags categories={post.categories} linkify />
+              <GardenMeta
+                stage={post.stage}
+                date={post.date}
+                tended={post.tended}
+                readTime={post.readTime}
+                confidence={post.confidence}
+              />
+              <StageNote stage={post.stage} />
             </Stack>
             <StyledProse>
               <MDXRemote {...post.content} components={mdxComponents} />
@@ -142,32 +170,56 @@ export default function PostPage({ post, relatedPosts }: PostPageProps) {
 
             <SocialBar />
 
-            {relatedPosts && relatedPosts.length > 0 && (
-              <Stack gap={{ base: 4, md: 6 }} py={{ base: 8, md: 12 }}>
-                <Flex direction="row" justify="space-between">
-                  <Heading size="2xl" fontFamily="Topoline">
-                    Related Posts
-                  </Heading>
-                  <Button
-                    display={{ base: "none", md: "flex" }}
-                    variant="ghost"
-                    asChild
-                  >
-                    <NextLink href="/posts">
-                      Revisit Garden <LuArrowRight />
-                    </NextLink>
-                  </Button>
-                </Flex>
-                <PostCardGrid posts={relatedPosts} />
-                <Button
-                  display={{ base: "flex", md: "none" }}
-                  variant="ghost"
-                  asChild
-                >
-                  <NextLink href="/posts">
-                    Revisit Garden <LuArrowRight />
-                  </NextLink>
-                </Button>
+            {(backlinks.length > 0 || related.length > 0) && (
+              <Stack gap={6} pt={{ base: 2, md: 4 }}>
+                {backlinks.length > 0 && (
+                  <Stack gap={2}>
+                    <Text fontFamily="mono" fontSize="sm" color="gray.500">
+                      Linked from
+                    </Text>
+                    <Stack gap={1} align="start">
+                      {backlinks.map((b) => (
+                        <GardenLink
+                          key={b.slug}
+                          href={`/posts/${b.slug}`}
+                          fontFamily="mono"
+                          fontSize="sm"
+                        >
+                          {b.title}
+                        </GardenLink>
+                      ))}
+                    </Stack>
+                  </Stack>
+                )}
+
+                {related.length > 0 && (
+                  <Stack gap={2}>
+                    <Text fontFamily="mono" fontSize="sm" color="gray.500">
+                      Related / Nearby
+                    </Text>
+                    <Stack gap={1.5} align="start">
+                      {related.map((r) => (
+                        <HStack key={r.slug} gap={2} wrap="wrap">
+                          <GardenLink
+                            href={`/posts/${r.slug}`}
+                            fontFamily="mono"
+                            fontSize="sm"
+                          >
+                            {r.title}
+                          </GardenLink>
+                          <Text
+                            as="span"
+                            fontFamily="mono"
+                            fontSize="xs"
+                            color="gray.600"
+                          >
+                            {reasonLabel(r)}
+                          </Text>
+                        </HStack>
+                      ))}
+                    </Stack>
+                  </Stack>
+                )}
               </Stack>
             )}
           </Stack>

@@ -84,7 +84,7 @@ export function PaperPreview({
         </Text>
       )}
       <Flex align="center" gap={1}>
-        <Text fontSize="xs" color="cyan.400">
+        <Text fontSize="xs" color="accent">
           arXiv:{arxivId}
         </Text>
       </Flex>
@@ -100,8 +100,8 @@ export function PaperPreview({
       closeDelay={100}
       showArrow
       contentProps={{
-        bg: "gray.800",
-        borderColor: "gray.700",
+        bg: "gray.950",
+        borderColor: "accent.subtle",
         borderWidth: "1px",
         rounded: "md",
         shadow: "lg",
@@ -110,8 +110,9 @@ export function PaperPreview({
     >
       <Link
         href={href}
-        color="cyan.400"
-        _hover={{ color: "cyan.300", textDecoration: "underline" }}
+        color="accent"
+        textDecoration="none"
+        _hover={{ color: "accent.emphasized", textDecoration: "none" }}
         fontWeight="medium"
       >
         {label}

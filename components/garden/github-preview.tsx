@@ -83,8 +83,8 @@ export function GithubPreview({ repo, children }: GithubPreviewProps) {
       closeDelay={100}
       showArrow
       contentProps={{
-        bg: "gray.800",
-        borderColor: "gray.700",
+        bg: "gray.950",
+        borderColor: "accent.subtle",
         borderWidth: "1px",
         rounded: "md",
         shadow: "lg",
@@ -93,8 +93,9 @@ export function GithubPreview({ repo, children }: GithubPreviewProps) {
     >
       <Link
         href={href}
-        color="gray.300"
-        _hover={{ color: "white", textDecoration: "underline" }}
+        color="accent"
+        textDecoration="none"
+        _hover={{ color: "accent.emphasized", textDecoration: "none" }}
         fontFamily="monospace"
         fontSize="sm"
       >

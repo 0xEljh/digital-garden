@@ -1,8 +1,9 @@
-import { Card, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
+import { Card, Heading, SimpleGrid, Stack } from "@chakra-ui/react";
 import { PostMetaData } from "@/types/posts";
 import { Link } from "@/components/ui/link";
 import { useAnalytics } from "@/components/common/analytics-provider";
 import { CategoryTags } from "./category-tag";
+import { GardenMeta } from "./garden-meta";
 
 interface PostCardGridProps {
   posts: PostMetaData[];
@@ -11,10 +12,7 @@ interface PostCardGridProps {
 export const PostCardGrid = ({ posts }: PostCardGridProps) => {
   const posthog = useAnalytics();
   return (
-    <SimpleGrid
-      columns={{ base: 1, md: 2, lg: 3 }}
-      gap={{ base: "12", lg: "8" }}
-    >
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={{ base: "12", lg: "8" }}>
       {posts.map((post) => (
         <Link
           href={`/posts/${post.slug}`}
@@ -31,19 +29,14 @@ export const PostCardGrid = ({ posts }: PostCardGridProps) => {
         >
           <Card.Root as="article" size="lg" rounded="xl">
             <Card.Body gap="3">
-              <Stack direction="row" gap={{ base: 6, md: 12 }}>
-                <Text textStyle="sm" color="gray.600">
-                  {post.readTime} min read
-                </Text>
-                <Text textStyle="sm" color="gray.600">
-                  {new Date(post.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
-              </Stack>
-              <Heading as="h3" size="2xl" fontFamily="Tickerbit">
+              <GardenMeta
+                compact
+                stage={post.stage}
+                date={post.date}
+                tended={post.tended}
+                readTime={post.readTime}
+              />
+              <Heading as="h3" size="2xl" fontFamily="heading">
                 {post.title}
               </Heading>
             </Card.Body>
