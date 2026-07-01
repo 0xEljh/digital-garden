@@ -1,6 +1,13 @@
-import { ButtonGroup, IconButton, useToken, HStack } from "@chakra-ui/react";
+import { ButtonGroup, IconButton, useToken } from "@chakra-ui/react";
 import type { ButtonGroupProps } from "@chakra-ui/react";
-import { FaXTwitter, FaGithub, FaLinkedin, FaEnvelope, FaThreads, FaTelegram } from "react-icons/fa6";
+import {
+  FaXTwitter,
+  FaGithub,
+  FaLinkedin,
+  FaEnvelope,
+  FaThreads,
+  FaTelegram,
+} from "react-icons/fa6";
 import { m } from "motion/react";
 import { Link } from "@/components/ui/link";
 
@@ -22,7 +29,7 @@ function AnimatedIconButton({
 }: AnimatedIconButtonProps) {
   const [initialColor, highlightColor] = useToken("colors", [
     "gray.600",
-    "teal.200",
+    "accent",
   ]);
 
   return (
@@ -84,38 +91,5 @@ export function SocialBar({ ...props }: ButtonGroupProps) {
         />
       ))}
     </ButtonGroup>
-  );
-}
-
-interface SocialShareBarProps {
-  slug: string;
-  title: string;
-}
-
-export function SocialShareBar({ slug, title, ...props }: SocialShareBarProps) {
-  const postUrl = `https://0xeljh.com/${slug}`;
-  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    title
-  )}&url=${encodeURIComponent(postUrl)}`;
-  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-    postUrl
-  )}`;
-
-  return (
-    <HStack gap="4" {...props}>
-      <ButtonGroup variant="surface">
-        <AnimatedIconButton
-          href={twitterShareUrl}
-          ariaLabel="Share on Twitter"
-          icon={<FaXTwitter />}
-        />
-        <AnimatedIconButton
-          href={linkedinShareUrl}
-          ariaLabel="Share on LinkedIn"
-          icon={<FaLinkedin />}
-          delay={1}
-        />
-      </ButtonGroup>
-    </HStack>
   );
 }

@@ -141,7 +141,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
             },
           }}
         >
-          <Heading size="2xl" fontFamily="Tickerbit">
+          <Heading size="2xl" fontFamily="heading">
             {entry.title}
           </Heading>
           {/* <Text fontSize="xl" color="gray.500">

@@ -21,7 +21,7 @@ export const NavbarLinks = (props: StackProps) => {
       {["Home", "Portfolio", "Posts", "Dashboard"].map((item) => (
         <Link
           key={item}
-          fontFamily="Tickerbit"
+          fontFamily="heading"
           fontWeight="medium"
           color="fg.muted"
           _hover={{

@@ -38,7 +38,7 @@ export const BarList = (props: BarListProps) => {
               <Text
                 position="relative"
                 fontSize="sm"
-                fontFamily="Tickerbit"
+                fontFamily="heading"
                 py={1}
                 px={2}
                 zIndex={1}
@@ -48,7 +48,7 @@ export const BarList = (props: BarListProps) => {
             </Box>
             <Text
               fontSize="sm"
-              fontFamily="Tickerbit"
+              fontFamily="heading"
               color="fg.muted"
               minW="50px"
               textAlign="right"

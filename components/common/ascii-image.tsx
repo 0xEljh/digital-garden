@@ -55,7 +55,7 @@ export const AsciiImage = ({
   return (
     <Box
       as="pre"
-      fontFamily="Aeion Mono"
+      fontFamily="mono"
       whiteSpace="pre"
       p={4}
       overflow="auto"
@@ -116,7 +116,7 @@ export const FlickeringAsciiImage = ({
   return (
     <Box
       as="pre"
-      fontFamily="Aeion Mono"
+      fontFamily="mono"
       whiteSpace="pre"
       p={4}
       overflow="auto"
@@ -320,7 +320,7 @@ export const HighlightableAsciiImage = ({
   return (
     <Box
       as="pre"
-      fontFamily="Aeion Mono"
+      fontFamily="mono"
       whiteSpace="pre"
       p={4}
       overflow="auto"
@@ -396,7 +396,7 @@ export const ScrambledAsciiImage = ({
   return (
     <Box
       as="pre"
-      fontFamily="Aeion Mono"
+      fontFamily="mono"
       whiteSpace="pre"
       p={4}
       overflow="auto"

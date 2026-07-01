@@ -14,15 +14,15 @@ export default function ErrorPage() {
     <Stack py={{ base: 8, md: 12 }} textAlign="center" alignItems="center">
       <Container py={{ base: 16, md: 24 }}>
         <Stack>
-          <Text fontFamily="Tickerbit">Opps. Wrong page?</Text>
-          <Text fontFamily="Tickerbit" color="fg.muted">
+          <Text fontFamily="heading">Opps. Wrong page?</Text>
+          <Text fontFamily="heading" color="fg.muted">
             {name} fell off the edge of the world
           </Text>
         </Stack>
       </Container>
       <Stack>
         <Container>
-          <Text fontFamily="Tickerbit">Select spawn point</Text>
+          <Text fontFamily="heading">Select spawn point</Text>
         </Container>
         <Container>
           <Stack direction={{ base: "column", md: "row" }} alignItems="center">
@@ -33,7 +33,7 @@ export default function ErrorPage() {
                   key={url}
                   asChild
                   variant="subtle"
-                  fontFamily="Aeion Mono"
+                  fontFamily="mono"
                   fontWeight="40"
                 >
                   <Link href={url}>

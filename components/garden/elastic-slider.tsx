@@ -120,7 +120,7 @@ export function ElasticSlider({
   return (
     <Flex direction="column" align="center" gap={2} w={width}>
       {label && (
-        <Text fontSize="xs" color="gray.500" fontFamily="Aeion Mono">
+        <Text fontSize="xs" color="gray.500" fontFamily="mono">
           {label}
         </Text>
       )}
@@ -236,7 +236,7 @@ export function ElasticSlider({
         </m.div>
       </m.div>
 
-      <Text fontSize="xs" color="gray.400" fontFamily="Aeion Mono">
+      <Text fontSize="xs" color="gray.400" fontFamily="mono">
         {displayValue}
       </Text>
 

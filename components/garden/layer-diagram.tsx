@@ -102,7 +102,7 @@ export function Layer({
         fontSize={isThin ? "xs" : "sm"}
         fontWeight={isThin ? "normal" : "semibold"}
         color={colors.text}
-        fontFamily="Aeion Mono"
+        fontFamily="mono"
         textAlign="center"
       >
         {label}

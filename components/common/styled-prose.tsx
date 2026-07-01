@@ -1,7 +1,7 @@
 import type { BoxProps, ContainerProps } from "@chakra-ui/react";
 import { Container } from "@chakra-ui/react";
 import type { MDXComponents } from "mdx/types";
-import { Link } from "@/components/ui/link";
+import { GardenLink } from "@/components/garden/garden-link";
 import { AnimatedHeading } from "@/components/animations/animated-heading";
 import {
   CodeBlock,
@@ -44,7 +44,7 @@ export const mdxComponents: MDXComponents = {
   LayerRow: LayerRow as React.ComponentType<BoxProps>,
   InlineLatex: InlineLatex as React.ComponentType<BoxProps>,
   VarTooltip: VarTooltip as React.ComponentType<BoxProps>,
-  a: (p: Record<string, unknown>) => <Link _hover={{ textDecoration: "italic" }} target="_blank" rel="noopener noreferrer" {...p} />,
+  a: (p: Record<string, unknown>) => <GardenLink {...p} />,
 };
 
 export function StyledProse({ children, ...props }: StyledProseProps) {
@@ -55,21 +55,21 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
       css={{
         /* headings */
         "& h1": {
-          fontFamily: "Tickerbit",
+          fontFamily: "var(--chakra-fonts-heading)",
           fontSize: "clamp(2rem, 6vw, 2.75rem)",
           marginTop: "3rem",
           marginBottom: "1rem",
           color: "gray.50",
         },
         "& h2": {
-          fontFamily: "Tickerbit",
+          fontFamily: "var(--chakra-fonts-heading)",
           fontSize: "clamp(1.5rem, 4.5vw, 2.25rem)",
           marginTop: "2.5rem",
           marginBottom: "1rem",
           color: "gray.50",
         },
         "& h3": {
-          fontFamily: "Tickerbit",
+          fontFamily: "var(--chakra-fonts-heading)",
           fontSize: "clamp(1.25rem, 3.5vw, 1.625rem)",
           marginTop: "2rem",
           marginBottom: "0.75rem",
@@ -119,7 +119,7 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
         "& thead th": {
           background: "rgba(255, 255, 255, 0.05)",
           color: "var(--chakra-colors-gray-100)",
-          fontFamily: "Aeion Mono",
+          fontFamily: "var(--chakra-fonts-mono)",
           letterSpacing: "0.02em",
           textAlign: "left",
         },
@@ -138,7 +138,7 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
           marginY: "1.5rem",
         },
         /* KaTeX block fix */
-        ".katex-display": {
+        "& .katex-display": {
           overflowX: "auto",
           marginY: "1.5rem",
         },

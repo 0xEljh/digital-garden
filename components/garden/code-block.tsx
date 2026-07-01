@@ -25,7 +25,7 @@ export const CodeBlock = ({ children }: CodeBlockProps) => {
     <Card.Root overflow="hidden" variant="outline" m={4}>
       <Card.Header py={2} px={4} bg="blackAlpha.300">
         <HStack justifyContent="space-between">
-          <Card.Title as="h4" fontFamily="Tickerbit">
+          <Card.Title as="h4" fontFamily="heading">
             {language}
           </Card.Title>
           <ClipboardEntry value={codeString} />

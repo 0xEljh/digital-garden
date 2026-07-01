@@ -68,7 +68,7 @@ export function VariableEquation({
         {computedValue !== null && (
           <Flex justify="center" align="center" gap={2}>
             {valueLabel && (
-              <Text fontSize="sm" color="gray.400" fontFamily="Aeion Mono">
+              <Text fontSize="sm" color="gray.400" fontFamily="mono">
                 {valueLabel} =
               </Text>
             )}
@@ -76,7 +76,7 @@ export function VariableEquation({
               fontSize="xl"
               fontWeight="bold"
               color="cyan.400"
-              fontFamily="Aeion Mono"
+              fontFamily="mono"
             >
               {formattedResult}
             </Text>

@@ -26,7 +26,7 @@ export function Callout({ title, children, type = "info" }: CalloutProps) {
       my={6}
       gap={{ base: 2, md: 4 }}
     >
-      <Text fontFamily="Tickerbit" color={`${c}.300`}>
+      <Text fontFamily="heading" color={`${c}.300`}>
         {title}
       </Text>
       <Box>{children}</Box>

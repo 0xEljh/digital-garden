@@ -82,16 +82,16 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
       <Card.Root overflow="hidden" variant="outline" m={4} borderColor="orange.700">
         <Card.Header py={2} px={4} bg="blackAlpha.300">
           <HStack justifyContent="space-between">
-            <Card.Title as="h4" fontFamily="Tickerbit">
+            <Card.Title as="h4" fontFamily="heading">
               mermaid
             </Card.Title>
-            <Text fontSize="xs" color="orange.300" fontFamily="Aeion Mono">
+            <Text fontSize="xs" color="orange.300" fontFamily="mono">
               render failed
             </Text>
           </HStack>
         </Card.Header>
         <Card.Body p={4}>
-          <Text mb={3} fontSize="sm" color="orange.300" fontFamily="Aeion Mono">
+          <Text mb={3} fontSize="sm" color="orange.300" fontFamily="mono">
             Mermaid could not render this diagram. Showing source.
           </Text>
           <Box
@@ -115,7 +115,7 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
     return (
       <Card.Root overflow="hidden" variant="outline" m={4}>
         <Card.Header py={2} px={4} bg="blackAlpha.300">
-          <Card.Title as="h4" fontFamily="Tickerbit">
+          <Card.Title as="h4" fontFamily="heading">
             mermaid
           </Card.Title>
         </Card.Header>
@@ -123,7 +123,7 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
           <Center>
             <HStack gap={3}>
               <Spinner size="sm" color="cyan.300" />
-              <Text fontSize="sm" color="gray.400" fontFamily="Aeion Mono">
+              <Text fontSize="sm" color="gray.400" fontFamily="mono">
                 Rendering diagram...
               </Text>
             </HStack>
@@ -138,7 +138,7 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
   return (
     <Card.Root overflow="hidden" variant="outline" m={4}>
       <Card.Header py={2} px={4} bg="blackAlpha.300">
-        <Card.Title as="h4" fontFamily="Tickerbit">
+        <Card.Title as="h4" fontFamily="heading">
           mermaid
         </Card.Title>
       </Card.Header>

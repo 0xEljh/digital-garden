@@ -77,7 +77,7 @@ export const PrecomputedAsciiIcon = ({
   return (
     <Box
       as="pre"
-      fontFamily="Aeion Mono"
+      fontFamily="mono"
       whiteSpace="pre"
       p={4}
       overflow="auto"

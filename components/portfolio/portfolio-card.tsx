@@ -103,7 +103,7 @@ export const PortfolioCard = ({
                 opacity={isHovered ? 1 : 0}
                 transition="opacity 0.3s"
                 _groupHover={{ opacity: 1 }}
-                fontFamily={"Tickerbit"}
+                fontFamily="heading"
               >
                 {category}
               </Text>
@@ -111,7 +111,7 @@ export const PortfolioCard = ({
             <Heading
               textAlign="center"
               size={{ base: "md", md: "sm" }}
-              fontFamily={"Tickerbit"}
+              fontFamily="heading"
               color="whiteAlpha.800"
             >
               {entry.title}
@@ -129,7 +129,7 @@ export const PortfolioCard = ({
           _groupHover={{ opacity: 1 }}
           maxW="sm"
           textWrap="break-word"
-          fontFamily={"Aeion Mono"}
+          fontFamily="mono"
         >
           {entry.shortDescription}
         </Text>

@@ -1,10 +1,10 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import type { HeadMetaProps } from "@/types/head-meta";
+import { SITE, SITE_URL } from "@/lib/site";
 
 const DEFAULT_TITLE = "Elijah's Digital Garden";
-const DEFAULT_DESCRIPTION =
-  "Digital garden of a full-stack deep learning engineer, trying to find his way in the startup world.";
+const DEFAULT_DESCRIPTION = SITE.description;
 const DEFAULT_KEYWORDS = [
   "digital garden",
   "deep learning",
@@ -23,7 +23,7 @@ const HeadMeta = ({
   url,
 }: HeadMetaProps) => {
   const router = useRouter();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const siteUrl = SITE_URL;
   const canonicalUrl = url ?? `${siteUrl}${router.asPath}`;
   const ogImageUrl = image ? `${siteUrl}/images/${image}` : undefined;
 

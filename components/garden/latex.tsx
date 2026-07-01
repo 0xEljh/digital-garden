@@ -26,7 +26,7 @@ export function InlineLatex({ math, display = false }: InlineLatexProps) {
       display={display ? "block" : "inline"}
       dangerouslySetInnerHTML={{ __html: html }}
       css={{
-        ".katex-display": {
+        "& .katex-display": {
           margin: 0,
         },
       }}

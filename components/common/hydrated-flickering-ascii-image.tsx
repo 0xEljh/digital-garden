@@ -40,7 +40,7 @@ export const HydratedFlickeringAsciiImage = ({
       {!hydrated ? (
         <Box
           as="pre"
-          fontFamily="Aeion Mono"
+          fontFamily="mono"
           whiteSpace="pre"
           p={4}
           overflow="auto"
@@ -65,7 +65,7 @@ export const HydratedFlickeringAsciiImage = ({
         <Box position="absolute" inset={0} pointerEvents="none">
           <Box
             as="pre"
-            fontFamily="Aeion Mono"
+            fontFamily="mono"
             whiteSpace="pre"
             p={4}
             overflow="hidden"
