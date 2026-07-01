@@ -44,16 +44,30 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
             justify="space-between"
             align={{ base: "flex-start", md: "center" }}
           >
-            <Heading size="3xl" fontFamily="Topoline">
+            <Heading size="3xl" fontFamily="display">
               Portfolio
             </Heading>
             <Button
-              colorScheme="teal"
               variant="ghost"
               size="sm"
               alignSelf={{ base: "flex-start", md: "center" }}
               ml={{ base: 1, md: 0 }}
               mt={{ base: 4, md: 0 }}
+              borderWidth="1px"
+              borderColor="edge.accent"
+              borderRadius="l2"
+              bg="blackAlpha.300"
+              color="accent"
+              px={4}
+              letterSpacing="0.02em"
+              _hover={{
+                bg: "accent.subtle",
+                borderColor: "accent",
+                color: "accent.emphasized",
+                transform: "translateY(-1px)",
+              }}
+              _active={{ transform: "translateY(0)" }}
+              transition="all 0.18s ease"
               asChild
             >
               <NextLink
@@ -65,7 +79,7 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
                 }}
               >
                 <LuDownload />
-                Resume
+                resume
               </NextLink>
             </Button>
           </Flex>

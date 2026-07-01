@@ -1,9 +1,8 @@
-import { Box, Heading, HStack, Stack, Text } from "@chakra-ui/react";
-import NextLink from "next/link";
+import { Heading, HStack, Stack, Text } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
 import { useMemo } from "react";
 import { AsciiBarList } from "@/components/ui/ascii-bar";
-import { getAnalyticsForWindow, type AggregatedAnalytics } from "@/lib/utils/analytics";
+import { getAnalyticsForWindow } from "@/lib/utils/analytics";
 import type { AnalyticsData } from "@/types/analytics";
 
 const formatHours = (hours: number): string => {
@@ -36,7 +35,7 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
 
   return (
     <Stack gap={4} w="full">
-      <Heading size="md" fontFamily="Topoline" fontWeight="100" textAlign="left">
+      <Heading size="md" fontFamily="display" fontWeight="100" textAlign="left">
         System Status
       </Heading>
 
@@ -44,13 +43,13 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
         gap={3}
         p={4}
         borderWidth="1px"
-        borderColor="gray.800"
+        borderColor="edge.muted"
         borderRadius="lg"
-        bg="gray.800/20"
+        bg="surface.panel"
       >
         <Text
           fontSize="xs"
-          fontFamily="Aeion Mono"
+          fontFamily="mono"
           color="fg.muted"
         >
           dev tools · {analytics.daysIncluded}d window
@@ -59,21 +58,21 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
         <AsciiBarList
           data={topTools}
           barWidth={10}
-          color="cyan.400"
+          color="data.dev"
           showValue={true}
           valueSuffix="%"
         />
 
         <HStack justify="space-between" pt={1}>
-          <Text fontSize="xs" fontFamily="Aeion Mono" color="fg.muted">
+          <Text fontSize="xs" fontFamily="mono" color="fg.muted">
             {formatHours(analytics.totalActiveTime.hours)} active
           </Text>
           <Link href="/dashboard">
             <Text
               fontSize="xs"
-              fontFamily="Aeion Mono"
-              color="cyan.600"
-              _hover={{ color: "cyan.400" }}
+              fontFamily="mono"
+              color="accent.muted"
+              _hover={{ color: "accent" }}
               transition="color 0.2s"
             >
               → Time Accounting

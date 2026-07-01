@@ -8,6 +8,7 @@ import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 
 import { Provider } from "@/components/ui/provider";
+import { CommandPaletteProvider } from "@/components/common/command-palette";
 import { PageTransition } from "@/components/animations/page-transition";
 import { DefaultLayout } from "@/components/layout";
 import type { HeadMetaProps } from "@/types/head-meta";
@@ -31,13 +32,15 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <Provider>
-      <LazyMotion features={domAnimation}>
-        <Fonts />
-        <HeadMeta {...pageHeadMeta} />
-        <PageTransition key={router.asPath}>
-          {getLayout(<Component {...pageProps} />)}
-        </PageTransition>
-      </LazyMotion>
+      <CommandPaletteProvider>
+        <LazyMotion features={domAnimation}>
+          <Fonts />
+          <HeadMeta {...pageHeadMeta} />
+          <PageTransition key={router.asPath}>
+            {getLayout(<Component {...pageProps} />)}
+          </PageTransition>
+        </LazyMotion>
+      </CommandPaletteProvider>
     </Provider>
   );
 }

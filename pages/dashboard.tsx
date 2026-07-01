@@ -11,11 +11,15 @@ import {
     Flex,
 } from "@chakra-ui/react";
 import { useState, useMemo, useEffect } from "react";
-import { AsciiBarList, AsciiRatioBar } from "@/components/ui/ascii-bar";
+import { AsciiBarList } from "@/components/ui/ascii-bar";
 import {
     getAnalyticsForWindow,
     type AggregatedAnalytics,
 } from "@/lib/utils/analytics";
+import {
+    getActiveTimeSegments,
+    type ActiveTimeSegmentKey,
+} from "@/lib/utils/dashboard-segments";
 import type { AnalyticsData, LookbackWindow } from "@/types/analytics";
 
 interface DashboardProps {
@@ -35,6 +39,19 @@ const formatHours = (hours: number): string => {
     return `${hours.toFixed(1)}h`;
 };
 
+const formatPercent = (percentage: number): string => {
+    if (percentage > 0 && percentage < 1) {
+        return "<1%";
+    }
+    return `${percentage.toFixed(0)}%`;
+};
+
+const SEGMENT_COLORS: Record<ActiveTimeSegmentKey, string> = {
+    dev: "data.dev",
+    design: "data.design",
+    other: "data.other",
+};
+
 const LookbackSelector = ({
     selected,
     onChange,
@@ -50,17 +67,17 @@ const LookbackSelector = ({
                 px={3}
                 py={1}
                 fontSize="sm"
-                fontFamily="Tickerbit"
+                fontFamily="heading"
                 borderRadius="md"
                 cursor="pointer"
                 transition="all 0.2s"
-                bg={selected === option.value ? "cyan.900" : "transparent"}
-                color={selected === option.value ? "cyan.100" : "fg.muted"}
+                bg={selected === option.value ? "accent.subtle" : "transparent"}
+                color={selected === option.value ? "accent.emphasized" : "fg.muted"}
                 borderWidth="1px"
-                borderColor={selected === option.value ? "cyan.700" : "gray.700"}
+                borderColor={selected === option.value ? "edge.accent" : "edge.default"}
                 _hover={{
-                    borderColor: "cyan.600",
-                    color: "cyan.200",
+                    borderColor: "accent",
+                    color: "accent.emphasized",
                 }}
                 onClick={() => onChange(option.value)}
             >
@@ -70,52 +87,85 @@ const LookbackSelector = ({
     </HStack>
 );
 
-const DevPlanningRatioCard = ({
+const ActiveTimeRail = ({
     analytics,
 }: {
     analytics: AggregatedAnalytics;
 }) => {
-    const activeTime = analytics.devTime.hours + analytics.planningTime.hours;
+    const segments = getActiveTimeSegments(analytics);
 
     return (
-        <Card.Root size="sm">
+        <Stack gap={4}>
+            <HStack
+                gap={0}
+                h="18px"
+                w="full"
+                overflow="hidden"
+                borderWidth="1px"
+                borderColor="edge.default"
+                borderRadius="l2"
+                bg="data.rail"
+            >
+                {segments.map((segment) => {
+                    if (segment.hours === 0) return null;
+
+                    return (
+                        <Box
+                            key={segment.key}
+                            h="full"
+                            flex={`${segment.hours} 1 0`}
+                            minW={segment.percentage > 0 && segment.percentage < 1 ? "3px" : undefined}
+                            bg={SEGMENT_COLORS[segment.key]}
+                            opacity={segment.key === "other" ? 0.45 : 0.9}
+                        />
+                    );
+                })}
+            </HStack>
+
+            <SimpleGrid columns={{ base: 1, md: 3 }} gap={3}>
+                {segments.map((segment) => (
+                    <Stack
+                        key={segment.key}
+                        gap={1}
+                        p={3}
+                        borderWidth="1px"
+                        borderColor="edge.muted"
+                        borderRadius="l2"
+                        bg="blackAlpha.300"
+                    >
+                        <HStack justify="space-between" fontFamily="mono" fontSize="sm">
+                            <Text color={SEGMENT_COLORS[segment.key]}>{segment.label}</Text>
+                            <Text color="fg.muted">{formatHours(segment.hours)}</Text>
+                        </HStack>
+                        <Text fontSize="xs" color="text.meta" fontFamily="mono">
+                            {formatPercent(segment.percentage)} of active time
+                        </Text>
+                    </Stack>
+                ))}
+            </SimpleGrid>
+        </Stack>
+    );
+};
+
+const ActiveTimeCard = ({
+    analytics,
+}: {
+    analytics: AggregatedAnalytics;
+}) => {
+    return (
+        <Card.Root size="sm" borderColor="edge.muted" bg="surface.panel">
             <Card.Header>
-                <Card.Title fontFamily="Tickerbit" fontSize="sm">
-                    Time spent on Dev vs Design
+                <Card.Title fontFamily="heading" fontSize="sm">
+                    Active time allocation
                 </Card.Title>
             </Card.Header>
             <Card.Body>
-                <Stack gap={4}>
-                    <HStack justify="space-between" fontSize="sm" fontFamily="Aeion Mono">
-                        <Text color="cyan.300">
-                            Dev: {formatHours(analytics.devTime.hours)} (
-                            {analytics.devTime.percentage.toFixed(0)}%)
-                        </Text>
-                        <Text color="purple.300">
-                            Design: {formatHours(analytics.planningTime.hours)} (
-                            {analytics.planningTime.percentage.toFixed(0)}%)
-                        </Text>
+                <Stack gap={5}>
+                    <ActiveTimeRail analytics={analytics} />
+                    <HStack justify="space-between" fontSize="xs" color="text.meta" fontFamily="mono" wrap="wrap" gap={2}>
+                        <Text>AI chat counted under design: {formatHours(analytics.aiChatTime.hours)}</Text>
+                        <Text>Total active: {formatHours(analytics.totalActiveTime.hours)}</Text>
                     </HStack>
-                    <AsciiRatioBar
-                        leftValue={analytics.devTime.percentage}
-                        rightValue={analytics.planningTime.percentage}
-                        width={32}
-                        leftColor="cyan.400"
-                        rightColor="purple.400"
-                    />
-                    <Box>
-                        <Stack fontSize="xs" color="fg.muted" fontFamily="Aeion Mono" align="flex-end">
-                            <HStack justify="space-between">
-                                <Text>AI Chat (design):</Text>
-                                <Text>{formatHours(analytics.aiChatTime.hours)}</Text>
-                            </HStack>
-                            <HStack justify="space-between">
-                                <Text>Total time:</Text>
-                                <Text>{formatHours(activeTime)}</Text>
-                            </HStack>
-
-                        </Stack>
-                    </Box>
                 </Stack>
             </Card.Body>
         </Card.Root>
@@ -130,15 +180,15 @@ const DevToolsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
 
     if (barData.length === 0) {
         return (
-            <Card.Root size="sm">
+            <Card.Root size="sm" borderColor="edge.muted" bg="surface.panel">
                 <Card.Header>
-                    <Card.Title fontFamily="Tickerbit" fontSize="sm">
+                    <Card.Title fontFamily="heading" fontSize="sm">
                         Dev Tools
                     </Card.Title>
                 </Card.Header>
                 <Card.Body>
                     <Text color="fg.muted" fontSize="sm">
-                        No dev tool data available
+                        no data yet.
                     </Text>
                 </Card.Body>
             </Card.Root>
@@ -146,9 +196,9 @@ const DevToolsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
     }
 
     return (
-        <Card.Root size="sm">
+        <Card.Root size="sm" borderColor="edge.muted" bg="surface.panel">
             <Card.Header>
-                <Card.Title fontFamily="Tickerbit" fontSize="sm">
+                <Card.Title fontFamily="heading" fontSize="sm">
                     Dev Tools
                 </Card.Title>
             </Card.Header>
@@ -156,7 +206,7 @@ const DevToolsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
                 <AsciiBarList
                     data={barData}
                     barWidth={16}
-                    color="cyan.400"
+                    color="data.dev"
                     showValue={true}
                     valueSuffix="%"
                 />
@@ -173,15 +223,15 @@ const AiChatsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
 
     if (barData.length === 0) {
         return (
-            <Card.Root size="sm">
+            <Card.Root size="sm" borderColor="edge.muted" bg="surface.panel">
                 <Card.Header>
-                    <Card.Title fontFamily="Tickerbit" fontSize="sm">
+                    <Card.Title fontFamily="heading" fontSize="sm">
                         AI Chats
                     </Card.Title>
                 </Card.Header>
                 <Card.Body>
                     <Text color="fg.muted" fontSize="sm">
-                        No AI chat data available
+                        no data yet.
                     </Text>
                 </Card.Body>
             </Card.Root>
@@ -189,9 +239,9 @@ const AiChatsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
     }
 
     return (
-        <Card.Root size="sm">
+        <Card.Root size="sm" borderColor="edge.muted" bg="surface.panel">
             <Card.Header>
-                <Card.Title fontFamily="Tickerbit" fontSize="sm">
+                <Card.Title fontFamily="heading" fontSize="sm">
                     AI Chats
                 </Card.Title>
             </Card.Header>
@@ -199,7 +249,7 @@ const AiChatsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
                 <AsciiBarList
                     data={barData}
                     barWidth={16}
-                    color="purple.400"
+                    color="data.design"
                     showValue={true}
                     valueSuffix="%"
                 />
@@ -211,10 +261,7 @@ const AiChatsCard = ({ analytics }: { analytics: AggregatedAnalytics }) => {
 const NoDataMessage = () => (
     <Box textAlign="center" py={12}>
         <Text color="fg.muted" fontSize="lg">
-            No analytics data available.
-        </Text>
-        <Text color="fg.muted" fontSize="sm" mt={2}>
-            Analytics data will appear here once exported.
+            no data yet.
         </Text>
     </Box>
 );
@@ -247,14 +294,14 @@ export default function Dashboard({ analyticsData: initialData }: DashboardProps
                     <Stack gap={4}>
                         <Heading
                             size="2xl"
-                            fontFamily="Topoline"
+                            fontFamily="display"
                             fontWeight="100"
                             letterSpacing="wide"
                         >
                             Time Accounting
                         </Heading>
-                        <Text color="fg.muted" fontSize="sm" fontFamily="Aeion Mono">
-                            Tracking the evolution of my workflows and AI use
+                        <Text color="fg.muted" fontSize="sm" fontFamily="mono">
+                            How my workflows and AI use have shifted.
                         </Text>
                     </Stack>
 
@@ -262,7 +309,7 @@ export default function Dashboard({ analyticsData: initialData }: DashboardProps
                         <NoDataMessage />
                     ) : (
                         <>
-                            <Flex justify="space-between" align="center" fontFamily="Aeion Mono" wrap="wrap" gap={2}>
+                            <Flex justify="space-between" align="center" fontFamily="mono" wrap="wrap" gap={2}>
                                 <Stack gap={0}>
                                     <Text color="fg.muted" fontSize="sm">
                                         {analytics.daysIncluded} days of data
@@ -277,7 +324,7 @@ export default function Dashboard({ analyticsData: initialData }: DashboardProps
                             </Flex>
 
                             <Stack gap={6}>
-                                <DevPlanningRatioCard analytics={analytics} />
+                                <ActiveTimeCard analytics={analytics} />
 
                                 <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
                                     <DevToolsCard analytics={analytics} />

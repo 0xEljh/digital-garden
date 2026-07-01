@@ -1,5 +1,4 @@
 import {
-  Button,
   Container,
   Stack,
   Text,
@@ -8,7 +7,6 @@ import {
   Heading,
   HStack,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
 import { HERO_ASCII } from "@/components/common/ascii-assets";
@@ -53,7 +51,7 @@ const HeroSection = ({
           fontSize={{ base: "lg", md: "xl" }}
           color="fg.muted"
           maxW={"md"}
-          fontFamily="Tickerbit"
+          fontFamily="heading"
           fontWeight="100"
         >
           The digital garden of a full-stack (btw) machine learning engineer.
@@ -81,7 +79,7 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
   return (
     <Stack gap={4} align="left">
       <HStack justify="space-between" align="baseline">
-        <Heading size="md" fontFamily="Topoline" fontWeight="100">
+        <Heading size="md" fontFamily="display" fontWeight="100">
           Digital Garden
         </Heading>
         <HStack gap={1}>
@@ -92,31 +90,31 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
               px={2}
               py={0.5}
               fontSize="xs"
-              fontFamily="Aeion Mono"
+              fontFamily="mono"
               borderRadius="sm"
               cursor={mode === "popular" ? "not-allowed" : "pointer"}
               transition="all 0.2s"
-              bg={sortMode === mode ? "cyan.900" : "transparent"}
+              bg={sortMode === mode ? "accent.subtle" : "transparent"}
               color={
                 mode === "popular"
                   ? "gray.700"
                   : sortMode === mode
-                    ? "cyan.100"
+                    ? "accent.emphasized"
                     : "fg.muted"
               }
               borderWidth="1px"
-              borderColor={sortMode === mode ? "cyan.700" : "gray.800"}
+              borderColor={sortMode === mode ? "edge.accent" : "edge.muted"}
               _hover={
                 mode === "popular"
                   ? {}
-                  : { borderColor: "cyan.600", color: "cyan.200" }
+                  : { borderColor: "accent", color: "accent.emphasized" }
               }
               onClick={() => {
                 if (mode !== "popular") setSortMode(mode);
               }}
               title={
                 mode === "popular"
-                  ? "Coming soon — needs page view tracking"
+                  ? "not wired up yet"
                   : undefined
               }
             >
@@ -155,7 +153,7 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
                 <Text
                   fontSize="md"
                   fontWeight="medium"
-                  fontFamily="Tickerbit"
+                  fontFamily="heading"
                   color="fg"
                   lineClamp={1}
                 >
@@ -202,12 +200,12 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
       >
         <Text
           fontSize="xs"
-          fontFamily="Aeion Mono"
-          color="cyan.600"
-          _hover={{ color: "cyan.400" }}
+          fontFamily="mono"
+          color="accent.muted"
+          _hover={{ color: "accent" }}
           transition="color 0.2s"
         >
-          → Explore Garden
+          explore →
         </Text>
       </Link>
     </Stack>

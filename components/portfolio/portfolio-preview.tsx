@@ -40,8 +40,8 @@ export const PortfolioPreview = ({
 
   return (
     <Stack gap={6} w="full" align="center">
-      <Heading size="md" fontFamily="Topoline" fontWeight="100" w="full" textAlign="left">
-        Recent works
+      <Heading size="md" fontFamily="display" fontWeight="100" w="full" textAlign="left">
+        Body of Work
       </Heading>
 
       <Stack direction="row"
@@ -113,7 +113,7 @@ export const PortfolioPreview = ({
                     style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
                     textWrap="pretty"
                     flex="none"
-                    fontFamily="Aeion Mono"
+                    fontFamily="mono"
                   >
                     {entry.title}
                   </Text>
@@ -153,12 +153,12 @@ export const PortfolioPreview = ({
                       </Center>
                     </Box>
                     <Stack mb={3}>
-                      <Heading size="md" color="white" fontFamily={"Tickerbit"}>
+                      <Heading size="md" color="white" fontFamily="heading">
                         {entry.title}
                       </Heading>
                     </Stack>
 
-                    <Text color="gray.300" mb={5} fontSize="sm" lineHeight="relaxed" fontFamily={"Aeion Mono"}>
+                    <Text color="gray.300" mb={5} fontSize="sm" lineHeight="relaxed" fontFamily="mono">
                       {entry.shortDescription}
                     </Text>
 
@@ -193,13 +193,27 @@ export const PortfolioPreview = ({
         })}
       </Stack>
 
-      <Stack direction={{ base: "column-reverse", md: "row" }}>
+      <Stack direction={{ base: "column-reverse", md: "row" }} gap={3}>
         <Button
           asChild
-          colorScheme="teal"
-          variant="outline"
-          size="md"
+          variant="ghost"
+          size="sm"
           alignSelf="center"
+          borderWidth="1px"
+          borderColor="edge.accent"
+          borderRadius="l2"
+          bg="blackAlpha.300"
+          color="accent"
+          px={4}
+          letterSpacing="0.02em"
+          _hover={{
+            bg: "accent.subtle",
+            borderColor: "accent",
+            color: "accent.emphasized",
+            transform: "translateY(-1px)",
+          }}
+          _active={{ transform: "translateY(0)" }}
+          transition="all 0.18s ease"
         >
           <Link href="/resume"
             onClick={() => {
@@ -208,16 +222,30 @@ export const PortfolioPreview = ({
               });
             }}
           >
-            <LuDownload /> Resume
+            <LuDownload /> resume
           </Link>
         </Button>
 
         <Button
           asChild
-          colorScheme="teal"
-          variant="outline"
-          size="md"
+          variant="ghost"
+          size="sm"
           alignSelf="center"
+          borderWidth="1px"
+          borderColor="edge.accent"
+          borderRadius="l2"
+          bg="blackAlpha.300"
+          color="accent"
+          px={4}
+          letterSpacing="0.02em"
+          _hover={{
+            bg: "accent.subtle",
+            borderColor: "accent",
+            color: "accent.emphasized",
+            transform: "translateY(-1px)",
+          }}
+          _active={{ transform: "translateY(0)" }}
+          transition="all 0.18s ease"
         >
           <Link href="/portfolio"
             onClick={() => {
@@ -225,7 +253,7 @@ export const PortfolioPreview = ({
                 location: router.asPath
               });
             }}
-          >Body of Work</Link>
+          >the rest →</Link>
         </Button>
       </Stack>
     </Stack>
