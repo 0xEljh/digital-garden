@@ -3,6 +3,7 @@ title: "Saving VRAM with Apple's Cut Cross Entropy"
 date: "2025-05-21"
 excerpt: "A comprehensive breakdown of apple's memory-efficient cut cross entropy implementation"
 categories: ["deep learning", "math", "triton"]
+stage: budding
 relatedPosts: ["cross-entropy"]
 mathTooltips:
   - tex: "- z_{y_i}"
@@ -308,12 +309,4 @@ Cut cross entropy is likely going to become the go-to implementation of cross-en
 
 As for its design, this approach to chunking, avoiding global memory loads, and perhaps even the zeroing-out and doing an "early stop" to expensive computations are methods that can be applied to other related problems such as kernel optimization.
 
-I'll definitely be writing more about kernel optimization and other similar breakdowns by the way, so if you found this interesting, you might want to follow me on any of my socials.
-
-<br />
-
----
-
-<br />
-
-_btw, I happen to also be looking for a job as a machine learning engineer now, so if you happen to know of any opportunities, please let me know! You can find my portfolio/resume [here](/portfolio)._
+I'll definitely be writing more about kernel optimization and other similar breakdowns by the way, so if you found this interesting, consider following me on any of my socials.
