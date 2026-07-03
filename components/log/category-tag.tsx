@@ -10,7 +10,7 @@ type CategoryTagProps = {
 
 export const CategoryTag = ({ category, linkify }: CategoryTagProps) => {
   const tag = (
-    <Tag.Root variant="subtle" color="accent.muted" fontFamily="display" size="md">
+    <Tag.Root variant="subtle" color="accent.muted" fontFamily="mono" size="md">
       {category}
     </Tag.Root>
   );

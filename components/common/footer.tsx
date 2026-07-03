@@ -31,7 +31,7 @@ export function Footer() {
             align={{ base: "flex-start", md: "center" }}
             gap={6}
           >
-            <NavbarLinks />
+            <NavbarLinks direction="row" flexWrap="wrap" gap={{ base: 5, md: 8 }} />
             <SocialBar size="sm" />
           </Stack>
 

@@ -294,11 +294,10 @@ export default function Dashboard({ analyticsData: initialData }: DashboardProps
                     <Stack gap={4}>
                         <Heading
                             size="2xl"
-                            fontFamily="display"
-                            fontWeight="100"
+                            fontFamily="heading"
                             letterSpacing="wide"
                         >
-                            Time Accounting
+                            time accounting
                         </Heading>
                         <Text color="fg.muted" fontSize="sm" fontFamily="mono">
                             How my workflows and AI use have shifted.

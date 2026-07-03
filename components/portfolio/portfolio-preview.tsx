@@ -1,5 +1,5 @@
 import { AnimatePresence, m } from "motion/react";
-import { Box, Heading, Stack, Button, Flex, Text, Center } from "@chakra-ui/react";
+import { Box, Heading, Stack, Button, Flex, Text, Center, useBreakpointValue } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from 'next/router';
@@ -24,6 +24,9 @@ export const PortfolioPreview = ({
   const [expandedPanel, setExpandedPanel] = useState<string | null>(defaultPanel);
   const router = useRouter();
   const posthog = useAnalytics();
+  // The collapsed rails are a hover interaction; on touch viewports show only
+  // the featured card, full width.
+  const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
 
   const handleMouseEnter = (slug: string) => {
     setExpandedPanel(slug);
@@ -40,8 +43,8 @@ export const PortfolioPreview = ({
 
   return (
     <Stack gap={6} w="full" align="center">
-      <Heading size="md" fontFamily="display" fontWeight="100" w="full" textAlign="left">
-        Body of Work
+      <Heading size="md" fontFamily="heading" w="full" textAlign="left">
+        body of work
       </Heading>
 
       <Stack direction="row"
@@ -52,6 +55,7 @@ export const PortfolioPreview = ({
         onMouseLeave={() => setExpandedPanel(defaultPanel)}
       >
         {entries.map((entry) => {
+          if (isMobile && expandedPanel !== entry.slug) return null;
           return (
             <MotionFlex
               key={entry.slug}
@@ -77,7 +81,12 @@ export const PortfolioPreview = ({
               }}
               initial={false}
               animate={{
-                width: expandedPanel === entry.slug ? "384px" : "80px",
+                width:
+                  expandedPanel === entry.slug
+                    ? isMobile
+                      ? "100%"
+                      : "384px"
+                    : "80px",
                 opacity: 1,
                 backgroundColor: expandedPanel === entry.slug ? "rgba(45, 55, 72, 0.4)" : "rgba(45, 55, 72, 0.2)",
               }}

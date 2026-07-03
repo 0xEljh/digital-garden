@@ -43,7 +43,7 @@ const customConfig = defineConfig({
     body: {
       bg: "surface.page",
       color: "text.body",
-      colorPalette: "teal",
+      colorPalette: "brand",
     },
   },
   theme: {
@@ -102,6 +102,18 @@ const customConfig = defineConfig({
           sighted: themed("#658594", "#24837B", "#8F8A75", "#8A5A00"),
           charted: themed("#7E9CD8", "#3AA99F", "#B4AF9A", "#C77E00"),
           mapped: themed("#A3D4D5", "#87D3C3", "#DCD8C0", "#FF9D00"),
+        },
+        // Themed color palette so components that rely on the global
+        // colorPalette (outline icon buttons, subtle tags) follow the active
+        // display theme instead of a hardcoded Chakra family.
+        brand: {
+          solid: { value: "{colors.accent}" },
+          contrast: { value: "{colors.surface.page}" },
+          fg: { value: "{colors.accent}" },
+          muted: { value: "{colors.accent.border}" },
+          subtle: { value: "{colors.accent.subtle}" },
+          emphasized: { value: "{colors.accent.border}" },
+          focusRing: { value: "{colors.accent}" },
         },
       },
     },

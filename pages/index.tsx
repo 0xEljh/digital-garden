@@ -4,6 +4,7 @@ import {
   Text,
   Box,
   Grid,
+  GridItem,
   Heading,
   HStack,
 } from "@chakra-ui/react";
@@ -40,7 +41,7 @@ const HeroSection = ({
             imagePath="/emiya_kiritsugu-small.png"
             width={300}
             sampleFactor={12}
-            fontSize="2px"
+            fontSize="1.8px"
             precomputedAscii={precomputedAscii}
             scrambleOnHydrate
             scrambleSpeedMs={14}
@@ -79,7 +80,7 @@ const ExpeditionLog = ({ posts }: { posts: PostMetaData[] }) => {
   return (
     <Stack gap={4} align="left">
       <HStack justify="space-between" align="baseline">
-        <Heading size="md" fontFamily="display" fontWeight="100">
+        <Heading size="md" fontFamily="heading">
           recent log
         </Heading>
         <HStack gap={1}>
@@ -279,9 +280,17 @@ export default function Home({
       <Container maxW="container.xl">
         <Stack gap={{ base: 12, md: 24 }}>
           <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
-            <PortfolioPreview entries={latestEntries} />
-            <HeroSection analyticsData={analyticsData} />
-            <ExpeditionLog posts={latestPosts} />
+            {/* Hero leads on mobile — identity before inventory. minW=0 lets
+                columns shrink below their content's min width. */}
+            <GridItem minW={0} order={{ base: 1, md: 0 }}>
+              <PortfolioPreview entries={latestEntries} />
+            </GridItem>
+            <GridItem minW={0} order={{ base: 0, md: 0 }}>
+              <HeroSection analyticsData={analyticsData} />
+            </GridItem>
+            <GridItem minW={0} order={{ base: 2, md: 0 }}>
+              <ExpeditionLog posts={latestPosts} />
+            </GridItem>
           </Grid>
         </Stack>
       </Container>

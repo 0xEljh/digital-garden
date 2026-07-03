@@ -89,7 +89,7 @@ export default function PostsIndexPage({ posts }: PageProps) {
         <Stack gap={8}>
           <Stack gap={3}>
             <Flex justify="space-between" align="center" gap={4} wrap="wrap">
-              <Heading size="2xl" fontFamily="display">
+              <Heading size="2xl" fontFamily="heading">
                 log
               </Heading>
               <ViewToggle view={view} onChange={setView} />

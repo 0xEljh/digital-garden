@@ -86,6 +86,11 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
   const activeNode = layout.nodes.find((node) => node.slug === activeSlug);
   const activePreview = activeSlug ? previewBySlug.get(activeSlug) : undefined;
 
+  // Counter-scale glyphs, labels, and strokes when the viewBox is squeezed
+  // below its native width (narrow viewports), so stars stay tappable and
+  // labels legible instead of shrinking with the SVG.
+  const inv = Math.min(1 / Math.min(scale || 1, 1), 2.6);
+
   return (
     <Box position="relative" w="100%">
       <svg
@@ -121,7 +126,7 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
               className="chartBgStar"
               cx={star.x}
               cy={star.y}
-              r={star.r}
+              r={star.r * inv}
               fill={cvar("accent-emphasized")}
               style={
                 {
@@ -147,11 +152,11 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
             />
             <text
               x={cluster.cx}
-              y={cluster.cy + cluster.r + 18}
+              y={cluster.cy + cluster.r + 18 * inv}
               textAnchor="middle"
               fill={cvar("text-meta")}
               fillOpacity={0.72}
-              style={{ fontFamily: FONT_MONO, fontSize: LABEL_FS, letterSpacing: "0.08em" }}
+              style={{ fontFamily: FONT_MONO, fontSize: LABEL_FS * inv, letterSpacing: "0.08em" }}
             >
               {cluster.label}
             </text>
@@ -167,9 +172,9 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
             x2={edge.x2}
             y2={edge.y2}
             stroke={cvar(edge.kind === "inline" ? "accent" : "accent-muted")}
-            strokeWidth={edge.kind === "inline" ? 1.3 : 1.1}
+            strokeWidth={(edge.kind === "inline" ? 1.3 : 1.1) * inv}
             strokeOpacity={edge.kind === "inline" ? 0.34 : 0.42}
-            strokeDasharray={edge.kind === "related" ? "3 7" : undefined}
+            strokeDasharray={edge.kind === "related" ? `${3 * inv} ${7 * inv}` : undefined}
             strokeLinecap="round"
             aria-hidden="true"
           />
@@ -199,7 +204,7 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
               <circle
                 cx={node.x}
                 cy={node.y}
-                r={active ? node.r * 3.2 : node.r * 2.4}
+                r={(active ? node.r * 3.2 : node.r * 2.4) * inv}
                 fill={cvar(`state-${node.stage}`)}
                 opacity={active ? 0.24 : 0.12 * node.brightness}
               />
@@ -210,16 +215,16 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
                 dominantBaseline="middle"
                 fill={cvar(`state-${node.stage}`)}
                 opacity={active ? 1 : node.brightness}
-                style={{ fontFamily: FONT_MONO, fontSize: node.r * 3.6 }}
+                style={{ fontFamily: FONT_MONO, fontSize: node.r * 3.6 * inv }}
                 aria-hidden="true"
               >
                 {glyphForStage(node.stage)}
               </text>
               <rect
-                x={node.x - HIT / 2}
-                y={node.y - HIT / 2}
-                width={HIT}
-                height={HIT}
+                x={node.x - (HIT * inv) / 2}
+                y={node.y - (HIT * inv) / 2}
+                width={HIT * inv}
+                height={HIT * inv}
                 fill="transparent"
               />
             </g>

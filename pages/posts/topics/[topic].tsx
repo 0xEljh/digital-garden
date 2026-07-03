@@ -83,7 +83,7 @@ export default function TopicPage({ label, posts }: TopicPageProps) {
             >
               topic
             </Text>
-            <Heading size="2xl" fontFamily="display">
+            <Heading size="2xl" fontFamily="heading">
               {label}
             </Heading>
             <Text

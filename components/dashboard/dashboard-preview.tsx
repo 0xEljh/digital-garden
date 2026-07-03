@@ -30,7 +30,7 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
 
   return (
     <Stack gap={4} w="full">
-      <Heading size="md" fontFamily="display" fontWeight="100" textAlign="left">
+      <Heading size="md" fontFamily="heading" textAlign="left">
         operator status
       </Heading>
 

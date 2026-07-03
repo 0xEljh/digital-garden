@@ -44,8 +44,8 @@ export default function PortfolioPage({ entries }: PortfolioPageProps) {
             justify="space-between"
             align={{ base: "flex-start", md: "center" }}
           >
-            <Heading size="3xl" fontFamily="display">
-              Portfolio
+            <Heading size="3xl" fontFamily="heading">
+              portfolio
             </Heading>
             <Button
               variant="ghost"
