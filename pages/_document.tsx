@@ -2,7 +2,9 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en" suppressHydrationWarning>
+    // Forced dark color mode lives here so display themes ([data-theme] on
+    // <html>) stay the only token scope — see components/ui/provider.tsx.
+    <Html lang="en" className="dark" suppressHydrationWarning>
       <Head>
         {/* Preload critical fonts to reduce FOUT/FOIT */}
         <link

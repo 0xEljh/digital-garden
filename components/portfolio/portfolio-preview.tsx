@@ -10,10 +10,14 @@ import { useAnalytics } from "@/components/common/analytics-provider";
 
 const MotionFlex = m.create(Flex);
 
-// Fixed width constants to prevent layout shift
+// Fixed width constants to prevent layout shift (desktop rail mode)
 const EXPANDED_WIDTH = 384;
 const COLLAPSED_WIDTH = 80;
 const GAP = 8; // Chakra gap={2} = 0.5rem = 8px
+
+// Mobile accordion heights: expanded card + collapsed row rails
+const MOBILE_EXPANDED_HEIGHT = 360;
+const MOBILE_COLLAPSED_HEIGHT = 52;
 
 export const PortfolioPreview = ({
   entries,
@@ -24,11 +28,11 @@ export const PortfolioPreview = ({
   const [expandedPanel, setExpandedPanel] = useState<string | null>(defaultPanel);
   const router = useRouter();
   const posthog = useAnalytics();
-  // The collapsed rails are a hover interaction; on touch viewports show only
-  // the featured card, full width.
+  // Desktop: horizontal rails, hover to expand. Mobile: vertical accordion,
+  // tap to expand — every entry stays visible as a full-width row.
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
 
-  const handleMouseEnter = (slug: string) => {
+  const expandPanel = (slug: string) => {
     setExpandedPanel(slug);
 
     posthog?.capture('portfolio_preview_expand', {
@@ -47,89 +51,102 @@ export const PortfolioPreview = ({
         body of work
       </Heading>
 
-      <Stack direction="row"
+      <Stack
+        direction={{ base: "column", md: "row" }}
         gap={2}
-        overflow="auto"
+        overflow={{ base: "visible", md: "auto" }}
         w="full"
-        maxW={`${containerWidth}px`}
-        onMouseLeave={() => setExpandedPanel(defaultPanel)}
+        maxW={{ base: "full", md: `${containerWidth}px` }}
+        onMouseLeave={() => {
+          if (!isMobile) setExpandedPanel(defaultPanel);
+        }}
       >
         {entries.map((entry) => {
-          if (isMobile && expandedPanel !== entry.slug) return null;
+          const expanded = expandedPanel === entry.slug;
           return (
             <MotionFlex
               key={entry.slug}
-              h={{ base: "350px", md: "480px" }}
               borderRadius="xl"
               position="relative"
               backdropFilter="blur(8px)"
               border="1px solid"
-              borderColor={
-                expandedPanel === entry.slug ? "gray.700" : "gray.800"
-              }
-              bg={
-                expandedPanel === entry.slug ? "gray.800" : "gray.800"
-              }
-              _before={{
-                content: '""',
-                position: "absolute",
-                inset: 0,
-                borderRadius: "xl",
-                opacity: 0.2,
-                bgGradient: `linear(to-br, transparent, transparent)`, // placeholder for now.
-                zIndex: -1,
-              }}
+              borderColor={expanded ? "edge.default" : "edge.muted"}
+              bg={expanded ? "surface.raised/50" : "surface.panel/40"}
+              transitionProperty="background, border-color"
+              transitionDuration="0.4s"
+              cursor={expanded ? "default" : "pointer"}
               initial={false}
-              animate={{
-                width:
-                  expandedPanel === entry.slug
-                    ? isMobile
-                      ? "100%"
-                      : "384px"
-                    : "80px",
-                opacity: 1,
-                backgroundColor: expandedPanel === entry.slug ? "rgba(45, 55, 72, 0.4)" : "rgba(45, 55, 72, 0.2)",
-              }}
+              animate={
+                isMobile
+                  ? {
+                      width: "100%",
+                      height: expanded
+                        ? MOBILE_EXPANDED_HEIGHT
+                        : MOBILE_COLLAPSED_HEIGHT,
+                    }
+                  : {
+                      width: expanded
+                        ? `${EXPANDED_WIDTH}px`
+                        : `${COLLAPSED_WIDTH}px`,
+                      height: 480,
+                    }
+              }
               transition={{ duration: 0.5, ease: "easeInOut" }}
-              onMouseEnter={() => handleMouseEnter(entry.slug)}
+              onMouseEnter={() => {
+                if (!isMobile) expandPanel(entry.slug);
+              }}
+              onClick={() => {
+                if (!expanded) expandPanel(entry.slug);
+              }}
             >
               {/* Glass shine effect */}
-              {expandedPanel === entry.slug && (
+              {expanded && (
                 <Box
                   position="absolute"
                   insetX="0"
                   top="0"
                   h="1px"
-                  bgGradient="linear(to-r, transparent, gray.400, transparent)"
+                  bg="accent.border"
+                  opacity={0.7}
                 />
               )}
 
-              {/* Collapsed state */}
-              {expandedPanel !== entry.slug && (
-                <Flex
-                  flexDirection="column"
-                  justifyContent="center"
-                  alignItems="center"
-                  w="full"
-                  h="full"
-                >
-                  <Text
-                    as={m.div}
-                    fontSize={{ base: "sm", md: "md" }}
-                    color="fg.muted"
-                    style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
-                    textWrap="pretty"
-                    flex="none"
-                    fontFamily="mono"
+              {/* Collapsed state — vertical spine on desktop, row rail on mobile */}
+              {!expanded &&
+                (isMobile ? (
+                  <Flex alignItems="center" w="full" h="full" px={4} gap={2}>
+                    <Text as="span" color="accent.muted" fontFamily="mono" fontSize="sm">
+                      ▸
+                    </Text>
+                    <Text fontSize="sm" color="fg.muted" fontFamily="mono" truncate>
+                      {entry.title}
+                    </Text>
+                  </Flex>
+                ) : (
+                  <Flex
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    w="full"
+                    h="full"
                   >
-                    {entry.title}
-                  </Text>
-                </Flex>
-              )}
+                    <Text
+                      as={m.div}
+                      fontSize={{ base: "sm", md: "md" }}
+                      color="fg.muted"
+                      style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                      textWrap="pretty"
+                      flex="none"
+                      fontFamily="mono"
+                    >
+                      {entry.title}
+                    </Text>
+                  </Flex>
+                ))}
 
               {/* Expanded state */}
               <AnimatePresence>
-                {expandedPanel === entry.slug && (
+                {expanded && (
                   <MotionFlex
                     flexDirection="column"
                     p={5}
@@ -153,27 +170,33 @@ export const PortfolioPreview = ({
                       <Center h="100%">
                         <DynamicPrecomputedAsciiIcon
                           iconName={entry.icon}
-                          highlighted={expandedPanel === entry.slug}
+                          highlighted={expanded}
                           noAnimation={true}
                         />
                       </Center>
                     </Box>
                     <Stack mb={3}>
-                      <Heading size="md" color="white" fontFamily="heading">
+                      <Heading size="md" color="text.body" fontFamily="heading">
                         {entry.title}
                       </Heading>
                     </Stack>
 
-                    <Text color="gray.300" mb={5} fontSize="sm" lineHeight="relaxed" fontFamily="mono">
+                    <Text color="text.muted" mb={5} fontSize="sm" lineHeight="relaxed" fontFamily="mono">
                       {entry.shortDescription}
                     </Text>
 
                     <Box mt="auto">
                       <Button
                         asChild
-                        variant="solid"
-                        bg="gray.700"
-                        _hover={{ bg: "gray.600" }}
+                        variant="outline"
+                        borderColor="edge.default"
+                        color="text.body"
+                        bg="surface.page/40"
+                        _hover={{
+                          borderColor: "accent",
+                          color: "accent.emphasized",
+                          bg: "accent.subtle",
+                        }}
                         size="sm"
                         borderRadius="lg"
                         transition="colors 0.3s"
@@ -187,7 +210,7 @@ export const PortfolioPreview = ({
                             });
                           }}
                         >
-                          Details
+                          details
                         </Link>
                       </Button>
                     </Box>
@@ -205,7 +228,7 @@ export const PortfolioPreview = ({
         align="center"
         justify={{ base: "center", md: "flex-start" }}
         w="full"
-        maxW={`${containerWidth}px`}
+        maxW={{ base: "full", md: `${containerWidth}px` }}
       >
         <Link href="/resume"
           onClick={() => {

@@ -5,7 +5,6 @@ import {
   FaGithub,
   FaLinkedin,
   FaEnvelope,
-  FaThreads,
   FaTelegram,
 } from "react-icons/fa6";
 import { m } from "motion/react";
@@ -55,11 +54,6 @@ const socials = [
     href: "https://www.linkedin.com/in/0xEljh/",
     ariaLabel: "LinkedIn",
     icon: <FaLinkedin />,
-  },
-  {
-    href: "https://threads.net/@0xEljh",
-    ariaLabel: "Threads",
-    icon: <FaThreads />,
   },
   {
     href: "mailto:elijah@0xeljh.com",

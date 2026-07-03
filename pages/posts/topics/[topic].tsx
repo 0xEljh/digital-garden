@@ -79,7 +79,7 @@ export default function TopicPage({ label, posts }: TopicPageProps) {
             <Text
               fontFamily="mono"
               fontSize="sm"
-              color="gray.500"
+              color="text.meta"
             >
               topic
             </Text>
@@ -89,7 +89,7 @@ export default function TopicPage({ label, posts }: TopicPageProps) {
             <Text
               fontFamily="mono"
               fontSize="sm"
-              color="gray.500"
+              color="text.meta"
             >
               {posts.length} {posts.length === 1 ? "entry" : "entries"}
             </Text>

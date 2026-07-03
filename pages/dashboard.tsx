@@ -131,7 +131,7 @@ const ActiveTimeRail = ({
                         borderWidth="1px"
                         borderColor="edge.muted"
                         borderRadius="l2"
-                        bg="blackAlpha.300"
+                        bg="surface.page/60"
                     >
                         <HStack justify="space-between" fontFamily="mono" fontSize="sm">
                             <Text color={SEGMENT_COLORS[segment.key]}>{segment.label}</Text>

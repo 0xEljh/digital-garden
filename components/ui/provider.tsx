@@ -9,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 import type { PropsWithChildren } from "react";
 import { ThemeProvider } from "next-themes";
-import { DarkMode } from "./color-mode";
 import { AnalyticsProvider } from "@/components/common/analytics-provider";
 import { DEFAULT_DISPLAY_THEME, DISPLAY_THEMES } from "@/lib/display-theme";
 
@@ -40,6 +39,13 @@ const customConfig = defineConfig({
     phosphor: "[data-theme=phosphor] &",
   },
   globalCss: {
+    // Color mode is forced dark via className="dark" on <Html> (_document.tsx).
+    // Do NOT reintroduce a <DarkMode>/<Theme> wrapper span: any `.chakra-theme`
+    // element re-declares every token's base value on itself, shadowing the
+    // [data-theme=*] overrides that only ever land on <html>.
+    html: {
+      colorScheme: "dark",
+    },
     body: {
       bg: "surface.page",
       color: "text.body",
@@ -95,6 +101,9 @@ const customConfig = defineConfig({
         },
         text: {
           body: themed("#DCD7BA", "#CECDC3", "#DCD8C0", "#E8E6E3"),
+          // Secondary copy: warmer + brighter than meta (a ~60/40 body/meta
+          // mix per palette) so it tracks the theme, unlike Chakra's fg.muted.
+          muted: themed("#B4B09B", "#B3B1AA", "#BFBAA4", "#BBB9BB"),
           meta: themed("#727169", "#878580", "#8F8A75", "#71717A"),
         },
         // Discovery states brighten as the territory gets known.
@@ -144,9 +153,7 @@ export const Provider = (props: PropsWithChildren) => {
         enableSystem={false}
         disableTransitionOnChange
       >
-        <ChakraProvider value={system}>
-          <DarkMode>{props.children}</DarkMode>
-        </ChakraProvider>
+        <ChakraProvider value={system}>{props.children}</ChakraProvider>
       </ThemeProvider>
     </AnalyticsProvider>
   );

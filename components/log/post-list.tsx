@@ -23,7 +23,7 @@ export function PostList({ posts, source = "posts/" }: PostListProps) {
           p={6}
           borderWidth="1px"
           borderRadius="lg"
-          _hover={{ bg: "gray.900", transform: "rotate(0.5deg)" }}
+          _hover={{ bg: "surface.panel", transform: "rotate(0.5deg)" }}
           transition="background 0.2s"
         >
           <Stack gap={3}>

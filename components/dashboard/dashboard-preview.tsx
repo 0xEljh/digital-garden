@@ -31,7 +31,7 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
   return (
     <Stack gap={4} w="full">
       <Heading size="md" fontFamily="heading" textAlign="left">
-        operator status
+        status
       </Heading>
 
       <Stack
@@ -49,15 +49,11 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
           </HStack>
           <HStack gap={3} align="baseline">
             <Text color="text.meta" minW="5.5rem">class</Text>
-            <Text>systems engineer · ai researcher</Text>
+            <Text>ai research · systems engineer</Text>
           </HStack>
           <HStack gap={3} align="baseline">
             <Text color="text.meta" minW="5.5rem">assignment</Text>
-            <Text>ai for science · startup research co.</Text>
-          </HStack>
-          <HStack gap={3} align="baseline">
-            <Text color="text.meta" minW="5.5rem">status</Text>
-            <Text>online — behind the glass</Text>
+            <Text>startup ai lab</Text>
           </HStack>
         </Stack>
 

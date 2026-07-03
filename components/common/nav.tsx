@@ -54,25 +54,28 @@ export const NavbarLinks = (props: StackProps) => {
 function SearchAnchor(props: BoxProps) {
   const palette = useCommandPalette();
 
+  // Quiet chip on mobile (no keyboard, no ⌘k, no accent fill — it sits next
+  // to the menu trigger); full accent-anchored form on desktop.
   return (
     <Box
       as="button"
       px={2.5}
       py={1}
       borderWidth="1px"
-      borderColor="accent.border"
+      borderColor={{ base: "edge.default", md: "accent.border" }}
       borderRadius="l2"
-      bg="accent.surface"
-      color="accent.emphasized"
+      bg={{ base: "transparent", md: "accent.surface" }}
+      color={{ base: "fg.muted", md: "accent.emphasized" }}
       fontFamily="mono"
       fontSize="xs"
       lineHeight={1}
       cursor="pointer"
+      whiteSpace="nowrap"
       _hover={{ borderColor: "accent", color: "accent" }}
       onClick={() => palette.open("nav")}
       {...props}
     >
-      [ /search ⌘k ]
+      [ /search<Box as="span" hideBelow="md"> ⌘k</Box> ]
     </Box>
   );
 }
@@ -103,14 +106,13 @@ export function NavBar() {
         <CollapsibleRoot>
           <HStack gap={{ base: "3", md: "8" }}>
             <Spacer hideFrom="md" />
+            {/* Search stays reachable without opening the menu. */}
             <NavbarLinks hideBelow="md" />
-            <SearchAnchor hideBelow="md" />
-            {/* <Button size={{ base: "sm", md: "md" }}>Buy Now</Button> */}
+            <SearchAnchor />
             <CollapsibleTrigger />
           </HStack>
           <CollapsibleContent hideFrom="md">
             <NavbarLinks pt="5" pb="2" alignItems="center" />
-            <SearchAnchor mx="auto" mt="3" mb="2" />
           </CollapsibleContent>
         </CollapsibleRoot>
       </Container>

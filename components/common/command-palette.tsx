@@ -264,13 +264,14 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
         p={0}
         w="full"
         maxW="2xl"
-        bg="gray.950"
+        bg="surface.panel"
         borderWidth="1px"
-        borderColor="accent.subtle"
+        borderColor="accent.border"
         rounded="l3"
         fontFamily="mono"
         shadow="lg"
       >
+        {/* CRT scanlines, tinted from the theme's text color. */}
         <Box
           aria-hidden
           position="absolute"
@@ -278,7 +279,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
           pointerEvents="none"
           zIndex={0}
           opacity={0.5}
-          backgroundImage="repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 3px)"
+          backgroundImage="repeating-linear-gradient(0deg, color-mix(in srgb, var(--chakra-colors-text-body) 6%, transparent) 0px, color-mix(in srgb, var(--chakra-colors-text-body) 6%, transparent) 1px, transparent 1px, transparent 3px)"
         />
 
         <Box position="relative" zIndex={1}>
@@ -286,7 +287,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
             <DialogTitle>Command palette</DialogTitle>
           </VisuallyHidden>
 
-          <Box borderBottomWidth="1px" borderColor="gray.800" px={4}>
+          <Box borderBottomWidth="1px" borderColor="edge.muted" px={4}>
             <Input
               ref={inputRef}
               role="combobox"
@@ -310,7 +311,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
               px={0}
               caretColor="accent"
               _focusVisible={{ outline: "none", boxShadow: "none" }}
-              _placeholder={{ color: "gray.600" }}
+              _placeholder={{ color: "text.meta" }}
             />
           </Box>
 
@@ -319,7 +320,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
               px={4}
               py={2}
               borderBottomWidth="1px"
-              borderColor="gray.800"
+              borderColor="edge.muted"
               fontSize="sm"
               color="accent.emphasized"
             >
@@ -338,7 +339,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
             py={2}
             listStyleType="none"
           >
-            <Text px={4} pb={1} fontSize="2xs" letterSpacing="wide" color="gray.600">
+            <Text px={4} pb={1} fontSize="2xs" letterSpacing="wide" color="text.meta">
               {label}
             </Text>
 
@@ -366,7 +367,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
                     py={2}
                     borderLeftWidth="2px"
                     borderColor={selected ? "accent" : "transparent"}
-                    bg={selected ? "whiteAlpha.100" : "transparent"}
+                    bg={selected ? "accent.subtle" : "transparent"}
                     display="flex"
                     alignItems="baseline"
                     gap={3}
@@ -401,13 +402,19 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
 
           <Box
             borderTopWidth="1px"
-            borderColor="gray.800"
+            borderColor="edge.muted"
             px={4}
             py={2}
             fontSize="xs"
-            color="gray.600"
+            color="text.meta"
           >
-            ↑↓ navigate · ↵ select · esc close
+            {/* Keyboard hints are noise on touch viewports. */}
+            <Box as="span" hideBelow="md">
+              ↑↓ navigate · ↵ select · esc close
+            </Box>
+            <Box as="span" hideFrom="md">
+              tap to select
+            </Box>
             {!isCommandMode && " · / for commands"}
           </Box>
         </Box>

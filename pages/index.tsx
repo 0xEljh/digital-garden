@@ -55,7 +55,7 @@ const HeroSection = ({
           fontFamily="heading"
           fontWeight="100"
         >
-          The expedition log of a systems engineer and AI researcher (btw).
+          A digital garden/logs of an ai research and systems engineer (btw).
         </Text>
         <SocialBar />
       </Stack>
@@ -96,9 +96,10 @@ const ExpeditionLog = ({ posts }: { posts: PostMetaData[] }) => {
               cursor={mode === "popular" ? "not-allowed" : "pointer"}
               transition="all 0.2s"
               bg={sortMode === mode ? "accent.subtle" : "transparent"}
+              opacity={mode === "popular" ? 0.5 : 1}
               color={
                 mode === "popular"
-                  ? "gray.700"
+                  ? "text.meta"
                   : sortMode === mode
                     ? "accent.emphasized"
                     : "fg.muted"
@@ -132,11 +133,11 @@ const ExpeditionLog = ({ posts }: { posts: PostMetaData[] }) => {
             asChild
             _hover={{
               transform: "translateX(-3px)",
-              bg: "gray.800/30",
+              bg: "surface.raised/30",
             }}
             transition="all 0.2s"
             borderBottom={i < sortedPosts.length - 1 ? "1px solid" : "none"}
-            borderColor="gray.800"
+            borderColor="edge.muted"
             py={3}
           >
             <Link
@@ -169,7 +170,7 @@ const ExpeditionLog = ({ posts }: { posts: PostMetaData[] }) => {
                     {post.excerpt}
                   </Text>
                 )}
-                <HStack fontSize="xs" color="gray.600" gap={2} flexWrap="wrap">
+                <HStack fontSize="xs" color="text.meta" gap={2} flexWrap="wrap">
                   <Text>
                     {new Date(post.date).toLocaleDateString("en-US", {
                       year: "numeric",
