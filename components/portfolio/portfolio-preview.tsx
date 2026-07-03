@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from 'next/router';
 import type { PortfolioEntry } from "@/types/portfolio";
 import { LuDownload } from "react-icons/lu";
-import { getIconComponent } from "@/lib/utils/portfolio-icons";
+import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { useAnalytics } from "@/components/common/analytics-provider";
 
 const MotionFlex = m.create(Flex);
@@ -52,8 +52,6 @@ export const PortfolioPreview = ({
         onMouseLeave={() => setExpandedPanel(defaultPanel)}
       >
         {entries.map((entry) => {
-          const IconComponent = getIconComponent(entry.icon);
-
           return (
             <MotionFlex
               key={entry.slug}
@@ -144,12 +142,11 @@ export const PortfolioPreview = ({
                       zIndex={0}
                     >
                       <Center h="100%">
-                        {IconComponent && (
-                          <IconComponent
-                            highlightColor="yellow.400"
-                            noAnimation={true}
-                          />
-                        )}
+                        <DynamicPrecomputedAsciiIcon
+                          iconName={entry.icon}
+                          highlighted={expandedPanel === entry.slug}
+                          noAnimation={true}
+                        />
                       </Center>
                     </Box>
                     <Stack mb={3}>
@@ -193,68 +190,52 @@ export const PortfolioPreview = ({
         })}
       </Stack>
 
-      <Stack direction={{ base: "column-reverse", md: "row" }} gap={3}>
-        <Button
-          asChild
-          variant="ghost"
-          size="sm"
-          alignSelf="center"
-          borderWidth="1px"
-          borderColor="edge.accent"
-          borderRadius="l2"
-          bg="blackAlpha.300"
-          color="accent"
-          px={4}
-          letterSpacing="0.02em"
-          _hover={{
-            bg: "accent.subtle",
-            borderColor: "accent",
-            color: "accent.emphasized",
-            transform: "translateY(-1px)",
+      <Stack
+        direction={{ base: "column-reverse", md: "row" }}
+        gap={3}
+        align="center"
+        justify={{ base: "center", md: "flex-start" }}
+        w="full"
+        maxW={`${containerWidth}px`}
+      >
+        <Link href="/resume"
+          onClick={() => {
+            posthog?.capture('download_resume_click', {
+              location: router.asPath
+            });
           }}
-          _active={{ transform: "translateY(0)" }}
-          transition="all 0.18s ease"
         >
-          <Link href="/resume"
-            onClick={() => {
-              posthog?.capture('download_resume_click', {
-                location: router.asPath
-              });
-            }}
+          <Text
+            as="span"
+            display="inline-flex"
+            alignItems="center"
+            gap={1}
+            fontSize="xs"
+            fontFamily="mono"
+            color="accent.muted"
+            _hover={{ color: "accent" }}
+            transition="color 0.2s"
           >
             <LuDownload /> resume
-          </Link>
-        </Button>
+          </Text>
+        </Link>
 
-        <Button
-          asChild
-          variant="ghost"
-          size="sm"
-          alignSelf="center"
-          borderWidth="1px"
-          borderColor="edge.accent"
-          borderRadius="l2"
-          bg="blackAlpha.300"
-          color="accent"
-          px={4}
-          letterSpacing="0.02em"
-          _hover={{
-            bg: "accent.subtle",
-            borderColor: "accent",
-            color: "accent.emphasized",
-            transform: "translateY(-1px)",
+        <Link href="/portfolio"
+          onClick={() => {
+            posthog?.capture('full_portfolio_click', {
+              location: router.asPath
+            });
           }}
-          _active={{ transform: "translateY(0)" }}
-          transition="all 0.18s ease"
         >
-          <Link href="/portfolio"
-            onClick={() => {
-              posthog?.capture('full_portfolio_click', {
-                location: router.asPath
-              });
-            }}
-          >the rest →</Link>
-        </Button>
+          <Text
+            as="span"
+            fontSize="xs"
+            fontFamily="mono"
+            color="accent.muted"
+            _hover={{ color: "accent" }}
+            transition="color 0.2s"
+          >the rest →</Text>
+        </Link>
       </Stack>
     </Stack>
   );

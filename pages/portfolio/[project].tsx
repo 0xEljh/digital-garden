@@ -21,7 +21,7 @@ import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import { loadPortfolioEntries, loadPortfolioEntry } from "@/lib/utils/portfolio";
 import { PortfolioEntry } from "@/types/portfolio";
-import { getIconComponent } from "@/lib/utils/portfolio-icons";
+import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { VscBrowser, VscGithub } from "react-icons/vsc";
 import { StyledProse, mdxComponents } from "@/components/common/styled-prose";
 
@@ -65,7 +65,6 @@ export const getStaticProps: GetStaticProps<ProjectPageProps> = async ({
 const MotionBox = m.create(Box);
 
 export default function ProjectPage({ entry, content }: ProjectPageProps) {
-  const IconComponent = getIconComponent(entry.icon);
   const iconWidth = useBreakpointValue({ base: 240, md: 400, lg: 600 });
 
   const containerVariants = {
@@ -98,13 +97,11 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
       h="95vh"
     >
       <Center position="absolute" top={0} left={0} w="full" h="full" zIndex={0}>
-        {IconComponent && (
-          <IconComponent
-            width={iconWidth}
-            highlightColor={"yellow.500"}
-            scrambleAnimationDuration={8}
-          />
-        )}
+        <DynamicPrecomputedAsciiIcon
+          iconName={entry.icon}
+          asciiWidth={iconWidth}
+          scrambleAnimationDuration={8}
+        />
       </Center>
 
       {/* Content: Occupy lower left quadrant */}
@@ -122,8 +119,8 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
           m={{ base: 0, md: 4 }}
           borderRadius="2xl"
           border="1px"
-          borderColor={"cyan.700"}
-          boxShadow="0 0 25px rgba(0, 200, 255, 0.20)"
+          borderColor="accent.border"
+          boxShadow="0 0 25px color-mix(in srgb, var(--chakra-colors-accent) 22%, transparent)"
           backdropFilter="blur(10px)"
           overflowY="scroll"
           h="100%"
@@ -136,7 +133,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
               background: "rgba(0,0,0,0.1)",
             },
             "&::-webkit-scrollbar-thumb": {
-              background: "rgba(0, 200, 255, 0.5)",
+              background: "var(--chakra-colors-accent)",
               borderRadius: "2px",
             },
           }}
@@ -172,8 +169,8 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
               p={8}
               borderRadius="lg"
               border="1px"
-              borderColor={"cyan.700"}
-              boxShadow="0 0 25px rgba(0, 200, 255, 0.20)"
+              borderColor="accent.border"
+              boxShadow="0 0 25px color-mix(in srgb, var(--chakra-colors-accent) 22%, transparent)"
               backdropFilter="blur(10px)"
             >
               <MotionBox variants={itemVariants}>
@@ -183,7 +180,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                   mb={3}
                   textTransform="uppercase"
                   letterSpacing="wider"
-                  color="cyan.300"
+                  color="accent.emphasized"
                 >
                   Category
                 </Text>
@@ -193,10 +190,10 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                       key={category}
                       size="md"
                       bg="blackAlpha.600"
-                      color="cyan.100"
+                      color="text.body"
                       borderWidth="1px"
-                      borderColor="cyan.700"
-                      _hover={{ bg: "cyan.900", transform: "translateY(-2px)" }}
+                      borderColor="accent.border"
+                      _hover={{ bg: "accent.surface", transform: "translateY(-2px)" }}
                       transition="all 0.2s"
                       p={2}
                     >
@@ -214,7 +211,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                     mb={3}
                     textTransform="uppercase"
                     letterSpacing="wider"
-                    color="cyan.300"
+                    color="accent.emphasized"
                   >
                     Tech Stack
                   </Text>
@@ -225,12 +222,12 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                           size="md"
                           variant="subtle"
                           bg="blackAlpha.600"
-                          color="cyan.100"
+                          color="text.body"
                           borderWidth="1px"
-                          borderColor="cyan.700"
+                          borderColor="accent.border"
                           p={2}
                           _hover={{
-                            bg: "cyan.900",
+                            bg: "accent.surface",
                             transform: "translateY(-2px)",
                           }}
                           transition="all 0.2s"
@@ -251,7 +248,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                     mb={3}
                     textTransform="uppercase"
                     letterSpacing="wider"
-                    color="cyan.300"
+                    color="accent.emphasized"
                   >
                     Links
                   </Text>
@@ -261,13 +258,13 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                         asChild
                         rel="noopener noreferrer"
                         size="lg"
-                        bg="cyan.600"
-                        color="white"
+                        bg="accent"
+                        color="surface.page"
                         _hover={{
-                          bg: "cyan.500",
+                          bg: "accent.emphasized",
                           transform: "translateY(-2px)",
                         }}
-                        boxShadow="0 0 15px rgba(0, 200, 255, 0.3)"
+                        boxShadow="0 0 15px color-mix(in srgb, var(--chakra-colors-accent) 35%, transparent)"
                         transition="all 0.2s"
                       >
                         <NextLink target="_blank" href={entry.link}>
@@ -282,11 +279,11 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
                         rel="noopener noreferrer"
                         variant="outline"
                         size="lg"
-                        borderColor="cyan.600"
-                        color="cyan.100"
+                        borderColor="accent"
+                        color="text.body"
                         _hover={{
                           bg: "blackAlpha.400",
-                          borderColor: "cyan.400",
+                          borderColor: "accent.emphasized",
                           transform: "translateY(-2px)",
                         }}
                         transition="all 0.2s"

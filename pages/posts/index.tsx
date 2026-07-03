@@ -14,14 +14,14 @@ import type { PostMetaData } from "@/types/posts";
 import { loadPostsMetadata } from "@/lib/utils/posts";
 import { useEffect } from "react";
 import { useAnalytics } from "@/components/common/analytics-provider";
-import { PostList } from "@/components/garden/post-list";
-import { GardenPlot } from "@/components/garden/garden-plot";
+import { PostList } from "@/components/log/post-list";
+import { StarChart } from "@/components/chart/star-chart";
 
 interface PageProps {
   posts: PostMetaData[];
 }
 
-type View = "list" | "garden";
+type View = "list" | "chart";
 
 function ViewToggle({
   view,
@@ -42,7 +42,7 @@ function ViewToggle({
       role="group"
       aria-label="View"
     >
-      {(["list", "garden"] as View[]).map((v) => (
+      {(["list", "chart"] as View[]).map((v) => (
         <chakra.button
           key={v}
           type="button"
@@ -50,8 +50,8 @@ function ViewToggle({
           px={3}
           py={1}
           bg={view === v ? "accent.subtle" : "transparent"}
-          color={view === v ? "accent.emphasized" : "gray.500"}
-          _hover={{ color: view === v ? "accent.emphasized" : "gray.300" }}
+          color={view === v ? "accent.emphasized" : "text.meta"}
+          _hover={{ color: view === v ? "accent.emphasized" : "text.body" }}
           aria-pressed={view === v}
           cursor="pointer"
           transition="color 0.15s ease, background 0.15s ease"
@@ -66,16 +66,16 @@ function ViewToggle({
 export default function PostsIndexPage({ posts }: PageProps) {
   const posthog = useAnalytics();
   const router = useRouter();
-  const view: View = router.query.view === "garden" ? "garden" : "list";
+  const view: View = router.query.view === "chart" ? "chart" : "list";
 
   useEffect(() => {
     posthog?.capture("view_blog_index");
   }, [posthog]);
 
   const setView = (next: View) => {
-    posthog?.capture?.("garden_view_toggle", { view: next });
+    posthog?.capture?.("chart_view_toggle", { view: next });
     const query = { ...router.query };
-    if (next === "garden") query.view = "garden";
+    if (next === "chart") query.view = "chart";
     else delete query.view;
     // shallow: URL only — both views share the same static props.
     router.replace({ pathname: router.pathname, query }, undefined, {
@@ -90,18 +90,18 @@ export default function PostsIndexPage({ posts }: PageProps) {
           <Stack gap={3}>
             <Flex justify="space-between" align="center" gap={4} wrap="wrap">
               <Heading size="2xl" fontFamily="display">
-                The Garden
+                log
               </Heading>
               <ViewToggle view={view} onChange={setView} />
             </Flex>
-            <Text color="gray.500" fontSize="sm" maxW="62ch" lineHeight={1.7}>
-              Some of these are seedlings — just planted, still rough. A few have
-              grown evergreen. All of them are version-controlled and grown in the
-              open, so each shows when it was planted and last tended.
+            <Text color="text.meta" fontSize="sm" maxW="68ch" lineHeight={1.7}>
+              An expedition log — most entries are sighted or charted; a few are
+              mapped. Version-controlled and kept in the open, so each shows when
+              it was logged and last updated.
             </Text>
           </Stack>
-          {view === "garden" ? (
-            <GardenPlot posts={posts} />
+          {view === "chart" ? (
+            <StarChart posts={posts} />
           ) : (
             <PostList posts={posts} source="posts/" />
           )}

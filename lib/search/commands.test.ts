@@ -56,10 +56,47 @@ describe("COMMANDS registry", () => {
 
   test("includes the resolved nav verbs and the eggs", () => {
     const verbs = COMMANDS.map((c) => c.verb);
-    for (const v of ["random", "home", "posts", "portfolio"]) {
+    for (const v of ["random", "home", "posts", "portfolio", "theme", "chart"]) {
       expect(verbs).toContain(v);
     }
     expect(verbs).toContain("whoami"); // egg
     expect(verbs).toContain("respawn"); // egg
+  });
+
+  test("theme command can list themes and switch to a named display", () => {
+    const command = COMMANDS.find((c) => c.verb === "theme");
+    expect(command).toBeDefined();
+
+    const lines: string[] = [];
+    let selected = "kanagawa";
+    command?.run(
+      {
+        navigate: () => {},
+        printLine: (line) => lines.push(line),
+        records: [],
+        theme: selected,
+        setTheme: (theme) => {
+          selected = theme;
+        },
+      },
+      "nier",
+    );
+    expect(selected).toBe("nier");
+    expect(lines.at(-1)).toContain("display: nier");
+
+    command?.run(
+      {
+        navigate: () => {},
+        printLine: (line) => lines.push(line),
+        records: [],
+        theme: selected,
+        setTheme: (theme) => {
+          selected = theme;
+        },
+      },
+      "unknown",
+    );
+    expect(selected).toBe("nier");
+    expect(lines.at(-1)).toContain("unknown display");
   });
 });

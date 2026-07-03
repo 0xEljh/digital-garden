@@ -30,7 +30,7 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
     fontSize = "clamp(2rem, 8vw, 8rem)",
     fontWeight = 900,
     fontFamily = "inherit",
-    color = "#fff",
+    color,
     enableHover = true,
     baseIntensity = 0.18,
     hoverIntensity = 0.5,
@@ -134,7 +134,7 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
                 gradient.forEach((c, i) => grad.addColorStop(i / (gradient.length - 1), c));
                 offCtx.fillStyle = grad;
             } else {
-                offCtx.fillStyle = color;
+                offCtx.fillStyle = color || window.getComputedStyle(canvas).color || "white";
             }
 
             if (letterSpacing !== 0) {

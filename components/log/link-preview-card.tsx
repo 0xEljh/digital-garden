@@ -4,7 +4,7 @@ import { glyphForStage } from "@/lib/content/schema";
 import { fmtDate } from "@/lib/content/format";
 import { StageBadge } from "./stage-badge";
 
-/** The pre-rendered preview payload a garden link shows on hover. */
+/** The pre-rendered preview payload an internal log link shows on hover. */
 export interface LinkPreview {
   slug: string;
   title: string;
@@ -15,7 +15,7 @@ export interface LinkPreview {
 }
 
 /**
- * gwern-lite hover preview: stage glyph + title · excerpt · maturity/tended.
+ * gwern-lite hover preview: state glyph + title · excerpt · state/updated.
  * The card chrome (bg, border) lives on HoverCardContent; this is the body.
  */
 export function LinkPreviewCard({ preview }: { preview: LinkPreview }) {
@@ -25,7 +25,7 @@ export function LinkPreviewCard({ preview }: { preview: LinkPreview }) {
         {preview.stage && (
           <Text
             as="span"
-            color={`stage.${preview.stage}`}
+            color={`state.${preview.stage}`}
             fontFamily="mono"
             fontSize="sm"
             aria-hidden="true"
@@ -33,20 +33,20 @@ export function LinkPreviewCard({ preview }: { preview: LinkPreview }) {
             {glyphForStage(preview.stage)}
           </Text>
         )}
-        <Text fontFamily="heading" fontSize="sm" color="gray.50" lineClamp={2}>
+        <Text fontFamily="heading" fontSize="sm" color="text.body" lineClamp={2}>
           {preview.title}
         </Text>
       </HStack>
 
       {preview.excerpt && (
-        <Text fontSize="xs" color="gray.400" lineHeight={1.5} lineClamp={3}>
+        <Text fontSize="xs" color="text.meta" lineHeight={1.5} lineClamp={3}>
           {preview.excerpt}
         </Text>
       )}
 
-      <HStack gap={2} color="gray.600" fontFamily="mono" fontSize="xs">
+      <HStack gap={2} color="text.meta" fontFamily="mono" fontSize="xs">
         {preview.stage && <StageBadge stage={preview.stage} />}
-        {preview.tended && <Text as="span">· tended {fmtDate(preview.tended)}</Text>}
+        {preview.tended && <Text as="span">· updated {fmtDate(preview.tended)}</Text>}
       </HStack>
     </Stack>
   );

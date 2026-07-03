@@ -3,17 +3,17 @@ import { useRouter } from "next/router";
 import type { HeadMetaProps } from "@/types/head-meta";
 import { SITE, SITE_URL } from "@/lib/site";
 
-const DEFAULT_TITLE = "Elijah's Digital Garden";
+const DEFAULT_TITLE = SITE.title;
 const DEFAULT_DESCRIPTION = SITE.description;
 const DEFAULT_KEYWORDS = [
-  "digital garden",
+  "expedition log",
   "deep learning",
-  "full-stack engineer",
-  "machine learning engineer",
+  "systems engineer",
+  "AI researcher",
   "startup",
-  "blog",
+  "technical notes",
 ];
-const DEFAULT_IMAGE = "digital-garden.jpg";
+const DEFAULT_IMAGE = undefined;
 
 const HeadMeta = ({
   title = DEFAULT_TITLE,

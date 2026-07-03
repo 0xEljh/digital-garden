@@ -9,8 +9,23 @@ import {
 } from "@chakra-ui/react";
 import type { PropsWithChildren } from "react";
 import { ThemeProvider } from "next-themes";
-import { ColorModeProvider, DarkMode } from "./color-mode";
+import { DarkMode } from "./color-mode";
 import { AnalyticsProvider } from "@/components/common/analytics-provider";
+import { DEFAULT_DISPLAY_THEME, DISPLAY_THEMES } from "@/lib/display-theme";
+
+const themed = (
+  kanagawa: string,
+  flexoki: string,
+  nier: string,
+  phosphor: string,
+) => ({
+  value: {
+    base: kanagawa,
+    _flexoki: flexoki,
+    _nier: nier,
+    _phosphor: phosphor,
+  },
+});
 
 const buttonRecipe = defineRecipe({
   base: {
@@ -19,8 +34,15 @@ const buttonRecipe = defineRecipe({
 });
 
 const customConfig = defineConfig({
+  conditions: {
+    flexoki: "[data-theme=flexoki] &",
+    nier: "[data-theme=nier] &",
+    phosphor: "[data-theme=phosphor] &",
+  },
   globalCss: {
     body: {
+      bg: "surface.page",
+      color: "text.body",
       colorPalette: "teal",
     },
   },
@@ -42,40 +64,44 @@ const customConfig = defineConfig({
     },
     semanticTokens: {
       colors: {
-        // Status-line palette: graphite UI, patina signal, brass secondary data.
+        // Expedition-console palette. Values are judged in situ via data-theme;
+        // do not use _dark here, because DarkMode is a nearer ancestor.
         accent: {
-          DEFAULT: { value: "{colors.teal.400}" },
-          emphasized: { value: "{colors.teal.200}" },
-          muted: { value: "{colors.teal.500}" },
-          subtle: { value: "{colors.teal.950}" },
-          surface: { value: "{colors.teal.900}" },
-          border: { value: "{colors.teal.800}" },
+          DEFAULT: themed("#7E9CD8", "#3AA99F", "#B4AF9A", "#FF9D00"),
+          emphasized: themed("#7FB4CA", "#5ABDAC", "#CCC8B1", "#FFB347"),
+          muted: themed("#658594", "#24837B", "#8F8A75", "#C77E00"),
+          subtle: themed("#223249", "#102F2D", "#28251E", "#2F1D00"),
+          surface: themed("#16161D", "#161B1A", "#302E27", "#1F170A"),
+          border: themed("#2D4F67", "#20514C", "#5A5444", "#5C3900"),
+        },
+        spike: {
+          DEFAULT: themed("#FFA066", "#DA702C", "#CD664D", "#FF2A00"),
         },
         data: {
-          dev: { value: "{colors.teal.300}" },
-          design: { value: "{colors.orange.300}" },
-          other: { value: "{colors.gray.500}" },
-          rail: { value: "{colors.gray.800}" },
+          dev: themed("#7FB4CA", "#4385BE", "#B4AF9A", "#FF9D00"),
+          design: themed("#FFA066", "#DA702C", "#CD664D", "#00FF66"),
+          other: themed("#727169", "#878580", "#8F8A75", "#71717A"),
+          rail: themed("#363646", "#282726", "#403D33", "#27272A"),
         },
         edge: {
-          muted: { value: "{colors.gray.800}" },
-          default: { value: "{colors.gray.700}" },
-          accent: { value: "{colors.teal.700}" },
+          muted: themed("#363646", "#282726", "#403D33", "#27272A"),
+          default: themed("#54546D", "#403E3C", "#5A5444", "#3F3F46"),
+          accent: themed("#2D4F67", "#20514C", "#5A5444", "#5C3900"),
         },
         surface: {
-          panel: { value: "{colors.gray.900}" },
-          raised: { value: "{colors.gray.800}" },
+          page: themed("#1F1F28", "#100F0F", "#292824", "#0A0A0A"),
+          panel: themed("#2A2A37", "#1C1B1A", "#35332C", "#18181B"),
+          raised: themed("#363646", "#282726", "#403D33", "#27272A"),
         },
         text: {
-          meta: { value: "{colors.gray.500}" },
+          body: themed("#DCD7BA", "#CECDC3", "#DCD8C0", "#E8E6E3"),
+          meta: themed("#727169", "#878580", "#8F8A75", "#71717A"),
         },
-        // Maturity as a coherent green→teal ramp (a note "greens into
-        // evergreen"), replacing the green/yellow/teal mix — keeps the whole
-        // site in the teal family. Used by badges, prose glyphs, and the garden.
-        stage: {
-          seedling: { value: "{colors.green.400}" },
-          budding: { value: "{colors.teal.300}" },
-          evergreen: { value: "{colors.teal.200}" },
+        // Discovery states brighten as the territory gets known.
+        state: {
+          sighted: themed("#658594", "#24837B", "#8F8A75", "#8A5A00"),
+          charted: themed("#7E9CD8", "#3AA99F", "#B4AF9A", "#C77E00"),
+          mapped: themed("#A3D4D5", "#87D3C3", "#DCD8C0", "#FF9D00"),
         },
       },
     },
@@ -94,16 +120,20 @@ const customConfig = defineConfig({
   },
 });
 
-const system = createSystem(defaultConfig, customConfig);
+export const system = createSystem(defaultConfig, customConfig);
 
 export const Provider = (props: PropsWithChildren) => {
   return (
     <AnalyticsProvider>
-      <ThemeProvider attribute="class" forcedTheme="dark" enableSystem={false}>
+      <ThemeProvider
+        attribute="data-theme"
+        themes={[...DISPLAY_THEMES]}
+        defaultTheme={DEFAULT_DISPLAY_THEME}
+        enableSystem={false}
+        disableTransitionOnChange
+      >
         <ChakraProvider value={system}>
-          <ColorModeProvider>
-            <DarkMode>{props.children}</DarkMode>
-          </ColorModeProvider>
+          <DarkMode>{props.children}</DarkMode>
         </ChakraProvider>
       </ThemeProvider>
     </AnalyticsProvider>

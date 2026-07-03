@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en">
+    <Html lang="en" suppressHydrationWarning>
       <Head>
         {/* Preload critical fonts to reduce FOUT/FOIT */}
         <link
@@ -23,13 +23,13 @@ export default function Document() {
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Elijah's Digital Garden"
+          title="Elijah's Expedition Log"
           href="/rss.xml"
         />
         <link
           rel="alternate"
           type="application/atom+xml"
-          title="Elijah's Digital Garden"
+          title="Elijah's Expedition Log"
           href="/atom.xml"
         />
       </Head>

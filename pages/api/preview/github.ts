@@ -38,7 +38,7 @@ export default async function handler(
 
   try {
     const headers: Record<string, string> = {
-      "User-Agent": "digital-garden/1.0",
+      "User-Agent": "expedition-log/1.0",
       Accept: "application/vnd.github.v3+json",
     };
 

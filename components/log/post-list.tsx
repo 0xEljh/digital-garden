@@ -3,7 +3,7 @@ import NextLink from "next/link";
 import type { PostMetaData } from "@/types/posts";
 import { useAnalytics } from "@/components/common/analytics-provider";
 import { CategoryTags } from "./category-tag";
-import { GardenMeta } from "./garden-meta";
+import { EntryMeta } from "./entry-meta";
 
 interface PostListProps {
   posts: PostMetaData[];
@@ -44,7 +44,7 @@ export function PostList({ posts, source = "posts/" }: PostListProps) {
               </LinkOverlay>
             </Heading>
             <CategoryTags categories={post.categories} linkify />
-            <GardenMeta
+            <EntryMeta
               compact
               stage={post.stage}
               date={post.date}

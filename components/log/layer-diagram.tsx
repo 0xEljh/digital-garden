@@ -4,7 +4,7 @@ import { Box, Flex, Stack, Text } from "@chakra-ui/react";
 const LAYER_COLORS: Record<string, { bg: string; border: string; text: string }> = {
   purple: { bg: "purple.900", border: "purple.500", text: "purple.200" },
   blue: { bg: "blue.900", border: "blue.500", text: "blue.200" },
-  cyan: { bg: "cyan.900", border: "cyan.500", text: "cyan.200" },
+  cyan: { bg: "accent.surface", border: "accent", text: "accent.emphasized" },
   green: { bg: "green.900", border: "green.500", text: "green.200" },
   orange: { bg: "orange.900", border: "orange.500", text: "orange.200" },
   red: { bg: "red.900", border: "red.500", text: "red.200" },

@@ -5,7 +5,7 @@ import { useScroll, useTransform, m } from "motion/react";
 
 const MotionBox = m.create(Box);
 
-const DEFAULT_BEAM_COLOR = "linear-gradient(to bottom, transparent, #06b6d4, #3b82f6, transparent)";
+const DEFAULT_BEAM_COLOR = "linear-gradient(to bottom, transparent, var(--chakra-colors-accent), var(--chakra-colors-accent-emphasized), transparent)";
 const DEFAULT_STICKY_TOP = { base: "4rem", md: "5rem" };
 
 interface TimelineProps {

@@ -13,15 +13,15 @@ import searchIndex from "@/lib/generated/search-index.json";
 import {
   LinkPreviewCard,
   type LinkPreview,
-} from "@/components/garden/link-preview-card";
+} from "@/components/log/link-preview-card";
 import {
   HoverCardContent,
   HoverCardRoot,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 
-/** Slug → preview, lifted once from the search index (post records already
- *  carry title/excerpt/stage/tended — no new build artifact). */
+/** Slug -> preview, lifted once from the search index (post records already
+ *  carry title/excerpt/state/updated — no new build artifact). */
 const PREVIEW_BY_SLUG: Map<string, LinkPreview> = (() => {
   const map = new Map<string, LinkPreview>();
   for (const r of searchIndex.records as unknown as SearchRecord[]) {
@@ -65,12 +65,12 @@ const ProseAnchor = React.forwardRef<
 
 /**
  * The MDX `a` renderer. Classifies the href and applies the typed-glyph
- * language: internal post links carry the target's stage glyph + a hover
+ * language: internal post links carry the target's state glyph + a hover
  * preview and stay in-tab; the glyph's presence/absence is itself the
  * internal-vs-external cue, so external links need no marker — they just open
  * in a new tab. Everything else is a plain in-tab anchor.
  */
-export function GardenLink(props: Record<string, unknown>) {
+export function EntryLink(props: Record<string, unknown>) {
   // MDX also hands us a hast `node` — must not spread it onto the DOM.
   const {
     href,
@@ -82,6 +82,7 @@ export function GardenLink(props: Record<string, unknown>) {
     children?: React.ReactNode;
     node?: unknown;
   } & Record<string, unknown>;
+  void _node;
 
   const cls = classifyHref(href, SITE.url);
 
@@ -112,7 +113,7 @@ export function GardenLink(props: Record<string, unknown>) {
               {preview.stage && (
                 <Text
                   as="span"
-                  color={`stage.${preview.stage}`}
+                  color={`state.${preview.stage}`}
                   fontFamily="mono"
                   mr="0.2em"
                   aria-hidden="true"
@@ -124,7 +125,7 @@ export function GardenLink(props: Record<string, unknown>) {
             </ProseAnchor>
           </HoverCardTrigger>
           <HoverCardContent
-            bg="gray.950"
+            bg="surface.panel"
             borderWidth="1px"
             borderColor="accent.subtle"
             borderRadius="md"

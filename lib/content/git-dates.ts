@@ -1,5 +1,5 @@
 /**
- * Resolve a post's "last tended" date.
+ * Resolve a post's last-updated date.
  *
  * Precedence: explicit frontmatter `tended` override → last git commit touching
  * the file → fall back to the planted date with a warning (covers untracked

@@ -4,7 +4,7 @@
  * Flattens posts + portfolio projects + top-level routes into one pre-lowercased
  * record array (lib/search/records.ts) and writes lib/generated/search-index.json
  * (gitignored). Run via `bun` AFTER generate-content-meta so per-post `tended`
- * dates are available; falls back to the planted date when the meta is absent.
+ * dates are available; falls back to the logged date when the meta is absent.
  *
  * Self-contained and relative-import only, matching generate-content-meta.ts —
  * the loaders pull in next-mdx-remote/serialize, which has no business in a
@@ -31,11 +31,11 @@ const OUT = path.join(ROOT, "lib/generated/search-index.json");
 
 /** Top-level destinations offered as `goto` targets, in nav order. */
 const ROUTES: RouteLike[] = [
-  { title: "Home", url: "/", subtitle: "the front page" },
-  { title: "The Garden", url: "/posts", subtitle: "all notes" },
-  { title: "Portfolio", url: "/portfolio", subtitle: "projects & work" },
-  { title: "Dashboard", url: "/dashboard", subtitle: "time-accounting" },
-  { title: "Resume", url: "/resume", subtitle: "cv" },
+  { title: "home", url: "/", subtitle: "operator screen" },
+  { title: "log", url: "/posts", subtitle: "all entries" },
+  { title: "portfolio", url: "/portfolio", subtitle: "projects & work" },
+  { title: "stats", url: "/dashboard", subtitle: "time-accounting" },
+  { title: "resume", url: "/resume", subtitle: "cv" },
 ];
 
 async function listMdx(dir: string): Promise<string[]> {

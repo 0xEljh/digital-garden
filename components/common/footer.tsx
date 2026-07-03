@@ -8,15 +8,20 @@ import {
 } from "@chakra-ui/react";
 import { NavbarLinks } from "@/components/common/nav";
 import { SocialBar } from "@/components/common/social-bar";
-import status from "@/lib/generated/garden-status.json";
+import status from "@/lib/generated/expedition-status.json";
+import { DEFAULT_DISPLAY_THEME } from "@/lib/display-theme";
+import { useTheme } from "next-themes";
 
 export function Footer() {
+  const { theme } = useTheme();
+  const display = theme ?? DEFAULT_DISPLAY_THEME;
+
   return (
     <Box
       as="footer"
       mt={{ base: 16, md: 24 }}
       borderTopWidth="1px"
-      borderColor="gray.800"
+      borderColor="edge.muted"
     >
       <Container maxW="container.lg" py={{ base: 8, md: 10 }}>
         <Stack gap={6}>
@@ -32,7 +37,7 @@ export function Footer() {
 
           <Box
             as="details"
-            color="gray.500"
+            color="text.meta"
             fontFamily="mono"
             fontSize="xs"
           >
@@ -40,14 +45,13 @@ export function Footer() {
               as="summary"
               cursor="pointer"
               width="fit-content"
-              _hover={{ color: "cyan.400" }}
+              _hover={{ color: "accent.emphasized" }}
             >
-              how this garden grows
+              legend
             </Box>
             <Text mt={2} maxW="68ch" lineHeight={1.7}>
-              seedling → budding → evergreen — a note starts rough and matures
-              as it gets revisited, though nothing here is ever quite done. Each
-              shows when it was planted and last tended.
+              ✦ sighted → ✳ charted → ❋ mapped — entries brighten as the
+              territory gets known; nothing here is ever quite done.
             </Text>
           </Box>
 
@@ -55,18 +59,18 @@ export function Footer() {
             justify="space-between"
             wrap="wrap"
             gap={3}
-            color="gray.600"
+            color="text.meta"
             fontFamily="mono"
             fontSize="xs"
           >
-            <Text>
-              last tended {status.lastTendedLabel} · {status.postCount} notes ·{" "}
-              {status.projectCount} projects
+            <Text suppressHydrationWarning>
+              last updated {status.lastUpdatedLabel} · {status.postCount} entries ·{" "}
+              {status.projectCount} projects · display: {display}
             </Text>
             <ChakraLink
               href="/rss.xml"
-              color="gray.600"
-              _hover={{ color: "cyan.400" }}
+              color="text.meta"
+              _hover={{ color: "accent.emphasized" }}
             >
               rss
             </ChakraLink>

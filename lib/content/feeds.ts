@@ -3,9 +3,9 @@
  * unit-testable; the generate script feeds them real posts and writes the
  * output to public/.
  *
- * Seedlings are excluded from the syndication feeds (planting a draft is free,
- * but it is not broadcast to subscribers until promoted) — they remain in the
- * sitemap, which lists every public route.
+ * Sighted entries are excluded from the syndication feeds (logging a rough
+ * detection is free, but it is not broadcast until charted) — they remain in
+ * the sitemap, which lists every public route.
  */
 import { Feed } from "feed";
 import type { Stage } from "./schema";
@@ -28,9 +28,9 @@ export interface SiteInfo {
   email?: string;
 }
 
-/** Posts eligible for syndication: everything past the seedling stage. */
+/** Posts eligible for syndication: everything past the sighted state. */
 export function selectFeedPosts(posts: FeedPost[]): FeedPost[] {
-  return posts.filter((p) => p.stage !== "seedling");
+  return posts.filter((p) => p.stage !== "sighted");
 }
 
 export function buildFeeds(

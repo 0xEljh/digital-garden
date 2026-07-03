@@ -31,7 +31,7 @@ export const BarList = (props: BarListProps) => {
                 left="0"
                 h="full"
                 w={`${percentage}%`}
-                bg="cyan.900"
+                bg="accent.surface"
                 borderRadius="sm"
                 transition="width 0.3s"
               />

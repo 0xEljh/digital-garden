@@ -52,8 +52,8 @@ const projects: ProjectLike[] = mdx(PORTFOLIO_DIR).map((f) => {
 });
 
 const routes: RouteLike[] = [
-  { title: "Home", url: "/" },
-  { title: "The Garden", url: "/posts" },
+  { title: "home", url: "/" },
+  { title: "log", url: "/posts" },
 ];
 
 const records = buildSearchRecords(posts, projects, routes);

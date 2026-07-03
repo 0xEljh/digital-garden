@@ -1,5 +1,10 @@
 import { score } from "./score";
 import type { SearchRecord } from "./types";
+import {
+  DISPLAY_THEMES,
+  isDisplayTheme,
+  type DisplayTheme,
+} from "@/lib/display-theme";
 
 /** The side-effect surface a command's `run` is handed by the palette at execution time. */
 export interface CommandContext {
@@ -9,6 +14,12 @@ export interface CommandContext {
   printLine: (line: string) => void;
   /** The full search index, for commands like /random. */
   records: SearchRecord[];
+  /** Current display theme, owned by next-themes in the UI layer. */
+  theme: string;
+  /** Switch display theme, owned by next-themes in the UI layer. */
+  setTheme: (theme: DisplayTheme) => void;
+  /** Optional analytics bridge for command-specific events. */
+  capture?: (event: string, props?: Record<string, unknown>) => void;
 }
 
 export type CommandKind = "navigate" | "action" | "egg";
@@ -19,7 +30,7 @@ export interface Command {
   label: string; // display form, e.g. "/random"
   hint: string; // right-meta description
   kind: CommandKind;
-  run: (ctx: CommandContext) => void;
+  run: (ctx: CommandContext, arg: string) => void;
 }
 
 export type ParsedInput =
@@ -54,20 +65,44 @@ function cmd(
   verb: string,
   hint: string,
   kind: CommandKind,
-  run: (ctx: CommandContext) => void,
+  run: (ctx: CommandContext, arg: string) => void,
 ): Command {
   return { id: `cmd:${verb}`, verb, label: `/${verb}`, hint, kind, run };
 }
 
+function themeOptions(): string {
+  return DISPLAY_THEMES.join(" | ");
+}
+
 /** The command registry. Nav verbs are browsable; eggs are hidden until typed toward. */
 export const COMMANDS: Command[] = [
-  cmd("random", "jump to a random note", "action", (ctx) => {
+  cmd("random", "somewhere uncharted", "action", (ctx) => {
     const posts = ctx.records.filter((r) => r.type === "post");
     const pick = posts[Math.floor(Math.random() * posts.length)];
     if (pick) ctx.navigate(pick.url);
   }),
   cmd("home", "back to spawn", "navigate", (ctx) => ctx.navigate("/")),
-  cmd("posts", "the garden", "navigate", (ctx) => ctx.navigate("/posts")),
+  cmd("posts", "the log", "navigate", (ctx) => ctx.navigate("/posts")),
+  cmd("chart", "star chart", "navigate", (ctx) => ctx.navigate("/posts?view=chart")),
+  cmd("theme", "display settings", "action", (ctx, arg) => {
+    const requested = arg.trim().toLowerCase();
+    if (!requested) {
+      ctx.printLine(`display: ${ctx.theme || "kanagawa"} · ${themeOptions()}`);
+      return;
+    }
+    if (!isDisplayTheme(requested)) {
+      ctx.printLine(`unknown display "${arg.trim()}" · ${themeOptions()}`);
+      return;
+    }
+    const from = ctx.theme || "kanagawa";
+    ctx.setTheme(requested);
+    ctx.capture?.("theme_switch", {
+      from,
+      to: requested,
+      surface: "command_palette",
+    });
+    ctx.printLine(`display: ${requested}`);
+  }),
   cmd("portfolio", "projects & work", "navigate", (ctx) => ctx.navigate("/portfolio")),
   cmd("dashboard", "time-accounting", "navigate", (ctx) => ctx.navigate("/dashboard")),
   // cmd("rss", "subscribe", "navigate", (ctx) => ctx.navigate("/rss.xml")),

@@ -1,7 +1,7 @@
 import type { BoxProps, ContainerProps } from "@chakra-ui/react";
 import { Container } from "@chakra-ui/react";
 import type { MDXComponents } from "mdx/types";
-import { GardenLink } from "@/components/garden/garden-link";
+import { EntryLink } from "@/components/log/entry-link";
 import { AnimatedHeading } from "@/components/animations/animated-heading";
 import {
   CodeBlock,
@@ -19,7 +19,7 @@ import {
   LayerRow,
   InlineLatex,
   VarTooltip,
-} from "@/components/garden/post-blocks";
+} from "@/components/log/post-blocks";
 
 interface StyledProseProps extends ContainerProps {
   children: React.ReactNode;
@@ -44,7 +44,7 @@ export const mdxComponents: MDXComponents = {
   LayerRow: LayerRow as React.ComponentType<BoxProps>,
   InlineLatex: InlineLatex as React.ComponentType<BoxProps>,
   VarTooltip: VarTooltip as React.ComponentType<BoxProps>,
-  a: (p: Record<string, unknown>) => <GardenLink {...p} />,
+  a: (p: Record<string, unknown>) => <EntryLink {...p} />,
 };
 
 export function StyledProse({ children, ...props }: StyledProseProps) {

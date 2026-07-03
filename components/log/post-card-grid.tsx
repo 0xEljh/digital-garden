@@ -3,7 +3,7 @@ import { PostMetaData } from "@/types/posts";
 import { Link } from "@/components/ui/link";
 import { useAnalytics } from "@/components/common/analytics-provider";
 import { CategoryTags } from "./category-tag";
-import { GardenMeta } from "./garden-meta";
+import { EntryMeta } from "./entry-meta";
 
 interface PostCardGridProps {
   posts: PostMetaData[];
@@ -29,7 +29,7 @@ export const PostCardGrid = ({ posts }: PostCardGridProps) => {
         >
           <Card.Root as="article" size="lg" rounded="xl">
             <Card.Body gap="3">
-              <GardenMeta
+              <EntryMeta
                 compact
                 stage={post.stage}
                 date={post.date}

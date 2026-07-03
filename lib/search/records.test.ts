@@ -10,7 +10,7 @@ const post: PostLike = {
   title: "Transformation of the Transformer",
   slug: "transformation-of-the-transformer",
   excerpt: "How attention reshaped sequence modeling.",
-  stage: "budding",
+  stage: "charted",
   tended: "2026-02-25",
   categories: ["Deep Learning", "Math"],
 };
@@ -23,7 +23,7 @@ const project: ProjectLike = {
   date: "2026-01-10",
 };
 
-const route: RouteLike = { title: "The Garden", url: "/posts", subtitle: "all notes" };
+const route: RouteLike = { title: "log", url: "/posts", subtitle: "all entries" };
 
 describe("buildSearchRecords", () => {
   test("maps a post to a post record", () => {
@@ -34,7 +34,7 @@ describe("buildSearchRecords", () => {
       title: "Transformation of the Transformer",
       subtitle: "How attention reshaped sequence modeling.",
       url: "/posts/transformation-of-the-transformer",
-      stage: "budding",
+      stage: "charted",
       tended: "2026-02-25",
     });
   });

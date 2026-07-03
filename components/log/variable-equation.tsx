@@ -75,7 +75,7 @@ export function VariableEquation({
             <Text
               fontSize="xl"
               fontWeight="bold"
-              color="cyan.400"
+              color="accent.emphasized"
               fontFamily="mono"
             >
               {formattedResult}

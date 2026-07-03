@@ -10,9 +10,9 @@ export const SITE = {
     /\/$/,
     ""
   ),
-  title: "Elijah's Digital Garden",
+  title: "Elijah's Expedition Log",
   description:
-    "Notes, derivations, and projects — a digital garden, tended in the open.",
+    "Notes, derivations, and projects — an expedition log, kept in the open.",
   author: "Elijah",
   email: "elijah@0xeljh.com",
 } as const;

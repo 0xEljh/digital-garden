@@ -22,21 +22,16 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
     return getAnalyticsForWindow(analyticsData, "7d");
   }, [analyticsData]);
 
-  if (!analytics || analytics.daysIncluded === 0) {
-    return null; // Gracefully hide when no data
-  }
-
-  const topTools = analytics.devToolsBreakdown.slice(0, 4).map((item) => ({
-    name: item.name,
-    value: item.percentage,
-  }));
-
-  if (topTools.length === 0) return null;
+  const topTools =
+    analytics?.devToolsBreakdown.slice(0, 4).map((item) => ({
+      name: item.name,
+      value: item.percentage,
+    })) ?? [];
 
   return (
     <Stack gap={4} w="full">
       <Heading size="md" fontFamily="display" fontWeight="100" textAlign="left">
-        System Status
+        operator status
       </Heading>
 
       <Stack
@@ -47,25 +42,43 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
         borderRadius="lg"
         bg="surface.panel"
       >
-        <Text
-          fontSize="xs"
-          fontFamily="mono"
-          color="fg.muted"
-        >
-          dev tools · {analytics.daysIncluded}d window
-        </Text>
+        <Stack gap={1} fontFamily="mono" fontSize="xs" color="fg.muted">
+          <HStack gap={3} align="baseline">
+            <Text color="text.meta" minW="5.5rem">operator</Text>
+            <Text>0xEljh</Text>
+          </HStack>
+          <HStack gap={3} align="baseline">
+            <Text color="text.meta" minW="5.5rem">class</Text>
+            <Text>systems engineer · ai researcher</Text>
+          </HStack>
+          <HStack gap={3} align="baseline">
+            <Text color="text.meta" minW="5.5rem">assignment</Text>
+            <Text>ai for science · startup research co.</Text>
+          </HStack>
+          <HStack gap={3} align="baseline">
+            <Text color="text.meta" minW="5.5rem">status</Text>
+            <Text>online — behind the glass</Text>
+          </HStack>
+        </Stack>
 
-        <AsciiBarList
-          data={topTools}
-          barWidth={10}
-          color="data.dev"
-          showValue={true}
-          valueSuffix="%"
-        />
+        {topTools.length > 0 && (
+          <Stack gap={2}>
+            <Text fontSize="xs" fontFamily="mono" color="text.meta">
+              tools · {analytics?.daysIncluded ?? 0}d window
+            </Text>
+            <AsciiBarList
+              data={topTools}
+              barWidth={10}
+              color="data.dev"
+              showValue={true}
+              valueSuffix="%"
+            />
+          </Stack>
+        )}
 
         <HStack justify="space-between" pt={1}>
           <Text fontSize="xs" fontFamily="mono" color="fg.muted">
-            {formatHours(analytics.totalActiveTime.hours)} active
+            {analytics ? `${formatHours(analytics.totalActiveTime.hours)} active` : "awaiting telemetry"}
           </Text>
           <Link href="/dashboard">
             <Text
@@ -75,7 +88,7 @@ export const DashboardPreview = ({ analyticsData }: DashboardPreviewProps) => {
               _hover={{ color: "accent" }}
               transition="color 0.2s"
             >
-              → Time Accounting
+              → stats
             </Text>
           </Link>
         </HStack>

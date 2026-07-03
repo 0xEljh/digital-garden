@@ -28,11 +28,14 @@ export const HydratedFlickeringAsciiImage = ({
     typeof skipConversion === "boolean" ? skipConversion : Boolean(precomputedAscii);
 
   useEffect(() => {
-    setHydrated(true);
+    const id = requestAnimationFrame(() => {
+      setHydrated(true);
 
-    if (scrambleOnHydrate && precomputedAscii) {
-      setShowScramble(true);
-    }
+      if (scrambleOnHydrate && precomputedAscii) {
+        setShowScramble(true);
+      }
+    });
+    return () => cancelAnimationFrame(id);
   }, [scrambleOnHydrate, precomputedAscii]);
 
   return (

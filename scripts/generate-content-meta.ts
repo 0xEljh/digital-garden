@@ -208,16 +208,16 @@ async function main(): Promise<void> {
     buildSitemap(sitemapPaths, SITE.url)
   );
 
-  // Site-level "garden status" for the footer colophon. Pre-format the date here
+  // Site-level expedition status for the footer colophon. Pre-format the date here
   // so the client renders a plain string (no Date parsing => no hydration drift).
-  const lastTendedIso = posts.reduce(
+  const lastUpdatedIso = posts.reduce(
     (latest, p) => (new Date(p.tended) > new Date(latest) ? p.tended : latest),
     posts[0]?.tended ?? today
   );
-  const gardenStatus = {
+  const expeditionStatus = {
     generatedAt: meta.generatedAt,
-    lastTended: lastTendedIso,
-    lastTendedLabel: new Date(lastTendedIso).toLocaleDateString("en-US", {
+    lastUpdated: lastUpdatedIso,
+    lastUpdatedLabel: new Date(lastUpdatedIso).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -226,8 +226,8 @@ async function main(): Promise<void> {
     projectCount: portfolioSlugs.length,
   };
   await fs.writeFile(
-    path.join(ROOT, "lib/generated/garden-status.json"),
-    `${JSON.stringify(gardenStatus, null, 2)}\n`
+    path.join(ROOT, "lib/generated/expedition-status.json"),
+    `${JSON.stringify(expeditionStatus, null, 2)}\n`
   );
 
   const linkCount = Object.values(graph.outgoing).reduce(

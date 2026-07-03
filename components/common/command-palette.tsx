@@ -1,6 +1,7 @@
 import { Box, Input, Text, VisuallyHidden } from "@chakra-ui/react";
 import { DialogContent, DialogRoot, DialogTitle } from "@/components/ui/dialog";
 import { useAnalytics } from "@/components/common/analytics-provider";
+import { DEFAULT_DISPLAY_THEME } from "@/lib/display-theme";
 import { search } from "@/lib/search/search";
 import {
   COMMANDS,
@@ -14,6 +15,7 @@ import type { SearchRecord } from "@/lib/search/types";
 import { STAGE_GLYPH } from "@/lib/content/schema";
 import searchIndex from "@/lib/generated/search-index.json";
 import { useRouter } from "next/router";
+import { useTheme } from "next-themes";
 import {
   createContext,
   useCallback,
@@ -33,14 +35,14 @@ const optionId = (i: number) => `cmdk-option-${i}`;
 
 function recordGlyph(r: SearchRecord): { glyph: string; color: string } {
   if (r.type === "post" && r.stage) {
-    return { glyph: STAGE_GLYPH[r.stage], color: `stage.${r.stage}` };
+    return { glyph: STAGE_GLYPH[r.stage], color: `state.${r.stage}` };
   }
   if (r.type === "project") return { glyph: "◆", color: "accent" };
   return { glyph: "→", color: "accent" };
 }
 
 function recordMeta(r: SearchRecord): { label: string; color: string } {
-  if (r.type === "post" && r.stage) return { label: r.stage, color: `stage.${r.stage}` };
+  if (r.type === "post" && r.stage) return { label: r.stage, color: `state.${r.stage}` };
   if (r.type === "project") return { label: "project", color: "text.meta" };
   return { label: "page", color: "text.meta" };
 }
@@ -84,6 +86,7 @@ interface PaletteProps {
 function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
   const router = useRouter();
   const posthog = useAnalytics();
+  const { theme, setTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
@@ -95,19 +98,15 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
   // focus the field once mounted.
   useEffect(() => {
     if (!open) return;
-    setQuery(seed);
-    setActive(0);
-    setOutput(null);
-    setHistory(loadHistory());
-    const id = requestAnimationFrame(() => inputRef.current?.focus());
+    const id = requestAnimationFrame(() => {
+      setQuery(seed);
+      setActive(0);
+      setOutput(null);
+      setHistory(loadHistory());
+      inputRef.current?.focus();
+    });
     return () => cancelAnimationFrame(id);
   }, [open, seed]);
-
-  // A new query resets the cursor and clears any egg output.
-  useEffect(() => {
-    setActive(0);
-    setOutput(null);
-  }, [query]);
 
   const ctx: CommandContext = useMemo(
     () => ({
@@ -118,8 +117,11 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
       },
       printLine: (line) => setOutput(line),
       records: RECORDS,
+      theme: theme ?? DEFAULT_DISPLAY_THEME,
+      setTheme: (next) => setTheme(next),
+      capture: (event, props) => posthog?.capture(event, props),
     }),
-    [onOpenChange, router],
+    [onOpenChange, posthog, router, setTheme, theme],
   );
 
   const remember = useCallback((entry: HistoryEntry) => {
@@ -148,13 +150,14 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
   );
 
   const runCommand = useCallback(
-    (command: Command) => {
+    (command: Command, arg: string) => {
       posthog?.capture("command_palette_execute", {
         kind: command.kind,
         target: command.verb,
+        arg: arg || undefined,
       });
       remember({ kind: "command", id: command.id });
-      command.run(ctx);
+      command.run(ctx, arg);
     },
     [posthog, remember, ctx],
   );
@@ -179,7 +182,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
   );
 
   const commandRow = useCallback(
-    (command: Command): Row => ({
+    (command: Command, arg = ""): Row => ({
       key: command.id,
       glyph: command.kind === "egg" ? "?" : "›",
       glyphColor: "accent",
@@ -187,7 +190,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
       titleFont: "mono",
       meta: command.hint,
       metaColor: "text.meta",
-      run: () => runCommand(command),
+      run: () => runCommand(command, arg),
     }),
     [runCommand],
   );
@@ -196,7 +199,9 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
     const parsed = parseInput(query);
     if (parsed.mode === "command") {
       return {
-        rows: matchCommands(COMMANDS, parsed.verb).map(commandRow),
+        rows: matchCommands(COMMANDS, parsed.verb).map((command) =>
+          commandRow(command, parsed.arg),
+        ),
         label: "commands",
       };
     }
@@ -289,10 +294,14 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
               aria-controls="cmdk-listbox"
               aria-activedescendant={activeId}
               aria-autocomplete="list"
-              aria-label="Search the garden, or type / for commands"
-              placeholder="search the garden — or / for commands"
+              aria-label="Search the log, or type / for commands"
+              placeholder="search the log — or / for commands"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setActive(0);
+                setOutput(null);
+              }}
               onKeyDown={onKeyDown}
               size="lg"
               fontFamily="mono"
@@ -407,7 +416,9 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
   );
 }
 
-const CommandPaletteContext = createContext<{ open: () => void } | null>(null);
+const CommandPaletteContext = createContext<{
+  open: (via?: string, seed?: string) => void;
+} | null>(null);
 
 export function useCommandPalette() {
   const ctx = useContext(CommandPaletteContext);
@@ -425,6 +436,7 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
       setSeed(seedValue);
       setOpen(true);
       posthog?.capture("command_palette_opened", { via });
+      if (via === "nav") posthog?.capture("nav_search_open");
     },
     [posthog],
   );
@@ -447,7 +459,10 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, summon]);
 
-  const value = useMemo(() => ({ open: () => summon("api", "") }), [summon]);
+  const value = useMemo(
+    () => ({ open: (via = "api", seedValue = "") => summon(via, seedValue) }),
+    [summon],
+  );
 
   return (
     <CommandPaletteContext.Provider value={value}>

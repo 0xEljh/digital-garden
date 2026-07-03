@@ -10,16 +10,16 @@ import {
 
 describe("coerceStage", () => {
   test("passes through valid stages", () => {
-    expect(coerceStage("budding")).toEqual({ stage: "budding" });
-    expect(coerceStage("evergreen").stage).toBe("evergreen");
+    expect(coerceStage("charted")).toEqual({ stage: "charted" });
+    expect(coerceStage("mapped").stage).toBe("mapped");
   });
-  test("defaults to seedling when absent (the low-friction default)", () => {
-    expect(coerceStage(undefined)).toEqual({ stage: "seedling" });
-    expect(DEFAULT_STAGE).toBe("seedling");
+  test("defaults to sighted when absent (the low-friction default)", () => {
+    expect(coerceStage(undefined)).toEqual({ stage: "sighted" });
+    expect(DEFAULT_STAGE).toBe("sighted");
   });
   test("warns and defaults on an unknown value", () => {
     const r = coerceStage("sprout");
-    expect(r.stage).toBe("seedling");
+    expect(r.stage).toBe("sighted");
     expect(r.warning).toMatch(/unknown stage/i);
   });
 });
@@ -40,9 +40,9 @@ describe("coerceConfidence", () => {
 
 describe("glyphForStage", () => {
   test("maps each stage to its escalating sprite", () => {
-    expect(glyphForStage("seedling")).toBe("✦");
-    expect(glyphForStage("budding")).toBe("✳");
-    expect(glyphForStage("evergreen")).toBe("❋");
+    expect(glyphForStage("sighted")).toBe("✦");
+    expect(glyphForStage("charted")).toBe("✳");
+    expect(glyphForStage("mapped")).toBe("❋");
   });
   test("every stage has a glyph (guards the shared map)", () => {
     for (const s of STAGES) expect(glyphForStage(s).length).toBeGreaterThan(0);

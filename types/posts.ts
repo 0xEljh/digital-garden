@@ -12,14 +12,14 @@ export type PostMetaData = {
   slug: string;
   excerpt: string;
   categories: string[];
-  /** Planted date — when the note entered the public garden (authorial). */
+  /** Logged date — when the entry entered the public log (authorial). */
   date: string;
   relatedPosts: string[];
-  /** Authorial maturity. Defaults to "seedling" when absent. */
+  /** Authorial discovery state. Defaults to "sighted" when absent. */
   stage: Stage;
   /** Optional epistemic confidence; rendered only when present. */
   confidence?: Confidence;
-  /** Last-tended date, derived from git history by the content pipeline. */
+  /** Last-updated date, derived from git history by the content pipeline. */
   tended: string;
   /** Slugs of posts that link here (derived from the link graph). */
   backlinks: string[];

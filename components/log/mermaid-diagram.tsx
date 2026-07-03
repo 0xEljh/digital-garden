@@ -122,7 +122,7 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
         <Card.Body p={4}>
           <Center>
             <HStack gap={3}>
-              <Spinner size="sm" color="cyan.300" />
+              <Spinner size="sm" color="accent.emphasized" />
               <Text fontSize="sm" color="gray.400" fontFamily="mono">
                 Rendering diagram...
               </Text>

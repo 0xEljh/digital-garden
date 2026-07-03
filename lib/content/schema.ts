@@ -1,24 +1,23 @@
 /**
- * Garden frontmatter vocabulary + forgiving coercion.
+ * Expedition-log frontmatter vocabulary + forgiving coercion.
  *
  * `stage` is an authorial maturity judgment (NOT derived from age or edit
- * count — the garden is always a work in progress). Absent stage defaults to
- * seedling so every new note starts rough-by-default, which is the behavior we
- * want to make frictionless.
+ * count). Absent stage defaults to sighted so every new note starts as a
+ * logged detection, which is the behavior we want to make frictionless.
  */
 
-export const STAGES = ["seedling", "budding", "evergreen"] as const;
+export const STAGES = ["sighted", "charted", "mapped"] as const;
 export type Stage = (typeof STAGES)[number];
-export const DEFAULT_STAGE: Stage = "seedling";
+export const DEFAULT_STAGE: Stage = "sighted";
 
 /**
- * Stage sprites — escalating density encodes growth. Single source so prose
- * links, the command palette, and preview cards agree.
+ * State glyphs — escalating density encodes discovery. Single source so prose
+ * links, the command palette, star chart, and preview cards agree.
  */
 export const STAGE_GLYPH: Record<Stage, string> = {
-  seedling: "✦",
-  budding: "✳",
-  evergreen: "❋",
+  sighted: "✦",
+  charted: "✳",
+  mapped: "❋",
 };
 
 export function glyphForStage(stage: Stage): string {

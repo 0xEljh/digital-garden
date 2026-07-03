@@ -1,4 +1,4 @@
-/** Shared human date format: "Jun 15, 2026". Used by garden meta + link previews. */
+/** Shared human date format: "Jun 15, 2026". Used by entry meta + link previews. */
 export function fmtDate(value: string): string {
   return new Date(value).toLocaleDateString("en-US", {
     year: "numeric",

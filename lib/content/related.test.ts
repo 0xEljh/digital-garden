@@ -20,7 +20,7 @@ const cand = (
   title: slug.toUpperCase(),
   categories: [],
   date: "2026-01-01",
-  stage: "seedling",
+  stage: "sighted",
   ...over,
 });
 

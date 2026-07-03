@@ -15,10 +15,10 @@ import { useEffect } from "react";
 import { useAnalytics } from "@/components/common/analytics-provider";
 import Head from "next/head";
 import type { HeadMetaProps } from "@/types/head-meta";
-import { CategoryTags } from "@/components/garden/category-tag";
-import { GardenMeta } from "@/components/garden/garden-meta";
-import { StageNote } from "@/components/garden/stage-badge";
-import { GardenLink } from "@/components/garden/garden-link";
+import { CategoryTags } from "@/components/log/category-tag";
+import { EntryMeta } from "@/components/log/entry-meta";
+import { StageNote } from "@/components/log/stage-badge";
+import { EntryLink } from "@/components/log/entry-link";
 
 interface RelatedRow {
   slug: string;
@@ -155,7 +155,7 @@ export default function PostPage({ post, related, backlinks }: PostPageProps) {
                 {post.title}
               </Heading>
               <CategoryTags categories={post.categories} linkify />
-              <GardenMeta
+              <EntryMeta
                 stage={post.stage}
                 date={post.date}
                 tended={post.tended}
@@ -174,19 +174,19 @@ export default function PostPage({ post, related, backlinks }: PostPageProps) {
               <Stack gap={6} pt={{ base: 2, md: 4 }}>
                 {backlinks.length > 0 && (
                   <Stack gap={2}>
-                    <Text fontFamily="mono" fontSize="sm" color="gray.500">
-                      Linked from
+                    <Text fontFamily="mono" fontSize="sm" color="text.meta">
+                      linked from
                     </Text>
                     <Stack gap={1} align="start">
                       {backlinks.map((b) => (
-                        <GardenLink
+                        <EntryLink
                           key={b.slug}
                           href={`/posts/${b.slug}`}
                           fontFamily="mono"
                           fontSize="sm"
                         >
                           {b.title}
-                        </GardenLink>
+                        </EntryLink>
                       ))}
                     </Stack>
                   </Stack>
@@ -194,24 +194,24 @@ export default function PostPage({ post, related, backlinks }: PostPageProps) {
 
                 {related.length > 0 && (
                   <Stack gap={2}>
-                    <Text fontFamily="mono" fontSize="sm" color="gray.500">
-                      Related / Nearby
+                    <Text fontFamily="mono" fontSize="sm" color="text.meta">
+                      related / nearby
                     </Text>
                     <Stack gap={1.5} align="start">
                       {related.map((r) => (
                         <HStack key={r.slug} gap={2} wrap="wrap">
-                          <GardenLink
+                          <EntryLink
                             href={`/posts/${r.slug}`}
                             fontFamily="mono"
                             fontSize="sm"
                           >
                             {r.title}
-                          </GardenLink>
+                          </EntryLink>
                           <Text
                             as="span"
                             fontFamily="mono"
                             fontSize="xs"
-                            color="gray.600"
+                            color="text.meta"
                           >
                             {reasonLabel(r)}
                           </Text>

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import type { PostMetaData } from "@/types/posts";
 import { loadPostsMetadata } from "@/lib/utils/posts";
 import { labelForCategory, slugifyCategory } from "@/lib/content/categories";
-import { PostList } from "@/components/garden/post-list";
+import { PostList } from "@/components/log/post-list";
 import { useAnalytics } from "@/components/common/analytics-provider";
 import type { HeadMetaProps } from "@/types/head-meta";
 
@@ -57,8 +57,8 @@ export const getStaticProps: GetStaticProps<TopicPageProps> = async ({
       label,
       posts,
       headMeta: {
-        title: `${label} · The Garden`,
-        description: `Notes in the garden tagged ${label}.`,
+        title: `${label} · log`,
+        description: `Entries in the log tagged ${label}.`,
       },
     },
   };
@@ -91,7 +91,7 @@ export default function TopicPage({ label, posts }: TopicPageProps) {
               fontSize="sm"
               color="gray.500"
             >
-              {posts.length} {posts.length === 1 ? "note" : "notes"}
+              {posts.length} {posts.length === 1 ? "entry" : "entries"}
             </Text>
           </Stack>
           <PostList posts={posts} source={`topic:${label}`} />

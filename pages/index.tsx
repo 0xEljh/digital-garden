@@ -21,7 +21,7 @@ import { PortfolioPreview } from "@/components/portfolio/portfolio-preview";
 import { DashboardPreview } from "@/components/dashboard/dashboard-preview";
 import { ReactElement, useEffect, useState, useMemo } from "react";
 import { useAnalytics } from "@/components/common/analytics-provider";
-import { CategoryTags } from "@/components/garden/category-tag";
+import { CategoryTags } from "@/components/log/category-tag";
 
 type SortMode = "recent" | "popular";
 
@@ -54,7 +54,7 @@ const HeroSection = ({
           fontFamily="heading"
           fontWeight="100"
         >
-          The digital garden of a full-stack (btw) machine learning engineer.
+          The expedition log of a systems engineer and AI researcher (btw).
         </Text>
         <SocialBar />
       </Stack>
@@ -63,7 +63,7 @@ const HeroSection = ({
   );
 };
 
-const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
+const ExpeditionLog = ({ posts }: { posts: PostMetaData[] }) => {
   const posthog = useAnalytics();
   const [sortMode, setSortMode] = useState<SortMode>("recent");
 
@@ -80,7 +80,7 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
     <Stack gap={4} align="left">
       <HStack justify="space-between" align="baseline">
         <Heading size="md" fontFamily="display" fontWeight="100">
-          Digital Garden
+          recent log
         </Heading>
         <HStack gap={1}>
           {(["recent", "popular"] as const).map((mode) => (
@@ -191,9 +191,11 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
         ))}
       </Stack>
 
-      <Link href="/posts"
+      <Link
+        href="/posts"
+        alignSelf={{ base: "flex-end", md: "flex-start" }}
         onClick={() => {
-          posthog?.capture("explore_garden_click", {
+          posthog?.capture("explore_log_click", {
             location: "/",
           });
         }}
@@ -205,7 +207,7 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
           _hover={{ color: "accent" }}
           transition="color 0.2s"
         >
-          explore →
+          open log →
         </Text>
       </Link>
     </Stack>
@@ -279,7 +281,7 @@ export default function Home({
           <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
             <PortfolioPreview entries={latestEntries} />
             <HeroSection analyticsData={analyticsData} />
-            <DigitalGarden posts={latestPosts} />
+            <ExpeditionLog posts={latestPosts} />
           </Grid>
         </Stack>
       </Container>
