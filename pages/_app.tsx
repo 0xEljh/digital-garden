@@ -1,14 +1,13 @@
 import type { AppProps } from "next/app";
 import Fonts from "@/styles/fonts";
-import { useRouter } from "next/router";
 import HeadMeta from "@/components/common/head-meta";
-import { LazyMotion, domAnimation } from "motion/react";
+import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
 
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 
 import { Provider } from "@/components/ui/provider";
-import { PageTransition } from "@/components/animations/page-transition";
+import { CommandPaletteProvider } from "@/components/common/command-palette";
 import { DefaultLayout } from "@/components/layout";
 import type { HeadMetaProps } from "@/types/head-meta";
 
@@ -21,8 +20,6 @@ type AppPropsWithLayout = AppProps<{ headMeta?: HeadMetaProps }> & {
 };
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
-  const router = useRouter();
-
   // Merge page-specific SEO if provided
   const pageHeadMeta = pageProps.headMeta || {};
 
@@ -31,13 +28,15 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <Provider>
-      <LazyMotion features={domAnimation}>
-        <Fonts />
-        <HeadMeta {...pageHeadMeta} />
-        <PageTransition key={router.asPath}>
-          {getLayout(<Component {...pageProps} />)}
-        </PageTransition>
-      </LazyMotion>
+      <CommandPaletteProvider>
+        <LazyMotion features={domAnimation}>
+          <MotionConfig reducedMotion="user">
+            <Fonts />
+            <HeadMeta {...pageHeadMeta} />
+            {getLayout(<Component {...pageProps} />)}
+          </MotionConfig>
+        </LazyMotion>
+      </CommandPaletteProvider>
     </Provider>
   );
 }

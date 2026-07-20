@@ -3,13 +3,14 @@ title: "Derivation: Cross-Entropy"
 date: "2025-05-13"
 excerpt: "Derivation of cross-entropy loss from first principles: information theory, entropy, and modelling probability distributions"
 categories: ["deep learning", "math"]
+stage: mapped
 relatedPosts: ["cut-cross-entropy"]
 ---
 
-Cross-entropy is is widely used in deep learning. It is what neural networks minimise when learning to model an underlying data distribution, especially in classification tasks like language modelling, where the models predict the probability of a token.
+Cross-entropy is widely used in deep learning. It is what neural networks minimise when learning to model an underlying data distribution, especially in classification tasks like language modelling, where the models predict the probability of a token.
 Understanding this loss and deriving it will require us to walk through a few ideas from information theory: entropy, divergence, and modelling probability distributions.
 
-This article lays out that path, starting from first principles. It lays out the groundwork for understanding the next article on [Apple's recent optimization cross entropy](https://arxiv.org/abs/2411.09009).
+This article intends to guide you through that path, starting from first principles. It lays out the groundwork for understanding the next article on [Apple's recent optimization cross entropy](https://arxiv.org/abs/2411.09009).
 If you are already familiar with cross-entropy loss, you can skip this derivation and jump straight to [article breaking down how Apple did it](/posts/cut-cross-entropy).
 
 ## Derivation: Entropy
@@ -43,7 +44,7 @@ From here, entropy emerges as the expected information content over a distributi
 </Callout>
 
 So deriving Shannon's entropy ($$H(Y)$$) involves computing the expected
-information from $$y$$. Each event, carries $$I(y)$$ information, and the
+information from $$y$$. Each event carries $$I(y)$$ information, and the
 probability of each event is $$p(y)$$. So by weighing each event by it's
 probability, we get the expected information content:
 
@@ -71,8 +72,8 @@ Another way of thinking about it is the "information cost" of using one distribu
 </Callout>
 
 KL-divergence can hence be framed as a problem: suppose you need to use $$q(y)$$ as a base to model $$p(y)$$, how much extra information would you need?
-Intuitively, if $$q(y)$$ is a poor appproximation of $$p(y)$$, then a lot of "extra explaining" would be needed the KL divergence would be high.
-Likewise, if $$q(y)$$ is a good appproximation of $$p(y)$$, then "no modifications are required", and the KL divergence would be low.
+Intuitively, if $$q(y)$$ is a poor approximation of $$p(y)$$, then a lot of "extra explaining" would be needed the KL divergence would be high.
+Likewise, if $$q(y)$$ is a good approximation of $$p(y)$$, then "no modifications are required", and the KL divergence would be low.
 
 <br />
 
@@ -82,7 +83,7 @@ $$
  D_{KL}(p \parallel q) = \sum_{y} p(y) \log \frac{p(y)}{q(y)}
 $$
 
-Expressed in terms of expectations ($$p(y)$$ is the true distribution, we're using it's probability distribution
+Expressed in terms of expectations ($$p(y)$$ is the true distribution, we're using its probability distribution
 to compute the expectation):
 
 $$
@@ -105,16 +106,24 @@ $$
 
 Thus, cross-entropy consists of two parts:
 
-1. **The true entropy** $$H(p)$$, which is the best that can be achieved (i.e. $$p = q$$)
+1. **The true entropy** $$H(p)$$. This is the irreducible uncertainty of the data distribution;
+   the loss that would still exist even if the model were perfect (i.e. $$p = q$$)
 2. **The KL divergence**, which measures how much extra cost is incurred
-   by using $$q$$ instead of $$p$$.
+   by using an imperfect model $$q$$ instead of the true model $$p$$.
 
-Put another way, **cross-entropy** equals the true entropy plus the divergence.
+> Quick tangent on $$H(p)$$ and the "true entropy", because this might help to ground intuition:
+> Suppose we are asking the model to predict the color of a swan.
+> The model can have complete knowledge of the true distribution of swan colors but still
+> be uncertain about the color and hence assign probabilities to both "black" and "white".
+> This uncertainty comes not from the model but from the data being modelled.
+
+Put another way, **cross-entropy** is the average surprise we would experience from working with the true distribution
+plus any extra surprise we introduced by using an imperfect model.
 
 <Callout title="Summary" type="info">
-  Cross-entropy is the total cost of using $$q$$ to represent $$p$$.
+  Cross-entropy is the _total_ cost of using $$q$$ to represent $$p$$.
   <br />
-  KL-divergence is the _excess_ cost of it.
+  KL-divergence is the _additional_ cost of using $$q$$ to represent $$p$$.
 </Callout>
 
 <br />
@@ -153,13 +162,26 @@ This looks familiar, but not quite the form we encounter in deep learning.
 
 ## Using logits in deep learning
 
-Neural networks output logits—raw, unnormalized scores for each class. To interpret these as probabilities, we apply the softmax function:
+Logits are a neural network's raw score for each class/label before we force those scores to become probabilities.
+
+For a model working with 3 labels, it might output:
+
+$$
+z = [4.2, 0.2, -2.7]
+$$
+
+These numbers do not need to be positive and do not need to sum to $$1$$, so they can't be used as probabilities.
+But they are an indication of the model's lean or preference between each class.
+
+To interpret these as probabilities, we apply the `softmax` function:
 
 $$
 q(y_j \mid x) = \frac{e^{z_j}}{\sum_{k} e^{z_k}}
 $$
 
-Where $$z_j$$ is the **raw-pre-activation value** for class $$j$$.
+Where $$z_j$$ is the **raw-pre-activation value** (logits) for class $$j$$.
+
+We convert these raw values into probabilities by exponentiating them and then normalising.
 
 If we plug this into the negative log-likelihood, we get:
 
@@ -237,4 +259,4 @@ $$
 
 If you've been following along, you'll find that cross-entropy emerges quite naturally from first principles: from measuring information content, to comparing distributions, to finally minimizing the loss in a prediction model.
 
-The loss function's structure reflects the task: to assign high scores to a correct label(s), and to do so with a distrbution that resembles the data we are asking it to model.
+The loss function's structure reflects the task: to assign high scores to a correct label(s), and to do so with a distribution that resembles the data we are asking it to model.

@@ -41,7 +41,7 @@ export default async function handler(
       `${SEMANTIC_SCHOLAR_API}/ARXIV:${arxivId}?fields=${FIELDS}`,
       {
         headers: {
-          "User-Agent": "digital-garden/1.0",
+          "User-Agent": "expedition-log/1.0",
         },
       }
     );

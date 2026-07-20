@@ -1,79 +1,110 @@
 import {
   Box,
+  chakra,
   Container,
+  Flex,
   Heading,
+  HStack,
   Stack,
   Text,
-  LinkBox,
-  LinkOverlay,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
 import type { GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import type { PostMetaData } from "@/types/posts";
 import { loadPostsMetadata } from "@/lib/utils/posts";
 import { useEffect } from "react";
 import { useAnalytics } from "@/components/common/analytics-provider";
-import { CategoryTags } from "@/components/garden/category-tag";
+import { PostList } from "@/components/log/post-list";
+import { StarChart } from "@/components/chart/star-chart";
 
 interface PageProps {
   posts: PostMetaData[];
 }
 
+type View = "list" | "chart";
+
+function ViewToggle({
+  view,
+  onChange,
+}: {
+  view: View;
+  onChange: (v: View) => void;
+}) {
+  return (
+    <HStack
+      gap={0}
+      fontFamily="mono"
+      fontSize="sm"
+      borderWidth="1px"
+      borderColor="edge.default"
+      borderRadius="md"
+      overflow="hidden"
+      role="group"
+      aria-label="View"
+    >
+      {(["list", "chart"] as View[]).map((v) => (
+        <chakra.button
+          key={v}
+          type="button"
+          onClick={() => onChange(v)}
+          px={3}
+          py={1}
+          bg={view === v ? "accent.subtle" : "transparent"}
+          color={view === v ? "accent.emphasized" : "text.meta"}
+          _hover={{ color: view === v ? "accent.emphasized" : "text.body" }}
+          aria-pressed={view === v}
+          cursor="pointer"
+          transition="color 0.15s ease, background 0.15s ease"
+        >
+          {v}
+        </chakra.button>
+      ))}
+    </HStack>
+  );
+}
+
 export default function PostsIndexPage({ posts }: PageProps) {
   const posthog = useAnalytics();
+  const router = useRouter();
+  const view: View = router.query.view === "chart" ? "chart" : "list";
 
   useEffect(() => {
     posthog?.capture("view_blog_index");
   }, [posthog]);
 
+  const setView = (next: View) => {
+    posthog?.capture?.("chart_view_toggle", { view: next });
+    const query = { ...router.query };
+    if (next === "chart") query.view = "chart";
+    else delete query.view;
+    // shallow: URL only — both views share the same static props.
+    router.replace({ pathname: router.pathname, query }, undefined, {
+      shallow: true,
+    });
+  };
+
   return (
     <Box py={{ base: 8, md: 12 }}>
       <Container maxW="container.lg">
         <Stack gap={8}>
-          <Heading size="2xl" fontFamily="Topoline">
-            Blog Posts
-          </Heading>
-
-          <Stack gap={6}>
-            {posts.map((post) => (
-              <LinkBox
-                key={post.slug}
-                as="article"
-                p={6}
-                borderWidth="1px"
-                borderRadius="lg"
-                _hover={{ bg: "gray.900", transform: "rotate(0.5deg)" }}
-                transition="background 0.2s"
-              >
-                <Stack gap={3}>
-                  <Heading size="lg" fontFamily="Tickerbit">
-                    <LinkOverlay
-                      as={NextLink}
-                      href={`/posts/${post.slug}`}
-                      onClick={() => {
-                        posthog?.capture("post_click", {
-                          post_title: post.title,
-                          post_slug: post.slug,
-                          categories: post.categories,
-                          location: "posts/",
-                        });
-                      }}
-                    >
-                      {post.title}
-                    </LinkOverlay>
-                  </Heading>
-                  <CategoryTags categories={post.categories} />
-                  <Text color="gray.500">
-                    {new Date(post.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </Text>
-                </Stack>
-              </LinkBox>
-            ))}
+          <Stack gap={3}>
+            <Flex justify="space-between" align="center" gap={4} wrap="wrap">
+              <Heading size="2xl" fontFamily="heading">
+                log
+              </Heading>
+              <ViewToggle view={view} onChange={setView} />
+            </Flex>
+            <Text color="text.meta" fontSize="sm" maxW="68ch" lineHeight={1.7}>
+              An expedition log — most entries are sighted or charted; a few are
+              mapped. Version-controlled and kept in the open, so each shows when
+              it was logged and last updated.
+            </Text>
           </Stack>
+          {view === "chart" ? (
+            <StarChart posts={posts} />
+          ) : (
+            <PostList posts={posts} source="posts/" />
+          )}
         </Stack>
       </Container>
     </Box>

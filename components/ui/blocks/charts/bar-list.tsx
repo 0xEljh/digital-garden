@@ -31,14 +31,14 @@ export const BarList = (props: BarListProps) => {
                 left="0"
                 h="full"
                 w={`${percentage}%`}
-                bg="cyan.900"
+                bg="accent.surface"
                 borderRadius="sm"
                 transition="width 0.3s"
               />
               <Text
                 position="relative"
                 fontSize="sm"
-                fontFamily="Tickerbit"
+                fontFamily="heading"
                 py={1}
                 px={2}
                 zIndex={1}
@@ -48,7 +48,7 @@ export const BarList = (props: BarListProps) => {
             </Box>
             <Text
               fontSize="sm"
-              fontFamily="Tickerbit"
+              fontFamily="heading"
               color="fg.muted"
               minW="50px"
               textAlign="right"

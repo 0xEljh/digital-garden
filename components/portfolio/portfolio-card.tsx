@@ -10,9 +10,10 @@ import {
 import { Link } from "@/components/ui/link";
 import { PortfolioEntry } from "@/types/portfolio";
 import { useInView } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { useAnalytics } from "@/components/common/analytics-provider";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 interface PortfolioCardProps {
   entry: PortfolioEntry;
@@ -21,30 +22,13 @@ interface PortfolioCardProps {
 export const PortfolioCard = ({
   entry,
 }: PortfolioCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.8 });
+  const hasBeenInView = useInView(ref, { amount: 0.8, once: true });
   const posthog = useAnalytics();
-
-  // Track if component has ever been in view
-  const [hasBeenInView, setHasBeenInView] = useState(false);
-
-  // Determine if we should render the ASCII icon
-  // Only render it the first time it comes into view
-  useEffect(() => {
-    if (isInView && !hasBeenInView) {
-      setHasBeenInView(true);
-    }
-  }, [isInView, hasBeenInView]);
-
-  useEffect(() => {
-    if (isMobile) {
-      setIsHovered(isInView);
-    } else {
-      setIsHovered(false);
-    }
-  }, [isMobile, isInView]);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isHovered = Boolean(isMobile && isInView);
 
   return (
     <Link
@@ -80,7 +64,11 @@ export const PortfolioCard = ({
         >
           <Center>
             {hasBeenInView && (
-              <DynamicPrecomputedAsciiIcon iconName={entry.icon} />
+              <DynamicPrecomputedAsciiIcon
+                iconName={entry.icon}
+                highlighted={isHovered || "group-hover"}
+                noAnimation={prefersReducedMotion}
+              />
             )}
           </Center>
         </Box>
@@ -103,7 +91,8 @@ export const PortfolioCard = ({
                 opacity={isHovered ? 1 : 0}
                 transition="opacity 0.3s"
                 _groupHover={{ opacity: 1 }}
-                fontFamily={"Tickerbit"}
+                _groupFocusWithin={{ opacity: 1 }}
+                fontFamily="heading"
               >
                 {category}
               </Text>
@@ -111,7 +100,7 @@ export const PortfolioCard = ({
             <Heading
               textAlign="center"
               size={{ base: "md", md: "sm" }}
-              fontFamily={"Tickerbit"}
+              fontFamily="heading"
               color="whiteAlpha.800"
             >
               {entry.title}
@@ -127,9 +116,10 @@ export const PortfolioCard = ({
           opacity={isHovered ? 1 : 0}
           transition="opacity 0.3s"
           _groupHover={{ opacity: 1 }}
+          _groupFocusWithin={{ opacity: 1 }}
           maxW="sm"
           textWrap="break-word"
-          fontFamily={"Aeion Mono"}
+          fontFamily="mono"
         >
           {entry.shortDescription}
         </Text>

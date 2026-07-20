@@ -1,4 +1,4 @@
-import { HStack, Stack, Text, Box } from "@chakra-ui/react";
+import { HStack, Stack, Text } from "@chakra-ui/react";
 
 const FILLED_CHAR = "█";
 const PARTIAL_CHARS = [" ", "░", "▒", "▓", "█"];
@@ -22,8 +22,8 @@ interface AsciiBarProps {
 export const AsciiBar = ({
   value,
   width = 16,
-  color = "cyan.400",
-  emptyColor = "gray.700",
+  color = "data.dev",
+  emptyColor = "data.rail",
 }: AsciiBarProps) => {
   const clamped = Math.max(0, Math.min(100, value));
   const filledExact = (clamped / 100) * width;
@@ -71,7 +71,7 @@ interface AsciiBarListProps {
 export const AsciiBarList = ({
   data,
   barWidth = 12,
-  color = "cyan.400",
+  color = "data.dev",
   showValue = true,
   valueSuffix = "%",
   sorted = true,
@@ -89,7 +89,7 @@ export const AsciiBarList = ({
           <HStack key={item.name} gap={2} align="center">
             <Text
               fontSize="xs"
-              fontFamily="Tickerbit"
+              fontFamily="heading"
               color="fg.muted"
               minW="80px"
               textAlign="right"
@@ -101,7 +101,7 @@ export const AsciiBarList = ({
             {showValue && (
               <Text
                 fontSize="xs"
-                fontFamily="Tickerbit"
+                fontFamily="heading"
                 color="fg.muted"
                 minW="40px"
                 textAlign="right"
@@ -136,13 +136,13 @@ export const AsciiRatioBar = ({
   leftValue,
   rightValue,
   width = 24,
-  leftColor = "cyan.400",
-  rightColor = "purple.400",
+  leftColor = "data.dev",
+  rightColor = "data.design",
 }: AsciiRatioBarProps) => {
   const total = leftValue + rightValue;
   if (total === 0) {
     return (
-      <Text fontFamily="monospace" fontSize="xs" letterSpacing="0" lineHeight="1" whiteSpace="pre" color="gray.700">
+      <Text fontFamily="monospace" fontSize="xs" letterSpacing="0" lineHeight="1" whiteSpace="pre" color="data.rail">
         {EMPTY_CHAR.repeat(width)}
       </Text>
     );

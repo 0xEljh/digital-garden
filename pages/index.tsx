@@ -1,14 +1,13 @@
 import {
-  Button,
   Container,
   Stack,
   Text,
   Box,
   Grid,
+  GridItem,
   Heading,
   HStack,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
 import { Link } from "@/components/ui/link";
 import { GetStaticProps } from "next";
 import { HERO_ASCII } from "@/components/common/ascii-assets";
@@ -23,7 +22,7 @@ import { PortfolioPreview } from "@/components/portfolio/portfolio-preview";
 import { DashboardPreview } from "@/components/dashboard/dashboard-preview";
 import { ReactElement, useEffect, useState, useMemo } from "react";
 import { useAnalytics } from "@/components/common/analytics-provider";
-import { CategoryTags } from "@/components/garden/category-tag";
+import { CategoryTags } from "@/components/log/category-tag";
 
 type SortMode = "recent" | "popular";
 
@@ -37,12 +36,12 @@ const HeroSection = ({
   return (
     <Stack p={4} alignItems="center" gap={6}>
       <Stack alignItems="center">
-        <Link href={`/dashboard`}>
+        <Link href="/dashboard" aria-label="Open activity stats">
           <HydratedFlickeringAsciiImage
             imagePath="/emiya_kiritsugu-small.png"
             width={300}
             sampleFactor={12}
-            fontSize="2px"
+            fontSize="1.8px"
             precomputedAscii={precomputedAscii}
             scrambleOnHydrate
             scrambleSpeedMs={14}
@@ -53,10 +52,10 @@ const HeroSection = ({
           fontSize={{ base: "lg", md: "xl" }}
           color="fg.muted"
           maxW={"md"}
-          fontFamily="Tickerbit"
+          fontFamily="heading"
           fontWeight="100"
         >
-          The digital garden of a full-stack (btw) machine learning engineer.
+          A digital garden/logs of an ai research and systems engineer (btw).
         </Text>
         <SocialBar />
       </Stack>
@@ -65,7 +64,7 @@ const HeroSection = ({
   );
 };
 
-const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
+const ExpeditionLog = ({ posts }: { posts: PostMetaData[] }) => {
   const posthog = useAnalytics();
   const [sortMode, setSortMode] = useState<SortMode>("recent");
 
@@ -81,8 +80,8 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
   return (
     <Stack gap={4} align="left">
       <HStack justify="space-between" align="baseline">
-        <Heading size="md" fontFamily="Topoline" fontWeight="100">
-          Digital Garden
+        <Heading size="md" fontFamily="heading">
+          recent log
         </Heading>
         <HStack gap={1}>
           {(["recent", "popular"] as const).map((mode) => (
@@ -92,31 +91,32 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
               px={2}
               py={0.5}
               fontSize="xs"
-              fontFamily="Aeion Mono"
+              fontFamily="mono"
               borderRadius="sm"
               cursor={mode === "popular" ? "not-allowed" : "pointer"}
               transition="all 0.2s"
-              bg={sortMode === mode ? "cyan.900" : "transparent"}
+              bg={sortMode === mode ? "accent.subtle" : "transparent"}
+              opacity={mode === "popular" ? 0.5 : 1}
               color={
                 mode === "popular"
-                  ? "gray.700"
+                  ? "text.meta"
                   : sortMode === mode
-                    ? "cyan.100"
+                    ? "accent.emphasized"
                     : "fg.muted"
               }
               borderWidth="1px"
-              borderColor={sortMode === mode ? "cyan.700" : "gray.800"}
+              borderColor={sortMode === mode ? "edge.accent" : "edge.muted"}
               _hover={
                 mode === "popular"
                   ? {}
-                  : { borderColor: "cyan.600", color: "cyan.200" }
+                  : { borderColor: "accent", color: "accent.emphasized" }
               }
               onClick={() => {
                 if (mode !== "popular") setSortMode(mode);
               }}
               title={
                 mode === "popular"
-                  ? "Coming soon — needs page view tracking"
+                  ? "not wired up yet"
                   : undefined
               }
             >
@@ -133,11 +133,11 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
             asChild
             _hover={{
               transform: "translateX(-3px)",
-              bg: "gray.800/30",
+              bg: "surface.raised/30",
             }}
             transition="all 0.2s"
             borderBottom={i < sortedPosts.length - 1 ? "1px solid" : "none"}
-            borderColor="gray.800"
+            borderColor="edge.muted"
             py={3}
           >
             <Link
@@ -155,7 +155,7 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
                 <Text
                   fontSize="md"
                   fontWeight="medium"
-                  fontFamily="Tickerbit"
+                  fontFamily="heading"
                   color="fg"
                   lineClamp={1}
                 >
@@ -170,7 +170,7 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
                     {post.excerpt}
                   </Text>
                 )}
-                <HStack fontSize="xs" color="gray.600" gap={2} flexWrap="wrap">
+                <HStack fontSize="xs" color="text.meta" gap={2} flexWrap="wrap">
                   <Text>
                     {new Date(post.date).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -193,21 +193,23 @@ const DigitalGarden = ({ posts }: { posts: PostMetaData[] }) => {
         ))}
       </Stack>
 
-      <Link href="/posts"
+      <Link
+        href="/posts"
+        alignSelf={{ base: "flex-end", md: "flex-start" }}
         onClick={() => {
-          posthog?.capture("explore_garden_click", {
+          posthog?.capture("explore_log_click", {
             location: "/",
           });
         }}
       >
         <Text
           fontSize="xs"
-          fontFamily="Aeion Mono"
-          color="cyan.600"
-          _hover={{ color: "cyan.400" }}
+          fontFamily="mono"
+          color="accent.muted"
+          _hover={{ color: "accent" }}
           transition="color 0.2s"
         >
-          → Explore Garden
+          open log →
         </Text>
       </Link>
     </Stack>
@@ -279,9 +281,17 @@ export default function Home({
       <Container maxW="container.xl">
         <Stack gap={{ base: 12, md: 24 }}>
           <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={12}>
-            <PortfolioPreview entries={latestEntries} />
-            <HeroSection analyticsData={analyticsData} />
-            <DigitalGarden posts={latestPosts} />
+            {/* Hero leads on mobile — identity before inventory. minW=0 lets
+                columns shrink below their content's min width. */}
+            <GridItem minW={0} order={{ base: 1, md: 0 }}>
+              <PortfolioPreview entries={latestEntries} />
+            </GridItem>
+            <GridItem minW={0} order={{ base: 0, md: 0 }}>
+              <HeroSection analyticsData={analyticsData} />
+            </GridItem>
+            <GridItem minW={0} order={{ base: 2, md: 0 }}>
+              <ExpeditionLog posts={latestPosts} />
+            </GridItem>
           </Grid>
         </Stack>
       </Container>

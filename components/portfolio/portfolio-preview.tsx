@@ -1,19 +1,24 @@
 import { AnimatePresence, m } from "motion/react";
-import { Box, Heading, Stack, Button, Flex, Text, Center } from "@chakra-ui/react";
+import { Box, Heading, Stack, Button, Flex, Text, Center, useBreakpointValue } from "@chakra-ui/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from 'next/router';
 import type { PortfolioEntry } from "@/types/portfolio";
 import { LuDownload } from "react-icons/lu";
-import { getIconComponent } from "@/lib/utils/portfolio-icons";
+import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { useAnalytics } from "@/components/common/analytics-provider";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 const MotionFlex = m.create(Flex);
 
-// Fixed width constants to prevent layout shift
+// Fixed width constants to prevent layout shift (desktop rail mode)
 const EXPANDED_WIDTH = 384;
 const COLLAPSED_WIDTH = 80;
 const GAP = 8; // Chakra gap={2} = 0.5rem = 8px
+
+// Mobile accordion heights: expanded card + collapsed row rails
+const MOBILE_EXPANDED_HEIGHT = 360;
+const MOBILE_COLLAPSED_HEIGHT = 52;
 
 export const PortfolioPreview = ({
   entries,
@@ -24,8 +29,12 @@ export const PortfolioPreview = ({
   const [expandedPanel, setExpandedPanel] = useState<string | null>(defaultPanel);
   const router = useRouter();
   const posthog = useAnalytics();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  // Desktop: horizontal rails, hover to expand. Mobile: vertical accordion,
+  // tap to expand — every entry stays visible as a full-width row.
+  const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
 
-  const handleMouseEnter = (slug: string) => {
+  const expandPanel = (slug: string) => {
     setExpandedPanel(slug);
 
     posthog?.capture('portfolio_preview_expand', {
@@ -40,89 +49,119 @@ export const PortfolioPreview = ({
 
   return (
     <Stack gap={6} w="full" align="center">
-      <Heading size="md" fontFamily="Topoline" fontWeight="100" w="full" textAlign="left">
-        Recent works
+      <Heading size="md" fontFamily="heading" w="full" textAlign="left">
+        body of work
       </Heading>
 
-      <Stack direction="row"
+      <Stack
+        direction={{ base: "column", md: "row" }}
         gap={2}
-        overflow="auto"
+        overflow={{ base: "visible", md: "auto" }}
         w="full"
-        maxW={`${containerWidth}px`}
-        onMouseLeave={() => setExpandedPanel(defaultPanel)}
+        maxW={{ base: "full", md: `${containerWidth}px` }}
+        onMouseLeave={() => {
+          if (!isMobile) setExpandedPanel(defaultPanel);
+        }}
       >
         {entries.map((entry) => {
-          const IconComponent = getIconComponent(entry.icon);
-
+          const expanded = expandedPanel === entry.slug;
           return (
             <MotionFlex
               key={entry.slug}
-              h={{ base: "350px", md: "480px" }}
               borderRadius="xl"
               position="relative"
               backdropFilter="blur(8px)"
               border="1px solid"
-              borderColor={
-                expandedPanel === entry.slug ? "gray.700" : "gray.800"
-              }
-              bg={
-                expandedPanel === entry.slug ? "gray.800" : "gray.800"
-              }
-              _before={{
-                content: '""',
-                position: "absolute",
-                inset: 0,
-                borderRadius: "xl",
-                opacity: 0.2,
-                bgGradient: `linear(to-br, transparent, transparent)`, // placeholder for now.
-                zIndex: -1,
-              }}
+              borderColor={expanded ? "edge.default" : "edge.muted"}
+              bg={expanded ? "surface.raised/50" : "surface.panel/40"}
+              transitionProperty="background, border-color"
+              transitionDuration="0.4s"
+              cursor={expanded ? "default" : "pointer"}
               initial={false}
-              animate={{
-                width: expandedPanel === entry.slug ? "384px" : "80px",
-                opacity: 1,
-                backgroundColor: expandedPanel === entry.slug ? "rgba(45, 55, 72, 0.4)" : "rgba(45, 55, 72, 0.2)",
+              animate={
+                isMobile
+                  ? {
+                      width: "100%",
+                      height: expanded
+                        ? MOBILE_EXPANDED_HEIGHT
+                        : MOBILE_COLLAPSED_HEIGHT,
+                    }
+                  : {
+                      width: expanded
+                        ? `${EXPANDED_WIDTH}px`
+                        : `${COLLAPSED_WIDTH}px`,
+                      height: 480,
+                    }
+              }
+              transition={prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.5, ease: "easeInOut" }}
+              role={expanded ? undefined : "button"}
+              tabIndex={expanded ? undefined : 0}
+              aria-expanded={expanded}
+              aria-label={expanded ? undefined : `Expand ${entry.title}`}
+              _focusVisible={{ outline: "2px solid", outlineColor: "accent", outlineOffset: "2px" }}
+              onMouseEnter={() => {
+                if (!isMobile) expandPanel(entry.slug);
               }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-              onMouseEnter={() => handleMouseEnter(entry.slug)}
+              onClick={() => {
+                if (!expanded) expandPanel(entry.slug);
+              }}
+              onKeyDown={(event) => {
+                if (!expanded && (event.key === "Enter" || event.key === " ")) {
+                  event.preventDefault();
+                  expandPanel(entry.slug);
+                }
+              }}
             >
               {/* Glass shine effect */}
-              {expandedPanel === entry.slug && (
+              {expanded && (
                 <Box
                   position="absolute"
                   insetX="0"
                   top="0"
                   h="1px"
-                  bgGradient="linear(to-r, transparent, gray.400, transparent)"
+                  bg="accent.border"
+                  opacity={0.7}
                 />
               )}
 
-              {/* Collapsed state */}
-              {expandedPanel !== entry.slug && (
-                <Flex
-                  flexDirection="column"
-                  justifyContent="center"
-                  alignItems="center"
-                  w="full"
-                  h="full"
-                >
-                  <Text
-                    as={m.div}
-                    fontSize={{ base: "sm", md: "md" }}
-                    color="fg.muted"
-                    style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
-                    textWrap="pretty"
-                    flex="none"
-                    fontFamily="Aeion Mono"
+              {/* Collapsed state — vertical spine on desktop, row rail on mobile */}
+              {!expanded &&
+                (isMobile ? (
+                  <Flex alignItems="center" w="full" h="full" px={4} gap={2}>
+                    <Text as="span" color="accent.muted" fontFamily="mono" fontSize="sm">
+                      ▸
+                    </Text>
+                    <Text fontSize="sm" color="fg.muted" fontFamily="mono" truncate>
+                      {entry.title}
+                    </Text>
+                  </Flex>
+                ) : (
+                  <Flex
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    w="full"
+                    h="full"
                   >
-                    {entry.title}
-                  </Text>
-                </Flex>
-              )}
+                    <Text
+                      as={m.div}
+                      fontSize={{ base: "sm", md: "md" }}
+                      color="fg.muted"
+                      style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                      textWrap="pretty"
+                      flex="none"
+                      fontFamily="mono"
+                    >
+                      {entry.title}
+                    </Text>
+                  </Flex>
+                ))}
 
               {/* Expanded state */}
               <AnimatePresence>
-                {expandedPanel === entry.slug && (
+                {expanded && (
                   <MotionFlex
                     flexDirection="column"
                     p={5}
@@ -144,30 +183,35 @@ export const PortfolioPreview = ({
                       zIndex={0}
                     >
                       <Center h="100%">
-                        {IconComponent && (
-                          <IconComponent
-                            highlightColor="yellow.400"
-                            noAnimation={true}
-                          />
-                        )}
+                        <DynamicPrecomputedAsciiIcon
+                          iconName={entry.icon}
+                          highlighted={expanded}
+                          noAnimation
+                        />
                       </Center>
                     </Box>
                     <Stack mb={3}>
-                      <Heading size="md" color="white" fontFamily={"Tickerbit"}>
+                      <Heading size="md" color="text.body" fontFamily="heading">
                         {entry.title}
                       </Heading>
                     </Stack>
 
-                    <Text color="gray.300" mb={5} fontSize="sm" lineHeight="relaxed" fontFamily={"Aeion Mono"}>
+                    <Text color="text.muted" mb={5} fontSize="sm" lineHeight="relaxed" fontFamily="mono">
                       {entry.shortDescription}
                     </Text>
 
                     <Box mt="auto">
                       <Button
                         asChild
-                        variant="solid"
-                        bg="gray.700"
-                        _hover={{ bg: "gray.600" }}
+                        variant="outline"
+                        borderColor="edge.default"
+                        color="text.body"
+                        bg="surface.page/40"
+                        _hover={{
+                          borderColor: "accent",
+                          color: "accent.emphasized",
+                          bg: "accent.subtle",
+                        }}
                         size="sm"
                         borderRadius="lg"
                         transition="colors 0.3s"
@@ -181,7 +225,7 @@ export const PortfolioPreview = ({
                             });
                           }}
                         >
-                          Details
+                          details
                         </Link>
                       </Button>
                     </Box>
@@ -193,40 +237,52 @@ export const PortfolioPreview = ({
         })}
       </Stack>
 
-      <Stack direction={{ base: "column-reverse", md: "row" }}>
-        <Button
-          asChild
-          colorScheme="teal"
-          variant="outline"
-          size="md"
-          alignSelf="center"
+      <Stack
+        direction={{ base: "column-reverse", md: "row" }}
+        gap={3}
+        align="center"
+        justify={{ base: "center", md: "flex-start" }}
+        w="full"
+        maxW={{ base: "full", md: `${containerWidth}px` }}
+      >
+        <Link href="/resume"
+          onClick={() => {
+            posthog?.capture('download_resume_click', {
+              location: router.asPath
+            });
+          }}
         >
-          <Link href="/resume"
-            onClick={() => {
-              posthog?.capture('download_resume_click', {
-                location: router.asPath
-              });
-            }}
+          <Text
+            as="span"
+            display="inline-flex"
+            alignItems="center"
+            gap={1}
+            fontSize="xs"
+            fontFamily="mono"
+            color="accent.muted"
+            _hover={{ color: "accent" }}
+            transition="color 0.2s"
           >
-            <LuDownload /> Resume
-          </Link>
-        </Button>
+            <LuDownload /> resume
+          </Text>
+        </Link>
 
-        <Button
-          asChild
-          colorScheme="teal"
-          variant="outline"
-          size="md"
-          alignSelf="center"
+        <Link href="/portfolio"
+          onClick={() => {
+            posthog?.capture('full_portfolio_click', {
+              location: router.asPath
+            });
+          }}
         >
-          <Link href="/portfolio"
-            onClick={() => {
-              posthog?.capture('full_portfolio_click', {
-                location: router.asPath
-              });
-            }}
-          >Body of Work</Link>
-        </Button>
+          <Text
+            as="span"
+            fontSize="xs"
+            fontFamily="mono"
+            color="accent.muted"
+            _hover={{ color: "accent" }}
+            transition="color 0.2s"
+          >the rest →</Text>
+        </Link>
       </Stack>
     </Stack>
   );

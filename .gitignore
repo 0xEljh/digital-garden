@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
 
 # next.js
 /.next/
@@ -45,3 +47,8 @@ next-env.d.ts
 
 # generated build files
 lib/generated/*
+
+# generated feeds + sitemap (emitted by scripts/generate-content-meta.ts)
+/public/rss.xml
+/public/atom.xml
+/public/sitemap.xml

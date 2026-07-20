@@ -1,11 +1,6 @@
 export {
-  AsciiImage,
   FlickeringAsciiImage,
-  HighlightableAsciiImage,
-  ScrambledAsciiImage,
   DynamicFlickeringAsciiImage,
-  DynamicAsciiImage,
-  DynamicScrambledAsciiImage,
 } from "./ascii-image";
 export { ScrambleText } from "./scramble-text";
 export { HydratedFlickeringAsciiImage } from "./hydrated-flickering-ascii-image";

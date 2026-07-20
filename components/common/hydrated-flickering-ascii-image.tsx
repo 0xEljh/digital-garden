@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { FlickeringAsciiImage } from "./ascii-image";
 import { ScrambleText } from "./scramble-text";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 type FlickerProps = React.ComponentProps<typeof FlickeringAsciiImage>;
 
@@ -23,24 +24,36 @@ export const HydratedFlickeringAsciiImage = ({
 }: HydratedFlickeringAsciiImageProps) => {
   const [hydrated, setHydrated] = useState(false);
   const [showScramble, setShowScramble] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const scrambling = showScramble && !prefersReducedMotion;
 
   const effectiveSkipConversion =
     typeof skipConversion === "boolean" ? skipConversion : Boolean(precomputedAscii);
 
   useEffect(() => {
-    setHydrated(true);
+    const id = requestAnimationFrame(() => {
+      setHydrated(true);
 
-    if (scrambleOnHydrate && precomputedAscii) {
-      setShowScramble(true);
-    }
-  }, [scrambleOnHydrate, precomputedAscii]);
+      if (!prefersReducedMotion && scrambleOnHydrate && precomputedAscii) {
+        setShowScramble(true);
+      }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [prefersReducedMotion, scrambleOnHydrate, precomputedAscii]);
+
+  useEffect(() => {
+    if (!prefersReducedMotion || !showScramble) return;
+    const id = requestAnimationFrame(() => setShowScramble(false));
+    return () => cancelAnimationFrame(id);
+  }, [prefersReducedMotion, showScramble]);
 
   return (
     <Box position="relative" width="fit-content">
-      {!hydrated ? (
+      {!hydrated && !prefersReducedMotion ? (
         <Box
           as="pre"
-          fontFamily="Aeion Mono"
+          aria-hidden="true"
+          fontFamily="mono"
           whiteSpace="pre"
           p={4}
           overflow="auto"
@@ -50,22 +63,23 @@ export const HydratedFlickeringAsciiImage = ({
           {precomputedAscii || ""}
         </Box>
       ) : (
-        <Box opacity={showScramble ? 0 : 1} transition="opacity 0.25s ease-out">
+        <Box opacity={scrambling ? 0 : 1} transition="opacity 0.25s ease-out">
           <FlickeringAsciiImage
             {...props}
             precomputedAscii={precomputedAscii}
             skipConversion={effectiveSkipConversion}
             fontSize={fontSize}
             onReady={onReady}
+            ambientEnabled={!scrambling}
           />
         </Box>
       )}
 
-      {hydrated && showScramble && precomputedAscii && (
-        <Box position="absolute" inset={0} pointerEvents="none">
+      {hydrated && scrambling && precomputedAscii && (
+        <Box aria-hidden="true" position="absolute" inset={0} pointerEvents="none">
           <Box
             as="pre"
-            fontFamily="Aeion Mono"
+            fontFamily="mono"
             whiteSpace="pre"
             p={4}
             overflow="hidden"

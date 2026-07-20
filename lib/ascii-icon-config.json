@@ -2,19 +2,30 @@
   "LightSabreIcon": {
     "imagePath": "/images/lightsabre.jpg",
     "fontSizeRatio": 0.0166,
-    "widthDivisor": 2
+    "widthDivisor": 2,
+    "highlight": {
+      "maxCoverage": 0.85
+    }
   },
   "PostQuantumEncryptionIcon": {
-    "imagePath": "/images/post-quantum-encryption.jpg"
+    "imagePath": "/images/post-quantum-encryption.jpg",
+    "highlight": {
+      "maxCoverage": 0.95
+    }
   },
   "DreamboothIcon": {
-    "imagePath": "/images/dreambooth.jpg"
+    "imagePath": "/images/dreambooth.jpg",
+    "highlight": {
+      "maxCoverage": 0.95
+    }
   },
   "CryptoChartIcon": {
-    "imagePath": "/images/crypto-candlestick-charts.jpg"
+    "imagePath": "/images/crypto-candlestick-charts.jpg",
+    "highlight": "auto"
   },
   "CandlestickChartIcon": {
-    "imagePath": "/images/candlestick-charts.jpg"
+    "imagePath": "/images/candlestick-charts.jpg",
+    "highlight": "auto"
   },
   "UnderTheRockIcon": {
     "imagePath": "/images/under-the-rock.jpg",
@@ -22,36 +33,56 @@
     "widthDivisor": 2
   },
   "ETHTokyo23Icon": {
-    "imagePath": "/images/ethtokyo23-square.jpg"
+    "imagePath": "/images/ethtokyo23-square.jpg",
+    "highlight": {
+      "maxCoverage": 0.95
+    }
   },
   "EdgeAIIcon": {
-    "imagePath": "/images/edge-ai.jpg"
+    "imagePath": "/images/edge-ai.jpg",
+    "highlight": "auto"
   },
   "MaritimeSatelliteIcon": {
-    "imagePath": "/images/maritime-satellite.jpg"
+    "imagePath": "/images/maritime-satellite.jpg",
+    "highlight": {
+      "maxCoverage": 0.95
+    }
   },
   "DegenLogoIcon": {
-    "imagePath": "/images/degen-logo.jpg"
+    "imagePath": "/images/degen-logo.jpg",
+    "highlight": {
+      "maxCoverage": 0.95
+    }
   },
   "BattleBotIcon": {
-    "imagePath": "/images/edhbattlebot.jpg"
+    "imagePath": "/images/edhbattlebot.jpg",
+    "highlight": "auto"
   },
   "AirdropIcon": {
-    "imagePath": "/images/airdrop.jpg"
+    "imagePath": "/images/airdrop.jpg",
+    "highlight": {
+      "maxCoverage": 0.95
+    }
   },
   "BacksimIcon": {
-    "imagePath": "/images/backsim.jpg"
+    "imagePath": "/images/backsim.jpg",
+    "highlight": {
+      "maxCoverage": 0.95
+    }
   },
   "TeatheGatheringLogoIcon": {
     "imagePath": "/images/teathegathering.jpg"
   },
   "VampTutorIcon": {
-    "imagePath": "/images/vamp-tutor.jpg"
+    "imagePath": "/images/vamp-tutor.jpg",
+    "highlight": "auto"
   },
   "UnslothIcon": {
-    "imagePath": "/images/sloth.jpg"
+    "imagePath": "/images/sloth.jpg",
+    "highlight": "auto"
   },
   "VigilIcon": {
-    "imagePath": "/images/vigil-black-bg.jpg"
+    "imagePath": "/images/vigil-black-bg.jpg",
+    "highlight": "auto"
   }
 }
