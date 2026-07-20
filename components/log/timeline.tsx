@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, type RefObject } from "react";
 import { Box, Flex, Stack, Text } from "@chakra-ui/react";
 import { Link } from "@/components/ui/link";
 import { useScroll, useTransform, m } from "motion/react";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 const MotionBox = m.create(Box);
 
@@ -24,6 +25,7 @@ export function Timeline({
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (!contentRef.current) return;
@@ -37,14 +39,6 @@ export function Timeline({
     observer.observe(contentRef.current);
     return () => observer.disconnect();
   }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 10%", "end 50%"],
-  });
-
-  const beamHeight = useTransform(scrollYProgress, [0, 1], [0, height]);
-  const beamOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
     <Box ref={containerRef} w="full" my={10}>
@@ -85,21 +79,42 @@ export function Timeline({
           overflow="hidden"
           style={{ height: `${height}px` }}
         >
-          <MotionBox
-            position="absolute"
-            insetX={0}
-            top={0}
-            w="2px"
-            rounded="full"
-            style={{
-              height: beamHeight,
-              opacity: beamOpacity,
-              background: beamColor,
-            }}
-          />
+          {prefersReducedMotion ? (
+            <Box position="absolute" insetX={0} top={0} w="2px" h="full" rounded="full" bg={beamColor} />
+          ) : (
+            <TimelineBeam target={containerRef} height={height} beamColor={beamColor} />
+          )}
         </Box>
       </Box>
     </Box>
+  );
+}
+
+function TimelineBeam({
+  target,
+  height,
+  beamColor,
+}: {
+  target: RefObject<HTMLDivElement | null>;
+  height: number;
+  beamColor: string;
+}) {
+  const { scrollYProgress } = useScroll({
+    target,
+    offset: ["start 10%", "end 50%"],
+  });
+  const beamHeight = useTransform(scrollYProgress, [0, 1], [0, height]);
+  const beamOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+
+  return (
+    <MotionBox
+      position="absolute"
+      insetX={0}
+      top={0}
+      w="2px"
+      rounded="full"
+      style={{ height: beamHeight, opacity: beamOpacity, background: beamColor }}
+    />
   );
 }
 

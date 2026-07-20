@@ -1,7 +1,6 @@
 import { ImQuotesLeft, ImQuotesRight } from "react-icons/im";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { TransitIn } from "@/components/animations/transit-in";
 
 interface QuoteBlockProps {
   colorScheme: string;
@@ -38,11 +37,11 @@ export const QuoteBlock = (props: QuoteBlockProps) => {
           >
             <ImQuotesLeft />
           </Box>
-          <TransitIn>
+          <Box>
             <Text fontSize="lg" color={dark ? "white" : "black"}>
               {children}
             </Text>
-          </TransitIn>
+          </Box>
           <Box
             position="absolute"
             bottom="-2"

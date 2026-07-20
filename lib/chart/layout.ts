@@ -140,8 +140,9 @@ function relax(nodes: ChartNode[]): ChartNode[] {
 }
 
 export function buildStarChartLayout(posts: ChartPostInput[]): StarChartLayout {
+  const sortedPosts = [...posts].sort((a, b) => a.slug.localeCompare(b.slug));
   const freq = new Map<string, number>();
-  for (const post of posts) {
+  for (const post of sortedPosts) {
     for (const category of post.categories) {
       freq.set(category, (freq.get(category) ?? 0) + 1);
     }
@@ -149,7 +150,7 @@ export function buildStarChartLayout(posts: ChartPostInput[]): StarChartLayout {
 
   const clusterKeys: string[] = [];
   const byCluster = new Map<string, ChartPostInput[]>();
-  for (const post of posts) {
+  for (const post of sortedPosts) {
     const key = rarestCategory(post.categories, freq);
     if (!byCluster.has(key)) {
       byCluster.set(key, []);
@@ -167,7 +168,7 @@ export function buildStarChartLayout(posts: ChartPostInput[]): StarChartLayout {
   const nodes: ChartNode[] = [];
 
   clusterKeys.forEach((key, clusterIndex) => {
-    const members = byCluster.get(key)!;
+    const members = byCluster.get(key)!.sort((a, b) => a.slug.localeCompare(b.slug));
     const center = clusterCenter(clusterIndex, clusterKeys.length);
     const radius = Math.max(50, 24 + Math.sqrt(members.length) * 34);
 
@@ -203,10 +204,13 @@ export function buildStarChartLayout(posts: ChartPostInput[]): StarChartLayout {
   const placed = relax(nodes);
   const centerBySlug = new Map(placed.map((node) => [node.slug, node]));
   const edges: ChartEdge[] = [];
-  for (const post of posts) {
+  for (const post of sortedPosts) {
     const from = centerBySlug.get(post.slug);
     if (!from) continue;
-    for (const edge of post.outgoing) {
+    const outgoing = [...post.outgoing].sort((a, b) =>
+      a.to.localeCompare(b.to) || a.kind.localeCompare(b.kind),
+    );
+    for (const edge of outgoing) {
       const to = centerBySlug.get(edge.to);
       if (!to) continue;
       edges.push({

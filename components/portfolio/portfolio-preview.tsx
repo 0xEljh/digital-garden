@@ -7,6 +7,7 @@ import type { PortfolioEntry } from "@/types/portfolio";
 import { LuDownload } from "react-icons/lu";
 import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { useAnalytics } from "@/components/common/analytics-provider";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 const MotionFlex = m.create(Flex);
 
@@ -28,6 +29,7 @@ export const PortfolioPreview = ({
   const [expandedPanel, setExpandedPanel] = useState<string | null>(defaultPanel);
   const router = useRouter();
   const posthog = useAnalytics();
+  const prefersReducedMotion = usePrefersReducedMotion();
   // Desktop: horizontal rails, hover to expand. Mobile: vertical accordion,
   // tap to expand — every entry stays visible as a full-width row.
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
@@ -91,12 +93,25 @@ export const PortfolioPreview = ({
                       height: 480,
                     }
               }
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+              transition={prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.5, ease: "easeInOut" }}
+              role={expanded ? undefined : "button"}
+              tabIndex={expanded ? undefined : 0}
+              aria-expanded={expanded}
+              aria-label={expanded ? undefined : `Expand ${entry.title}`}
+              _focusVisible={{ outline: "2px solid", outlineColor: "accent", outlineOffset: "2px" }}
               onMouseEnter={() => {
                 if (!isMobile) expandPanel(entry.slug);
               }}
               onClick={() => {
                 if (!expanded) expandPanel(entry.slug);
+              }}
+              onKeyDown={(event) => {
+                if (!expanded && (event.key === "Enter" || event.key === " ")) {
+                  event.preventDefault();
+                  expandPanel(entry.slug);
+                }
               }}
             >
               {/* Glass shine effect */}
@@ -171,7 +186,7 @@ export const PortfolioPreview = ({
                         <DynamicPrecomputedAsciiIcon
                           iconName={entry.icon}
                           highlighted={expanded}
-                          noAnimation={true}
+                          noAnimation
                         />
                       </Center>
                     </Box>

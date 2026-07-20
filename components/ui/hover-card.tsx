@@ -15,7 +15,12 @@ export const HoverCardContent = React.forwardRef<
   return (
     <Portal disabled={!portalled} container={portalRef}>
       <ChakraHoverCard.Positioner>
-        <ChakraHoverCard.Content ref={ref} {...rest} />
+        <ChakraHoverCard.Content
+          ref={ref}
+          {...rest}
+          _open={{ _motionReduce: { animationName: "fade-in", transform: "none" } }}
+          _closed={{ _motionReduce: { animationName: "fade-out", transform: "none" } }}
+        />
       </ChakraHoverCard.Positioner>
     </Portal>
   );

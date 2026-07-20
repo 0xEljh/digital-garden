@@ -89,6 +89,24 @@ describe("buildStarChartLayout", () => {
     expect(buildStarChartLayout(corpus)).toEqual(layout);
   });
 
+  test("is invariant to input and outgoing-edge order", () => {
+    const linkedCorpus = [
+      post("a", ["shared"], [
+        { to: "c", kind: "related" },
+        { to: "b", kind: "inline" },
+      ]),
+      post("b", ["shared"]),
+      post("c", ["shared"]),
+    ];
+    const reordered = [...linkedCorpus]
+      .reverse()
+      .map((item) => ({ ...item, outgoing: [...item.outgoing].reverse() }));
+
+    expect(buildStarChartLayout(reordered)).toEqual(
+      buildStarChartLayout(linkedCorpus),
+    );
+  });
+
   test("handles empty and single-entry inputs without NaN", () => {
     expect(buildStarChartLayout([]).nodes).toEqual([]);
     const [node] = buildStarChartLayout([post("solo", [])]).nodes;

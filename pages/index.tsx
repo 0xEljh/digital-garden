@@ -36,7 +36,7 @@ const HeroSection = ({
   return (
     <Stack p={4} alignItems="center" gap={6}>
       <Stack alignItems="center">
-        <Link href={`/dashboard`}>
+        <Link href="/dashboard" aria-label="Open activity stats">
           <HydratedFlickeringAsciiImage
             imagePath="/emiya_kiritsugu-small.png"
             width={300}

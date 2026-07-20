@@ -6,6 +6,7 @@ import { Box, BoxProps } from "@chakra-ui/react";
 import { animate, cubicBezier, MotionValue, useMotionValue, useTransform } from "motion/react";
 import dynamic from "next/dynamic";
 import asciiAssets from "@/lib/generated/ascii-assets.json";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 interface PrecomputedAsciiIconProps extends BoxProps {
   iconName: string;
@@ -71,7 +72,10 @@ export const PrecomputedAsciiIcon = ({
     .portfolioIcons?.[iconName];
 
   const progressValue = useMotionValue(0);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const animationDisabled = noAnimation || prefersReducedMotion;
   const animationRef = useRef<ReturnType<typeof animate> | null>(null);
+  const resolvedWithoutAnimationRef = useRef(animationDisabled);
   const segmentsByRow = useMemo(() => {
     const segmentMap = new Map<number, HighlightSegment[]>();
 
@@ -95,18 +99,24 @@ export const PrecomputedAsciiIcon = ({
 
   useEffect(() => {
     if (!iconData) return;
-    if (noAnimation) {
+    if (animationDisabled) {
       animationRef.current?.stop();
+      resolvedWithoutAnimationRef.current = true;
+      progressValue.set(1);
+      return;
+    }
+
+    if (resolvedWithoutAnimationRef.current) {
+      progressValue.set(1);
       return;
     }
 
     // Start animation
     progressValue.set(0);
 
-    // @ts-expect-error Type '1' has no properties in common with type 'ObjectTarget<MotionValue<number>>'
     animationRef.current = animate(progressValue, 1, {
       duration: scrambleAnimationDuration,
-      easing: SMOOTH_EASING,
+      ease: SMOOTH_EASING,
       repeat: 0,
     });
 
@@ -115,7 +125,7 @@ export const PrecomputedAsciiIcon = ({
         animationRef.current.stop();
       }
     };
-  }, [iconData, noAnimation, scrambleAnimationDuration, progressValue]);
+  }, [animationDisabled, iconData, scrambleAnimationDuration, progressValue]);
 
   if (!iconData) {
     return null;
@@ -131,6 +141,7 @@ export const PrecomputedAsciiIcon = ({
   return (
     <Box
       as="pre"
+      aria-hidden="true"
       data-ascii-active={highlighted === true || undefined}
       fontFamily="mono"
       whiteSpace="pre"
@@ -146,6 +157,7 @@ export const PrecomputedAsciiIcon = ({
         "&[data-ascii-active] .ascii-hi": ASCII_ACTIVE_STYLES,
         ...(highlighted === "group-hover" ? {
           ".group:hover & .ascii-hi": ASCII_ACTIVE_STYLES,
+          ".group:focus-visible & .ascii-hi, .group:focus-within & .ascii-hi": ASCII_ACTIVE_STYLES,
         } : {}),
         "@media (prefers-reduced-motion: reduce)": {
           "& .ascii-hi": {
@@ -166,7 +178,7 @@ export const PrecomputedAsciiIcon = ({
           sweep={sweep}
           sweepRank={sweepRankByRow.get(rowIndex) ?? 0}
           sweepCount={sweepRankByRow.size}
-          noAnimation={noAnimation}
+          noAnimation={animationDisabled}
         />
       ))}
     </Box>

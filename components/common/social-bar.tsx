@@ -1,5 +1,6 @@
-import { ButtonGroup, IconButton, useToken } from "@chakra-ui/react";
+import { ButtonGroup, IconButton } from "@chakra-ui/react";
 import type { ButtonGroupProps } from "@chakra-ui/react";
+import type { CSSProperties } from "react";
 import {
   FaXTwitter,
   FaGithub,
@@ -7,39 +8,33 @@ import {
   FaEnvelope,
   FaTelegram,
 } from "react-icons/fa6";
-import { m } from "motion/react";
 import { Link } from "@/components/ui/link";
-
-export const MotionButton = m.create(IconButton);
+import { useAmbientMotion } from "@/components/animations/use-ambient-motion";
 
 // AnimatedIconButton Component
 interface AnimatedIconButtonProps {
   href: string;
   ariaLabel: string;
   icon: React.ReactNode;
-  delay?: number;
+  delay: number;
 }
 
 function AnimatedIconButton({
   href,
   ariaLabel,
   icon,
-  delay = 0,
+  delay,
 }: AnimatedIconButtonProps) {
-  const [initialColor, highlightColor] = useToken("colors", [
-    "gray.600",
-    "accent",
-  ]);
-
   return (
-    <Link href={href}>
-      <MotionButton
-        animate={{ color: [null, highlightColor, initialColor] }}
-        transition={{ repeat: Infinity, duration: 0.75, repeatDelay: 2, delay }}
+    <Link href={href} className="social-link">
+      <IconButton
+        className="social-pulse"
+        color="gray.600"
+        style={{ "--social-pulse-delay": `${delay}s` } as CSSProperties}
         aria-label={ariaLabel}
       >
         {icon}
-      </MotionButton>
+      </IconButton>
     </Link>
   );
 }
@@ -73,15 +68,40 @@ const socials = [
 ];
 
 export function SocialBar({ ...props }: ButtonGroupProps) {
+  const { ref: ambientRef, active: ambientActive } =
+    useAmbientMotion<HTMLDivElement>({ threshold: 0.1 });
+
   return (
-    <ButtonGroup variant="outline" {...props}>
-      {socials.map((social, i) => (
+    <ButtonGroup
+      {...props}
+      ref={ambientRef}
+      variant="outline"
+      data-motion-id="social.ambient"
+      data-motion-state={ambientActive ? "active" : "static"}
+      css={{
+        "@keyframes social-pulse": {
+          "0%, 27.273%, 100%": { color: "var(--chakra-colors-gray-600)" },
+          "13.636%": { color: "var(--chakra-colors-accent)" },
+        },
+        '&[data-motion-state="active"] .social-pulse': {
+          animation: "social-pulse 2.75s ease-in-out var(--social-pulse-delay) infinite",
+        },
+        "& .social-link:hover .social-pulse, & .social-link:focus-visible .social-pulse, & .social-pulse:focus-visible": {
+          animation: "none",
+          color: "var(--chakra-colors-accent)",
+        },
+        "@media (prefers-reduced-motion: reduce)": {
+          "& .social-pulse": { animation: "none !important" },
+        },
+      }}
+    >
+      {socials.map((social, index) => (
         <AnimatedIconButton
-          key={i}
+          key={social.href}
           href={social.href}
           ariaLabel={social.ariaLabel}
           icon={social.icon}
-          delay={i * -0.5}
+          delay={index * -0.5}
         />
       ))}
     </ButtonGroup>

@@ -13,6 +13,7 @@ import { useInView } from "motion/react";
 import { useRef } from "react";
 import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { useAnalytics } from "@/components/common/analytics-provider";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 interface PortfolioCardProps {
   entry: PortfolioEntry;
@@ -26,6 +27,7 @@ export const PortfolioCard = ({
   const isInView = useInView(ref, { amount: 0.8 });
   const hasBeenInView = useInView(ref, { amount: 0.8, once: true });
   const posthog = useAnalytics();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const isHovered = Boolean(isMobile && isInView);
 
   return (
@@ -65,6 +67,7 @@ export const PortfolioCard = ({
               <DynamicPrecomputedAsciiIcon
                 iconName={entry.icon}
                 highlighted={isHovered || "group-hover"}
+                noAnimation={prefersReducedMotion}
               />
             )}
           </Center>
@@ -88,6 +91,7 @@ export const PortfolioCard = ({
                 opacity={isHovered ? 1 : 0}
                 transition="opacity 0.3s"
                 _groupHover={{ opacity: 1 }}
+                _groupFocusWithin={{ opacity: 1 }}
                 fontFamily="heading"
               >
                 {category}
@@ -112,6 +116,7 @@ export const PortfolioCard = ({
           opacity={isHovered ? 1 : 0}
           transition="opacity 0.3s"
           _groupHover={{ opacity: 1 }}
+          _groupFocusWithin={{ opacity: 1 }}
           maxW="sm"
           textWrap="break-word"
           fontFamily="mono"

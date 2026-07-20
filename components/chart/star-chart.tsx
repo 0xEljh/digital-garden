@@ -9,6 +9,7 @@ import {
 import type { PostMetaData } from "@/types/posts";
 import { glyphForStage } from "@/lib/content/schema";
 import { buildStarChartLayout } from "@/lib/chart/layout";
+import { useAmbientMotion } from "@/components/animations/use-ambient-motion";
 
 const cvar = (name: string) => `var(--chakra-colors-${name})`;
 const FONT_MONO = "var(--chakra-fonts-mono)";
@@ -34,6 +35,8 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
+  const { ref: ambientRef, active: ambientActive } =
+    useAmbientMotion<HTMLDivElement>({ threshold: 0.1 });
 
   const layout = useMemo(
     () =>
@@ -92,7 +95,13 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
   const inv = Math.min(1 / Math.min(scale || 1, 1), 2.6);
 
   return (
-    <Box position="relative" w="100%">
+    <Box
+      ref={ambientRef}
+      position="relative"
+      w="100%"
+      data-motion-id="chart.ambient"
+      data-motion-state={ambientActive ? "active" : "static"}
+    >
       <svg
         ref={svgRef}
         viewBox={`0 0 ${layout.width} ${layout.height}`}
@@ -111,9 +120,17 @@ export function StarChart({ posts }: { posts: PostMetaData[] }) {
         <style>{`
           @keyframes chartPulse { 0%, 100% { opacity: var(--o); } 50% { opacity: calc(var(--o) * 0.45); } }
           @keyframes chartTrace { to { stroke-dashoffset: -18; } }
-          @media (prefers-reduced-motion: no-preference) {
-            .chartBgStar { animation: chartPulse 5200ms ease-in-out infinite; }
-            .chartEdgeMotion { animation: chartTrace 2200ms linear infinite; }
+          [data-motion-id="chart.ambient"][data-motion-state="active"] .chartBgStar {
+            animation: chartPulse 5200ms ease-in-out infinite;
+          }
+          [data-motion-id="chart.ambient"][data-motion-state="active"] .chartEdgeMotion {
+            animation: chartTrace 2200ms linear infinite;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            [data-motion-id="chart.ambient"] .chartBgStar,
+            [data-motion-id="chart.ambient"] .chartEdgeMotion {
+              animation: none !important;
+            }
           }
         `}</style>
 

@@ -24,6 +24,7 @@ import { PortfolioEntry } from "@/types/portfolio";
 import { DynamicPrecomputedAsciiIcon } from "@/components/common/precomputed-ascii-icon";
 import { VscBrowser, VscGithub } from "react-icons/vsc";
 import { StyledProse, mdxComponents } from "@/components/common/styled-prose";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 interface ProjectPageProps {
   entry: PortfolioEntry;
@@ -66,6 +67,7 @@ const MotionBox = m.create(Box);
 
 export default function ProjectPage({ entry, content }: ProjectPageProps) {
   const iconWidth = useBreakpointValue({ base: 240, md: 400, lg: 600 });
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -101,6 +103,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
           iconName={entry.icon}
           asciiWidth={iconWidth}
           scrambleAnimationDuration={8}
+          noAnimation={prefersReducedMotion}
         />
       </Center>
 
@@ -138,7 +141,7 @@ export default function ProjectPage({ entry, content }: ProjectPageProps) {
             },
           }}
         >
-          <Heading size="2xl" fontFamily="heading">
+          <Heading as="h1" size="2xl" fontFamily="heading">
             {entry.title}
           </Heading>
           {/* <Text fontSize="xl" color="gray.500">

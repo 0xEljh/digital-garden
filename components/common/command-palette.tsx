@@ -81,9 +81,10 @@ interface PaletteProps {
   open: boolean;
   seed: string;
   onOpenChange: (open: boolean) => void;
+  finalFocusEl: () => HTMLElement | null;
 }
 
-function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
+function CommandPalette({ open, seed, onOpenChange, finalFocusEl }: PaletteProps) {
   const router = useRouter();
   const posthog = useAnalytics();
   const { theme, setTheme } = useTheme();
@@ -254,11 +255,16 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
     <DialogRoot
       open={open}
       onOpenChange={(e) => onOpenChange(e.open)}
+      finalFocusEl={finalFocusEl}
       placement="top"
       size="lg"
       scrollBehavior="inside"
     >
       <DialogContent
+        backdropProps={{
+          _open: { _motionReduce: { animationName: "fade-in", transform: "none" } },
+          _closed: { _motionReduce: { animationName: "fade-out", transform: "none" } },
+        }}
         position="relative"
         overflow="hidden"
         p={0}
@@ -270,6 +276,8 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
         rounded="l3"
         fontFamily="mono"
         shadow="lg"
+        _open={{ _motionReduce: { animationName: "fade-in", transform: "none" } }}
+        _closed={{ _motionReduce: { animationName: "fade-out", transform: "none" } }}
       >
         {/* CRT scanlines, tinted from the theme's text color. */}
         <Box
@@ -316,6 +324,12 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
           </Box>
 
           {output && (
+            <VisuallyHidden role="status" aria-live="polite" aria-atomic="true">
+              {output}
+            </VisuallyHidden>
+          )}
+
+          {output && (
             <Box
               px={4}
               py={2}
@@ -324,7 +338,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
               fontSize="sm"
               color="accent.emphasized"
             >
-              → {output}
+              <Box aria-hidden="true">→ {output}</Box>
             </Box>
           )}
 
@@ -361,6 +375,7 @@ function CommandPalette({ open, seed, onOpenChange }: PaletteProps) {
                     role="option"
                     aria-selected={selected}
                     onMouseMove={() => setActive(i)}
+                    onMouseDown={(event) => event.preventDefault()}
                     onClick={() => row.run()}
                     cursor="pointer"
                     px={4}
@@ -436,10 +451,13 @@ export function useCommandPalette() {
 export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [seed, setSeed] = useState("");
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   const posthog = useAnalytics();
 
   const summon = useCallback(
     (via: string, seedValue: string) => {
+      const activeElement = document.activeElement;
+      returnFocusRef.current = activeElement instanceof HTMLElement ? activeElement : null;
       setSeed(seedValue);
       setOpen(true);
       posthog?.capture("command_palette_opened", { via });
@@ -447,6 +465,10 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
     },
     [posthog],
   );
+
+  const handleOpenChange = useCallback((nextOpen: boolean) => {
+    setOpen(nextOpen);
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -474,7 +496,12 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   return (
     <CommandPaletteContext.Provider value={value}>
       {children}
-      <CommandPalette open={open} seed={seed} onOpenChange={setOpen} />
+      <CommandPalette
+        open={open}
+        seed={seed}
+        onOpenChange={handleOpenChange}
+        finalFocusEl={() => returnFocusRef.current}
+      />
     </CommandPaletteContext.Provider>
   );
 }

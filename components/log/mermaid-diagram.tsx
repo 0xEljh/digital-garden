@@ -1,5 +1,6 @@
 import { Box, Card, Center, HStack, Spinner, Text } from "@chakra-ui/react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 interface MermaidDiagramProps {
   chart: string;
@@ -13,6 +14,7 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isRendering, setIsRendering] = useState(true);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const instanceId = useId();
   const renderIndexRef = useRef(0);
 
@@ -122,7 +124,7 @@ export const MermaidDiagram = ({ chart }: MermaidDiagramProps) => {
         <Card.Body p={4}>
           <Center>
             <HStack gap={3}>
-              <Spinner size="sm" color="accent.emphasized" />
+              {!prefersReducedMotion && <Spinner size="sm" color="accent.emphasized" />}
               <Text fontSize="sm" color="gray.400" fontFamily="mono">
                 Rendering diagram...
               </Text>

@@ -11,7 +11,8 @@
     "build": "node scripts/generate-ascii-assets.mjs && bun scripts/generate-content-meta.ts && bun scripts/generate-search-index.ts && next build",
     "start": "next start -p 3005",
     "lint": "eslint .",
-    "test": "bun test"
+    "test": "bun test",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@chakra-ui/charts": "^3.30.0",
@@ -40,6 +41,7 @@
     "remark-math": "^6.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/node": "^20.19.27",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",

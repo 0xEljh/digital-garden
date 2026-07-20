@@ -111,7 +111,11 @@ export function NavBar() {
             <SearchAnchor />
             <CollapsibleTrigger />
           </HStack>
-          <CollapsibleContent hideFrom="md">
+          <CollapsibleContent
+            hideFrom="md"
+            _open={{ _motionReduce: { animationName: "none" } }}
+            _closed={{ _motionReduce: { animationName: "none" } }}
+          >
             <NavbarLinks pt="5" pb="2" alignItems="center" />
           </CollapsibleContent>
         </CollapsibleRoot>

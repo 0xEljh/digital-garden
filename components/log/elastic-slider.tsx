@@ -7,6 +7,7 @@ import {
   useMotionValueEvent,
   useTransform,
 } from "motion/react";
+import { usePrefersReducedMotion } from "@/components/animations/use-prefers-reduced-motion";
 
 const MAX_OVERFLOW = 50;
 
@@ -50,6 +51,8 @@ export function ElasticSlider({
 
   const sliderRef = useRef<HTMLDivElement>(null);
   const [region, setRegion] = useState<"left" | "middle" | "right">("middle");
+  const [focused, setFocused] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const clientX = useMotionValue(0);
   const overflow = useMotionValue(0);
   const scale = useMotionValue(1);
@@ -58,12 +61,22 @@ export function ElasticSlider({
     if (!isControlled) setInternalValue(defaultValue);
   }, [defaultValue, isControlled]);
 
+  useEffect(() => {
+    if (!prefersReducedMotion) return;
+    scale.jump(1);
+    overflow.jump(0);
+  }, [overflow, prefersReducedMotion, scale]);
+
   const setValue = (v: number) => {
     if (!isControlled) setInternalValue(v);
     onValueChange?.(v);
   };
 
   useMotionValueEvent(clientX, "change", (latest) => {
+    if (prefersReducedMotion) {
+      overflow.jump(0);
+      return;
+    }
     if (sliderRef.current) {
       const { left, right } = sliderRef.current.getBoundingClientRect();
       let newValue: number;
@@ -94,7 +107,7 @@ export function ElasticSlider({
 
       newValue = Math.min(Math.max(newValue, min), max);
       setValue(newValue);
-      clientX.jump(e.clientX);
+      if (!prefersReducedMotion) clientX.jump(e.clientX);
     }
   };
 
@@ -104,7 +117,8 @@ export function ElasticSlider({
   };
 
   const handlePointerUp = () => {
-    animate(overflow, 0, { type: "spring", bounce: 0.5 });
+    if (prefersReducedMotion) overflow.jump(0);
+    else animate(overflow, 0, { type: "spring", bounce: 0.5 });
   };
 
   const getRangePercentage = () => {
@@ -125,10 +139,18 @@ export function ElasticSlider({
         </Text>
       )}
       <m.div
-        onHoverStart={() => animate(scale, 1.2)}
-        onHoverEnd={() => animate(scale, 1)}
-        onTouchStart={() => animate(scale, 1.2)}
-        onTouchEnd={() => animate(scale, 1)}
+        onHoverStart={() => {
+          if (!prefersReducedMotion) animate(scale, 1.2);
+        }}
+        onHoverEnd={() => {
+          if (!prefersReducedMotion) animate(scale, 1);
+        }}
+        onTouchStart={() => {
+          if (!prefersReducedMotion) animate(scale, 1.2);
+        }}
+        onTouchEnd={() => {
+          if (!prefersReducedMotion) animate(scale, 1);
+        }}
         style={{
           scale,
           opacity: useTransform(scale, [1, 1.2], [0.7, 1]),
@@ -139,11 +161,13 @@ export function ElasticSlider({
           gap: "1rem",
           touchAction: "none",
           userSelect: "none",
+          outline: focused ? "2px solid var(--chakra-colors-accent)" : "none",
+          outlineOffset: focused ? "4px" : undefined,
         }}
       >
         <m.div
           animate={{
-            scale: region === "left" ? [1, 1.4, 1] : 1,
+            scale: !prefersReducedMotion && region === "left" ? [1, 1.4, 1] : 1,
             transition: { duration: 0.25 },
           }}
           style={{
@@ -176,6 +200,7 @@ export function ElasticSlider({
           <m.div
             style={{
               scaleX: useTransform(() => {
+                if (prefersReducedMotion) return 1;
                 if (sliderRef.current) {
                   const { width: trackWidth } =
                     sliderRef.current.getBoundingClientRect();
@@ -183,7 +208,7 @@ export function ElasticSlider({
                 }
                 return 1;
               }),
-              scaleY: useTransform(overflow, [0, MAX_OVERFLOW], [1, 0.8]),
+              scaleY: useTransform(overflow, [0, MAX_OVERFLOW], prefersReducedMotion ? [1, 1] : [1, 0.8]),
               transformOrigin: useTransform(() => {
                 if (sliderRef.current) {
                   const { left, width: trackWidth } =
@@ -222,7 +247,7 @@ export function ElasticSlider({
 
         <m.div
           animate={{
-            scale: region === "right" ? [1, 1.4, 1] : 1,
+            scale: !prefersReducedMotion && region === "right" ? [1, 1.4, 1] : 1,
             transition: { duration: 0.25 },
           }}
           style={{
@@ -248,6 +273,8 @@ export function ElasticSlider({
         step={step}
         value={currentValue}
         onChange={(e) => setValue(Number(e.target.value))}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         aria-label={label || "Slider"}
         style={{
           position: "absolute",
