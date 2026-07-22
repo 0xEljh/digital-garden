@@ -5,6 +5,7 @@ import { DEFAULT_DISPLAY_THEME } from "@/lib/display-theme";
 import { search } from "@/lib/search/search";
 import {
   COMMANDS,
+  matchCommandCompletions,
   matchCommands,
   parseInput,
   type Command,
@@ -196,9 +197,32 @@ function CommandPalette({ open, seed, onOpenChange, finalFocusEl }: PaletteProps
     [runCommand],
   );
 
+  const completionRow = useCallback(
+    (command: Command, value: string, label: string): Row => ({
+      key: `${command.id}:${value}`,
+      glyph: "›",
+      glyphColor: "accent",
+      title: `${command.label} ${label}`,
+      titleFont: "mono",
+      meta: command.hint,
+      metaColor: "text.meta",
+      run: () => runCommand(command, value),
+    }),
+    [runCommand],
+  );
+
   const { rows, label } = useMemo(() => {
     const parsed = parseInput(query);
     if (parsed.mode === "command") {
+      const exactCommand = COMMANDS.find((command) => command.verb === parsed.verb);
+      if (exactCommand?.completions) {
+        return {
+          rows: matchCommandCompletions(exactCommand, parsed.arg).map((item) =>
+            completionRow(exactCommand, item.value, item.label),
+          ),
+          label: `${exactCommand.label} options`,
+        };
+      }
       return {
         rows: matchCommands(COMMANDS, parsed.verb).map((command) =>
           commandRow(command, parsed.arg),
@@ -225,7 +249,7 @@ function CommandPalette({ open, seed, onOpenChange, finalFocusEl }: PaletteProps
       rows: search(RECORDS, parsed.query, LIMIT).map(({ record }) => recordRow(record)),
       label: "results",
     };
-  }, [query, history, recordRow, commandRow]);
+  }, [query, history, recordRow, commandRow, completionRow]);
 
   const isCommandMode = query.startsWith("/");
 

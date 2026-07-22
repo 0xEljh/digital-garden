@@ -476,6 +476,22 @@ test.describe("reduced interaction recipes", () => {
     await expect(trigger).toBeFocused();
   });
 
+  test("the theme command suggests and selects named displays", async ({ page }) => {
+    await page.goto("/posts");
+    await page.getByRole("button", { name: /search/i }).click();
+
+    const input = page.getByRole("combobox", {
+      name: "Search the log, or type / for commands",
+    });
+    await input.fill("/theme n");
+
+    const option = page.getByRole("option", { name: /\/theme nier/ });
+    await expect(option).toBeVisible();
+    await expect(option).toHaveAttribute("aria-selected", "true");
+    await input.press("Enter");
+    await expect(page.getByRole("status")).toHaveText("display: nier");
+  });
+
   test("the reduced mobile menu exposes links without height animation", async ({ page }, testInfo) => {
     test.skip(testInfo.project.use.isMobile !== true, "The collapsible navigation is hidden on desktop");
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -521,6 +537,42 @@ test.describe("reduced interaction recipes", () => {
     );
     await expect(hoverCard).toBeVisible();
     await expect(hoverCard).toHaveCSS("transform", "none");
+  });
+});
+
+test.describe("prose presentation", () => {
+  test("quotes remain readable and default videos are two-thirds width", async ({ page }) => {
+    await page.goto("/posts/transformation-of-the-transformer");
+
+    const quote = page.locator("blockquote").filter({
+      hasText: "This is not a beginner's guide",
+    });
+    await expect(quote).toBeVisible();
+    const contrast = await quote.evaluate((element) => {
+      const channels = (color: string) =>
+        color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+      const luminance = (color: string) => {
+        const [red, green, blue] = channels(color);
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      };
+      const foreground = luminance(getComputedStyle(element).color);
+      const background = luminance(getComputedStyle(document.body).backgroundColor);
+      return (Math.max(foreground, background) + 0.05) /
+        (Math.min(foreground, background) + 0.05);
+    });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+
+    const iframe = page.locator('iframe[src*="youtube.com/embed/"]');
+    await expect(iframe).toBeVisible();
+    const widthRatio = await iframe.evaluate((element) => {
+      const wrapper = element.parentElement;
+      const container = wrapper?.parentElement;
+      return element.getBoundingClientRect().width / container!.getBoundingClientRect().width;
+    });
+    expect(widthRatio).toBeLessThanOrEqual(0.68);
   });
 });
 

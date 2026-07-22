@@ -7,7 +7,7 @@ stage: sighted
 relatedPosts: []
 ---
 
-"Attention is all you need" might be the most influential paper in the past decade. The transformer has completely transformed (you can't stop me) AI and is now everywhere.
+"Attention is all you need" might be the most influential paper in the past decade. The transformer has completely transformed AI (you can't stop me) and is now everywhere.
 
 Naturally, it has also undergone several updates and improvements since its release. And this post is meant to track that.
 
@@ -190,15 +190,60 @@ All of this translates to memory savings!
 
 ## Grouped Query Attention
 
-In <PaperPreview arxivID="1911.02150">Fast Transformer Decoding: One Write-Head is All You Need</PaperPreview> we take our memory savings further.
+In <PaperPreview arxivId="1911.02150">Fast Transformer Decoding: One Write-Head is All You Need</PaperPreview> we take our memory savings further.
 
 Instead of storing $N$ heads worth of KV caches, we group the heads into $G$ groups and have each group share a set of KV tensors.
 Hence, we slash memory by a factor of $N \divide G$, i.e. the number of heads assigned to a group.
 
 ## Multi-Head Latent Attention
 
-Breaking away from the chronological progression... Multi-Head Latent Attention is a natural progression (and huge upgrade) from Grouped Query Attention.
+Breaking away from the chronological progression, Multi-Head Latent Attention (MLA) is a natural next step from Grouped Query Attention.
 
-## Rotary Postion Embeddings (RoPE)
+<PaperPreview arxivId="2405.04434">DeepSeek-V2</PaperPreview> introduced MLA and
+DeepSeekMoE in the same breath (more on that later).
 
-To deal with the issue of our attention mechanism being positionally invariant, we introduce the idea of positional embeddings into our transformer.
+Rather than sharing KV heads, MLA jointly compresses each token's keys and values into a low-dimensional latent vector:
+
+$$
+\mathbf{c}^{KV}_t = \mathbf{h}_t\mathbf{W}^{DKV}, \qquad
+\mathbf{k}^C_t = \mathbf{c}^{KV}_t\mathbf{W}^{UK}, \qquad
+\mathbf{v}^C_t = \mathbf{c}^{KV}_t\mathbf{W}^{UV},
+$$
+
+where $\mathbf{c}^{KV}_t \in \mathbb{R}^{d_c}$ and $d_c \ll n_h d_h$. During decoding, we cache $\mathbf{c}^{KV}_t$ and reconstruct the content keys and values when needed. Ignoring positional information for now, this reduces the cache per layer from $2Ln_hd_h$ elements to $Ld_c$.
+
+Queries may be compressed through a separate low-rank projection too, but this reduces training activations rather than the KV cache. There is one complication: applying RoPE directly to the reconstructed keys prevents the key up-projection from being folded into the query projection during inference. We will return to this after introducing RoPE.
+
+## Rotary Position Embeddings (RoPE)
+
+<PaperPreview arxivId="2104.09864">RoFormer</PaperPreview> introduced Rotary
+Position Embeddings (RoPE) to make attention position-aware without adding a
+positional vector to each token embedding.
+
+RoPE groups the coordinates of each query and key into pairs. At position $m$, it rotates pair $r$ by the angle $m\theta_r$, where $\theta_r = 10000^{-2r/d_h}$ and $0 \le r < d_h/2$:
+
+$$
+\mathbf{R}_m^{(r)} =
+\begin{bmatrix}
+\cos(m\theta_r) & -\sin(m\theta_r) \\
+\sin(m\theta_r) & \cos(m\theta_r)
+\end{bmatrix}.
+$$
+
+The full $\mathbf{R}_m$ is block-diagonal, with one such block per pair. Using the row-vector convention from above, $\widetilde{\mathbf{q}}_m = \mathbf{q}_m\mathbf{R}_m^\mathsf{T}$ and $\widetilde{\mathbf{k}}_n = \mathbf{k}_n\mathbf{R}_n^\mathsf{T}$. Since $\mathbf{R}_m^\mathsf{T}\mathbf{R}_n = \mathbf{R}_{n-m}$, their dot product depends only on relative position:
+
+$$
+\widetilde{\mathbf{q}}_m\widetilde{\mathbf{k}}_n^\mathsf{T}
+= \mathbf{q}_m\mathbf{R}_{n-m}\mathbf{k}_n^\mathsf{T}.
+$$
+
+DeepSeek makes RoPE compatible with MLA by separating each query and key into a content part and a smaller rotary part:
+
+$$
+\mathbf{q}_{t,i} = [\mathbf{q}^C_{t,i};\mathbf{q}^R_{t,i}], \qquad
+\mathbf{k}_{t,i} = [\mathbf{k}^C_{t,i};\mathbf{k}^R_t].
+$$
+
+RoPE is applied only to $\mathbf{q}^R_{t,i}$ and the key $\mathbf{k}^R_t$, which is shared by all heads. The content path remains position-independent, so its projection matrices can still be absorbed during inference. MLA therefore caches only $\mathbf{c}^{KV}_t$ and $\mathbf{k}^R_t$, for a total of $L(d_c+d_h^R)$ elements per layer instead of MHA's $2Ln_hd_h$.
+
+---

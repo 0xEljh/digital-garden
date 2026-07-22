@@ -52,6 +52,10 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
   return (
     <Container
       mx="auto"
+      // Both consumers (post page, portfolio panel) already pad horizontally;
+      // Container's default px would double-indent the prose relative to the
+      // title/meta block above it.
+      px="0"
       css={{
         /* headings */
         "& h1": {
@@ -131,16 +135,21 @@ export function StyledProse({ children, ...props }: StyledProseProps) {
         },
         "& blockquote": {
           borderLeft: "4px solid",
-          borderColor: "gray.300",
+          borderColor: "accent",
           paddingInlineStart: "1rem",
-          color: "gray.600",
+          color: "text.muted",
           fontStyle: "italic",
           marginY: "1.5rem",
         },
-        /* KaTeX block fix */
+        /* KaTeX block fix: tall glyphs overflow the line box by a few px, and
+           overflow-x:auto forces overflow-y to auto too — so without the
+           padding + hidden-y, every equation becomes a vertical scroll
+           container (stray scrollbars, trackpad wiggle). */
         "& .katex-display": {
           overflowX: "auto",
-          marginY: "1.5rem",
+          overflowY: "hidden",
+          paddingBlock: "0.5em",
+          marginY: "1rem",
         },
       }}
       {...props}

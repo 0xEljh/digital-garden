@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { COMMANDS, matchCommands, parseInput } from "./commands";
+import {
+  COMMANDS,
+  matchCommandCompletions,
+  matchCommands,
+  parseInput,
+} from "./commands";
 
 describe("parseInput", () => {
   test("plain text is search mode", () => {
@@ -40,6 +45,28 @@ describe("matchCommands", () => {
 
   test("no match yields an empty list", () => {
     expect(matchCommands(COMMANDS, "zzzzz")).toEqual([]);
+  });
+});
+
+describe("matchCommandCompletions", () => {
+  test("lists and filters the theme command's named displays", () => {
+    const command = COMMANDS.find((c) => c.verb === "theme");
+    expect(command).toBeDefined();
+
+    expect(matchCommandCompletions(command!, "").map((item) => item.value)).toEqual([
+      "kanagawa",
+      "flexoki",
+      "nier",
+      "phosphor",
+    ]);
+    expect(matchCommandCompletions(command!, "n").map((item) => item.value)).toEqual([
+      "nier",
+    ]);
+  });
+
+  test("commands without argument completions return an empty list", () => {
+    const command = COMMANDS.find((c) => c.verb === "posts");
+    expect(matchCommandCompletions(command!, "")).toEqual([]);
   });
 });
 

@@ -148,7 +148,8 @@ export default function PostPage({ post, related, backlinks }: PostPageProps) {
         />
       </Head>
       <Box py={{ base: 8, md: 12 }}>
-        <Container maxW="container.lg" px={{ base: 4, md: 12, lg: 24 }}>
+        {/* Chakra v3 has no `container.*` size tokens — use 5xl (64rem ≈ v2 container.lg). */}
+        <Container maxW="5xl" px={{ base: 4, md: 12, lg: 24 }}>
           <Stack gap={8}>
             <Stack gap={4}>
               <Heading size="2xl" fontFamily="heading">

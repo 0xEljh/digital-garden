@@ -24,12 +24,18 @@ export interface CommandContext {
 
 export type CommandKind = "navigate" | "action" | "egg";
 
+export interface CommandCompletion {
+  value: string;
+  label: string;
+}
+
 export interface Command {
   id: string;
   verb: string; // slash-free, e.g. "random"
   label: string; // display form, e.g. "/random"
   hint: string; // right-meta description
   kind: CommandKind;
+  completions?: readonly CommandCompletion[];
   run: (ctx: CommandContext, arg: string) => void;
 }
 
@@ -61,13 +67,25 @@ export function matchCommands(commands: Command[], verb: string): Command[] {
     .map((x) => x.c);
 }
 
+/** Return a command's argument hints, narrowed by the currently typed prefix. */
+export function matchCommandCompletions(
+  command: Command,
+  arg: string,
+): readonly CommandCompletion[] {
+  const prefix = arg.trim().toLowerCase();
+  return (command.completions ?? []).filter((item) =>
+    item.value.toLowerCase().startsWith(prefix),
+  );
+}
+
 function cmd(
   verb: string,
   hint: string,
   kind: CommandKind,
   run: (ctx: CommandContext, arg: string) => void,
+  completions?: readonly CommandCompletion[],
 ): Command {
-  return { id: `cmd:${verb}`, verb, label: `/${verb}`, hint, kind, run };
+  return { id: `cmd:${verb}`, verb, label: `/${verb}`, hint, kind, run, completions };
 }
 
 function themeOptions(): string {
@@ -84,25 +102,31 @@ export const COMMANDS: Command[] = [
   cmd("home", "back to spawn", "navigate", (ctx) => ctx.navigate("/")),
   cmd("posts", "the log", "navigate", (ctx) => ctx.navigate("/posts")),
   cmd("chart", "star chart", "navigate", (ctx) => ctx.navigate("/posts?view=chart")),
-  cmd("theme", "display settings", "action", (ctx, arg) => {
-    const requested = arg.trim().toLowerCase();
-    if (!requested) {
-      ctx.printLine(`display: ${ctx.theme || "kanagawa"} · ${themeOptions()}`);
-      return;
-    }
-    if (!isDisplayTheme(requested)) {
-      ctx.printLine(`unknown display "${arg.trim()}" · ${themeOptions()}`);
-      return;
-    }
-    const from = ctx.theme || "kanagawa";
-    ctx.setTheme(requested);
-    ctx.capture?.("theme_switch", {
-      from,
-      to: requested,
-      surface: "command_palette",
-    });
-    ctx.printLine(`display: ${requested}`);
-  }),
+  cmd(
+    "theme",
+    "display settings",
+    "action",
+    (ctx, arg) => {
+      const requested = arg.trim().toLowerCase();
+      if (!requested) {
+        ctx.printLine(`display: ${ctx.theme || "kanagawa"} · ${themeOptions()}`);
+        return;
+      }
+      if (!isDisplayTheme(requested)) {
+        ctx.printLine(`unknown display "${arg.trim()}" · ${themeOptions()}`);
+        return;
+      }
+      const from = ctx.theme || "kanagawa";
+      ctx.setTheme(requested);
+      ctx.capture?.("theme_switch", {
+        from,
+        to: requested,
+        surface: "command_palette",
+      });
+      ctx.printLine(`display: ${requested}`);
+    },
+    DISPLAY_THEMES.map((theme) => ({ value: theme, label: theme })),
+  ),
   cmd("portfolio", "projects & work", "navigate", (ctx) => ctx.navigate("/portfolio")),
   cmd("dashboard", "time-accounting", "navigate", (ctx) => ctx.navigate("/dashboard")),
   // cmd("rss", "subscribe", "navigate", (ctx) => ctx.navigate("/rss.xml")),

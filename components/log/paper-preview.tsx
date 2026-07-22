@@ -26,6 +26,9 @@ export function PaperPreview({
   const fetchedRef = useRef(false);
 
   const fetchPreview = useCallback(async () => {
+    // MDX usage isn't type-checked — a prop typo (e.g. arxivID) reaches here
+    // as undefined; don't fire a doomed /api request for it.
+    if (!arxivId) return;
     if (fetchedRef.current || clientCache.has(arxivId)) {
       if (clientCache.has(arxivId)) setData(clientCache.get(arxivId)!);
       return;
